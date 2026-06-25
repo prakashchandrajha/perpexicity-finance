@@ -1,0 +1,6 @@
+playwright
+trafilatura
+pydantic
+loguru
+beautifulsoup4
+aiofiles
