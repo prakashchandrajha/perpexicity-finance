@@ -1,6 +1,5 @@
 from loguru import logger
 from models.schema import (
-    QuoteData,
     ProfileData,
     EarningsEntry,
     AnalystDocument,
@@ -30,13 +29,12 @@ class FinanceExtractor:
 
         # For pre and post market, get everything
         if mode != "live":
-            snapshot.quote = self._extract_quote(ticker, raw_api_data)
             snapshot.earnings = self._extract_earnings(ticker, raw_api_data)
             annual, quarterly = self._extract_financials(ticker, raw_api_data)
             snapshot.financials_annual = annual
             snapshot.financials_quarterly = quarterly
         else:
-            logger.debug(f"Live mode: skipped parsing quote and financials for {ticker}")
+            logger.debug(f"Live mode: skipped parsing financials for {ticker}")
 
         return snapshot
 
@@ -46,41 +44,6 @@ class FinanceExtractor:
             if keyword in key:
                 return value
         return None
-
-    def _extract_quote(self, ticker: str, api_data: dict) -> QuoteData | None:
-        raw = self._find_api(api_data, f"quote/{ticker}")
-        if not raw or not isinstance(raw, dict):
-            logger.warning(f"No quote data found for {ticker}")
-            return None
-
-        try:
-            return QuoteData(
-                symbol=raw.get("symbol", ticker),
-                name=raw.get("name", ""),
-                price=raw.get("price", 0.0),
-                change=raw.get("change", 0.0),
-                changes_percentage=raw.get("changesPercentage", 0.0),
-                day_low=raw.get("dayLow", 0.0),
-                day_high=raw.get("dayHigh", 0.0),
-                year_low=raw.get("yearLow", 0.0),
-                year_high=raw.get("yearHigh", 0.0),
-                market_cap=raw.get("marketCap"),
-                volume=raw.get("volume"),
-                avg_volume=raw.get("avgVolume"),
-                open=raw.get("open"),
-                previous_close=raw.get("previousClose"),
-                eps=raw.get("eps"),
-                pe=raw.get("pe"),
-                exchange=raw.get("exchange", ""),
-                currency=raw.get("currency", "USD"),
-                is_market_open=raw.get("isMarketOpen", False),
-                dividend_yield_ttm=raw.get("dividendYieldTTM"),
-                price_avg_50=raw.get("priceAvg50"),
-                price_avg_200=raw.get("priceAvg200"),
-            )
-        except Exception as e:
-            logger.error(f"Failed to parse quote: {e}")
-            return None
 
     def _extract_profile(self, ticker: str, api_data: dict) -> ProfileData | None:
         raw = self._find_api(api_data, f"profile/{ticker}")
@@ -139,7 +102,10 @@ class FinanceExtractor:
         if not raw or not isinstance(raw, dict):
             return []
 
+        # US stocks use "documents", Indian stocks use "sourced_reports"
         docs = raw.get("documents", [])
+        reports = raw.get("sourced_reports", [])
+        
         result = []
         for doc in docs[:10]:
             try:
@@ -153,8 +119,22 @@ class FinanceExtractor:
                 )
             except Exception:
                 continue
+                
+        for rep in reports[:10]:
+            try:
+                result.append(
+                    AnalystDocument(
+                        title=rep.get("title", ""),
+                        provider=rep.get("provider"),
+                        updated_at=rep.get("date"),
+                        outlook=rep.get("outlook"),
+                        summary=rep.get("summary")
+                    )
+                )
+            except Exception:
+                continue
 
-        logger.info(f"Extracted {len(result)} analyst documents for {ticker}")
+        logger.info(f"Extracted {len(result)} analyst documents/reports for {ticker}")
         return result
 
     def _extract_financials(

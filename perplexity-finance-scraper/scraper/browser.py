@@ -1,7 +1,8 @@
-import json
-from playwright.async_api import async_playwright, Response
+import asyncio
+import urllib.parse
 from loguru import logger
-from config import PERPLEXITY_URL, HEADLESS, PAGE_TIMEOUT, DATA_WAIT_SECONDS
+from camoufox.async_api import AsyncCamoufox
+from config import PERPLEXITY_URL, HEADLESS
 
 
 class BrowserError(Exception):
@@ -9,97 +10,84 @@ class BrowserError(Exception):
 
 
 class PerplexityBrowser:
+    """Camoufox-powered browser that queries Perplexity's conversational AI
+    and extracts the generated prose response.
+
+    Camoufox uses a patched Firefox with randomized fingerprints to bypass
+    Cloudflare Turnstile without any API key.
+    """
+
     def __init__(self):
-        self.playwright = None
-        self.browser = None
-        self.page = None
+        self._browser_ctx = None
+        self._browser = None
 
     async def __aenter__(self):
-        self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(
-            headless=HEADLESS,
-            args=["--disable-blink-features=AutomationControlled"],
-        )
-        context = await self.browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/131.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1920, "height": 1080},
-            locale="en-US",
-        )
-        await context.add_init_script(
-            "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });"
-        )
-        self.page = await context.new_page()
-        self.page.set_default_timeout(PAGE_TIMEOUT)
+        self._browser_ctx = AsyncCamoufox(headless=HEADLESS)
+        self._browser = await self._browser_ctx.__aenter__()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        if self.browser:
-            await self.browser.close()
-        if self.playwright:
-            await self.playwright.stop()
+        if self._browser_ctx:
+            await self._browser_ctx.__aexit__(exc_type, exc, tb)
 
-    async def get_ticker_data(self, ticker: str) -> dict:
-        """Navigate to /finance/{ticker} and intercept REST API responses.
+    async def ask(self, prompt: str, timeout: int = 45) -> str:
+        """Send a prompt to Perplexity search and return the AI-generated text.
 
-        Returns a dict keyed by API endpoint name (e.g. "quote/NVDA",
-        "profile/NVDA") with parsed JSON values.
+        Args:
+            prompt: The exact question to ask Perplexity.
+            timeout: Max seconds to wait for the AI response to stream.
+
+        Returns:
+            The extracted prose text from Perplexity's answer.
         """
-        captured: dict[str, dict] = {}
-
-        async def _on_response(resp: Response) -> None:
-            if "/rest/finance/" not in resp.url:
-                return
-            if resp.status != 200:
-                return
-            try:
-                body = await resp.text()
-                if not body or body.startswith("<!DOCTYPE"):
-                    return
-                # Extract key like "quote/NVDA" from full URL
-                path = resp.url.split("/rest/finance/")[-1]
-                key = path.split("?")[0]
-                captured[key] = json.loads(body)
-                logger.debug(f"Captured API: {key} ({len(body)} bytes)")
-            except Exception as e:
-                logger.warning(f"Failed to capture {resp.url}: {e}")
-
-        self.page.on("response", _on_response)
+        page = await self._browser.new_page()
 
         try:
-            url = f"{PERPLEXITY_URL}/{ticker}"
-            
-            # Retry loop for ERR_NETWORK_CHANGED
+            query = urllib.parse.quote_plus(prompt)
+            url = f"{PERPLEXITY_URL}?q={query}"
+
+            logger.info(f"Navigating to Perplexity search...")
+            logger.debug(f"URL: {url[:120]}...")
+
+            # Retry loop for transient network errors
             for attempt in range(3):
                 try:
-                    await self.page.goto(url, wait_until="domcontentloaded")
+                    await page.goto(url, wait_until="domcontentloaded")
                     break
                 except Exception as e:
-                    if "ERR_NETWORK_CHANGED" in str(e) and attempt < 2:
-                        logger.warning(f"Network changed, retrying... ({attempt + 1}/3)")
-                        import asyncio
+                    if attempt < 2:
+                        logger.warning(f"Navigation attempt {attempt + 1} failed: {e}. Retrying...")
                         await asyncio.sleep(2)
                     else:
-                        raise
-                        
-            logger.info(f"Navigated to {url}")
+                        raise BrowserError(f"Failed to navigate after 3 attempts: {e}")
 
-            # Wait for API responses to arrive
-            await self.page.wait_for_timeout(DATA_WAIT_SECONDS * 1000)
-            logger.info(
-                f"Waited {DATA_WAIT_SECONDS}s — captured {len(captured)} API responses"
-            )
-
-            if not captured:
+            # Wait for the .prose container (Perplexity's answer block)
+            logger.info("Waiting for AI response to generate...")
+            try:
+                await page.wait_for_selector(".prose", timeout=timeout * 1000)
+            except Exception:
                 raise BrowserError(
-                    f"No API data captured for ticker '{ticker}'. "
-                    "The ticker may be invalid or the page structure changed."
+                    "Perplexity did not generate a response within timeout. "
+                    "The site may be blocking us or experiencing issues."
                 )
 
-            return captured
+            # Let the LLM stream finish — wait for text to stabilize
+            stable_text = ""
+            for _ in range(timeout // 2):
+                await asyncio.sleep(2)
+                current_text = await page.locator(".prose").first.inner_text()
+                if current_text == stable_text and len(current_text) > 50:
+                    break
+                stable_text = current_text
+            else:
+                # Use whatever we have after the loop
+                stable_text = await page.locator(".prose").first.inner_text()
+
+            if not stable_text or len(stable_text) < 30:
+                raise BrowserError("Perplexity returned an empty or very short response.")
+
+            logger.info(f"Extracted {len(stable_text)} chars of AI-generated prose.")
+            return stable_text.strip()
 
         except BrowserError:
             raise
@@ -107,4 +95,4 @@ class PerplexityBrowser:
             logger.error(f"Browser error: {e}")
             raise BrowserError(str(e))
         finally:
-            self.page.remove_listener("response", _on_response)
+            await page.close()

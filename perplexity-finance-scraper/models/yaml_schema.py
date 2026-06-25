@@ -1,47 +1,17 @@
-from typing import Optional, List
 from pydantic import BaseModel
 
-
-class PreMarketQuote(BaseModel):
-    indicative_price: Optional[float]
-
-class DailyNarrative(BaseModel):
-    overnight_catalyst: Optional[str]
-
-class PreMarketEarnings(BaseModel):
-    eps_surprise_magnitude: Optional[float]
-
-class AnalystCoverage(BaseModel):
-    target_changes: List[str]
-
-class QuantMetrics(BaseModel):
-    revenue_growth_yoy: Optional[str]
-    profit_margin_current: Optional[str]
-    earnings_surprise_avg: Optional[str]
-    momentum_52_week: Optional[str]
-    fundamental_grade: str
+class PerplexityAlpha(BaseModel):
+    """The goldmine. Real-time AI-synthesized narrative from Perplexity Chat.
+    This provides qualitative edge that NO quantitative broker API can provide."""
+    query_used: str
+    ai_narrative: str
+    char_count: int
 
 class PreMarketConfig(BaseModel):
-    pre_market_quote: PreMarketQuote
-    daily_narrative: DailyNarrative
-    quant_metrics: QuantMetrics
-    analyst_coverage: AnalystCoverage
-
-
-class LiveNews(BaseModel):
-    live_narrative_summary: Optional[str]
-    recent_analyst_updates: List[str]
-
-class MarketSummary(BaseModel):
-    sector_performance: Optional[str]
+    perplexity_alpha: PerplexityAlpha
 
 class LiveMarketConfig(BaseModel):
-    news: LiveNews
-    market_summary: MarketSummary
-
+    perplexity_alpha: PerplexityAlpha
 
 class PostMarketConfig(BaseModel):
-    closing_quote: PreMarketQuote
-    daily_narrative: DailyNarrative
-    quant_metrics: QuantMetrics
-    analyst_coverage: AnalystCoverage
+    perplexity_alpha: PerplexityAlpha
