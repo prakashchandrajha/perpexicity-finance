@@ -1,6 +1,6 @@
 {
   "ticker": "RELIANCE.NS",
-  "scraped_at": "2026-06-25T21:00:20.923083",
+  "scraped_at": "2026-06-25T16:47:42.081510",
   "source_url": "https://www.perplexity.ai/finance/RELIANCE.NS",
   "quote": {
     "symbol": "RELIANCE.NS",
@@ -2853,6 +2853,38 @@
         }
       ]
     },
+    "profile/RELIANCE.NS": {
+      "symbol": "RELIANCE.NS",
+      "exchangeShortName": "NSE",
+      "currency": "INR",
+      "companyName": "Reliance Industries Limited",
+      "cik": null,
+      "isin": "INE002A01018",
+      "cusip": "Y72596102",
+      "exchange": "National Stock Exchange of India",
+      "industry": "Oil & Gas Refining & Marketing",
+      "website": "https://www.ril.com",
+      "description": "Reliance Industries Limited (RIL), a prominent Indian conglomerate, conducts a wide array of business operations globally. At its core, RIL is deeply involved in the energy sector, encompassing the exploration, development, and production of crude oil and natural gas. The company also refines and distributes an extensive portfolio of petroleum products, such as LPG, gasoline, jet fuel, diesel, and various industrial chemicals. Furthermore, it is a major producer of petrochemicals, offering a vast range of products including different types of polyethylene (PE), polypropylene, polyvinyl chloride (PVC), and polyester fibers. Beyond its energy ventures, RIL commands an extensive retail footprint, managing over 12,711 stores as of March 31, 2021. This diverse retail ecosystem spans numerous formats like supermarkets, hypermarkets, specialty outlets, pharmacies, and online platforms, selling everything from groceries and apparel to electronics, beauty products, and connectivity solutions. Under its Jio brand, the company is a significant provider of digital services, offering telecommunications, internet access, and a variety of online platforms. RIL also operates in the financial services sector, delivering non-banking financial products and insurance brokerage. Additionally, the conglomerate has a presence in textile manufacturing, producing yarns, fabrics, clothing, and automotive furnishings. Its media and entertainment division, including Network18, manages news channels, entertainment platforms, financial portals, lifestyle websites, and online ticket booking services, alongside publishing magazines. The company also provides highway hospitality and fleet management services. Reliance Industries Limited, established in 1973, is headquartered in Mumbai, India.",
+      "ceo": "Mukesh Dhirubhai Ambani",
+      "sector": "Energy",
+      "country": "IN",
+      "fullTimeEmployees": "347362",
+      "phone": "91 22 3555 5000",
+      "address": "Maker Chambers IV",
+      "city": "Mumbai",
+      "state": null,
+      "zip": "400021",
+      "ipoDate": "1996-01-01",
+      "isEtf": false,
+      "isActivelyTrading": true,
+      "isAdr": false,
+      "isFund": false,
+      "mktCap": 17837152178875.0,
+      "image": "https://finance-logo.perplexity.ai/ticker/RELIANCE.NS?format=png&fallback=404&size=50",
+      "imageDark": "https://finance-logo.perplexity.ai/ticker/RELIANCE.NS?format=png&fallback=404&size=50&theme=dark",
+      "isCanonical": null,
+      "isCrypto": null
+    },
     "documents/RELIANCE.NS": {
       "documents": [],
       "sourced_reports": [
@@ -2890,6 +2922,176 @@
         }
       ],
       "pplx_reports": []
+    },
+    "settings": {
+      "spaces": [
+        {
+          "id": "sp-500-transcripts",
+          "title": "S&P 500 Transcripts",
+          "description": "Query any S&P company transcript over the last two years.",
+          "emoji": "🎙️",
+          "buttonText": "Query transcripts",
+          "href": "https://www.perplexity.ai/collections/s-p-500-transcripts-uAswRB_uSaSI.jrrkf.isQ"
+        },
+        {
+          "id": "buffett-advice",
+          "title": "What would Buffett say?",
+          "description": "Get answers from Buffett shareholder letters and Berkshire Hathaway's website.",
+          "emoji": "💰",
+          "buttonText": "Ask Buffett",
+          "href": "https://www.perplexity.ai/collections/what-would-buffett-say-39U7SZo7SUm8zi1d.EwaJQ"
+        },
+        {
+          "id": "investor-question-generator",
+          "title": "Investor Question Generator",
+          "description": "Get five strategic questions to ask before a potential investment",
+          "emoji": "❓",
+          "buttonText": "Generate questions",
+          "href": "https://www.perplexity.ai/collections/investor-prep-question-generat-bRs3o4CBRcaKHYpfBd_0MA"
+        }
+      ],
+      "history_intervals": [
+        {
+          "max_days": 1,
+          "allowed_intervals": [
+            "1min",
+            "5min",
+            "15min",
+            "30min"
+          ],
+          "default_interval": "1min"
+        },
+        {
+          "max_days": 5,
+          "allowed_intervals": [
+            "5min",
+            "15min",
+            "30min",
+            "1hour"
+          ],
+          "default_interval": "5min"
+        },
+        {
+          "max_days": 30,
+          "allowed_intervals": [
+            "15min",
+            "30min",
+            "1hour",
+            "4hour",
+            "1day"
+          ],
+          "default_interval": "1hour"
+        },
+        {
+          "max_days": 90,
+          "allowed_intervals": [
+            "30min",
+            "1hour",
+            "1day",
+            "1week"
+          ],
+          "default_interval": "1hour"
+        },
+        {
+          "max_days": 180,
+          "allowed_intervals": [
+            "4hour",
+            "1day",
+            "1week"
+          ],
+          "default_interval": "1day"
+        },
+        {
+          "max_days": 365,
+          "allowed_intervals": [
+            "4hour",
+            "1day",
+            "1week",
+            "1month"
+          ],
+          "default_interval": "1day"
+        },
+        {
+          "max_days": 1825,
+          "allowed_intervals": [
+            "1day",
+            "1week",
+            "1month"
+          ],
+          "default_interval": "1week"
+        }
+      ],
+      "date_range_interval_policies": [
+        {
+          "max_days": 1,
+          "allowed_intervals": [
+            "1min",
+            "5min",
+            "15min",
+            "30min"
+          ],
+          "default_interval": "1min"
+        },
+        {
+          "max_days": 5,
+          "allowed_intervals": [
+            "5min",
+            "15min",
+            "30min",
+            "1hour"
+          ],
+          "default_interval": "5min"
+        },
+        {
+          "max_days": 30,
+          "allowed_intervals": [
+            "15min",
+            "30min",
+            "1hour",
+            "4hour",
+            "1day"
+          ],
+          "default_interval": "1hour"
+        },
+        {
+          "max_days": 90,
+          "allowed_intervals": [
+            "30min",
+            "1hour",
+            "1day",
+            "1week"
+          ],
+          "default_interval": "1hour"
+        },
+        {
+          "max_days": 180,
+          "allowed_intervals": [
+            "4hour",
+            "1day",
+            "1week"
+          ],
+          "default_interval": "1day"
+        },
+        {
+          "max_days": 365,
+          "allowed_intervals": [
+            "4hour",
+            "1day",
+            "1week",
+            "1month"
+          ],
+          "default_interval": "1day"
+        },
+        {
+          "max_days": 1825,
+          "allowed_intervals": [
+            "1day",
+            "1week",
+            "1month"
+          ],
+          "default_interval": "1week"
+        }
+      ]
     },
     "earnings/RELIANCE.NS": [
       {
@@ -6226,37 +6428,207 @@
         "priceSigFigs": 2
       }
     },
-    "profile/RELIANCE.NS": {
-      "symbol": "RELIANCE.NS",
-      "exchangeShortName": "NSE",
-      "currency": "INR",
-      "companyName": "Reliance Industries Limited",
-      "cik": null,
-      "isin": "INE002A01018",
-      "cusip": "Y72596102",
-      "exchange": "National Stock Exchange of India",
-      "industry": "Oil & Gas Refining & Marketing",
-      "website": "https://www.ril.com",
-      "description": "Reliance Industries Limited (RIL), a prominent Indian conglomerate, conducts a wide array of business operations globally. At its core, RIL is deeply involved in the energy sector, encompassing the exploration, development, and production of crude oil and natural gas. The company also refines and distributes an extensive portfolio of petroleum products, such as LPG, gasoline, jet fuel, diesel, and various industrial chemicals. Furthermore, it is a major producer of petrochemicals, offering a vast range of products including different types of polyethylene (PE), polypropylene, polyvinyl chloride (PVC), and polyester fibers. Beyond its energy ventures, RIL commands an extensive retail footprint, managing over 12,711 stores as of March 31, 2021. This diverse retail ecosystem spans numerous formats like supermarkets, hypermarkets, specialty outlets, pharmacies, and online platforms, selling everything from groceries and apparel to electronics, beauty products, and connectivity solutions. Under its Jio brand, the company is a significant provider of digital services, offering telecommunications, internet access, and a variety of online platforms. RIL also operates in the financial services sector, delivering non-banking financial products and insurance brokerage. Additionally, the conglomerate has a presence in textile manufacturing, producing yarns, fabrics, clothing, and automotive furnishings. Its media and entertainment division, including Network18, manages news channels, entertainment platforms, financial portals, lifestyle websites, and online ticket booking services, alongside publishing magazines. The company also provides highway hospitality and fleet management services. Reliance Industries Limited, established in 1973, is headquartered in Mumbai, India.",
-      "ceo": "Mukesh Dhirubhai Ambani",
-      "sector": "Energy",
-      "country": "IN",
-      "fullTimeEmployees": "347362",
-      "phone": "91 22 3555 5000",
-      "address": "Maker Chambers IV",
-      "city": "Mumbai",
-      "state": null,
-      "zip": "400021",
-      "ipoDate": "1996-01-01",
-      "isEtf": false,
-      "isActivelyTrading": true,
-      "isAdr": false,
-      "isFund": false,
-      "mktCap": 17837152178875.0,
-      "image": "https://finance-logo.perplexity.ai/ticker/RELIANCE.NS?format=png&fallback=404&size=50",
-      "imageDark": "https://finance-logo.perplexity.ai/ticker/RELIANCE.NS?format=png&fallback=404&size=50&theme=dark",
-      "isCanonical": null,
-      "isCrypto": null
-    }
+    "profile/RELIANCE.NS/description": "Reliance Industries Limited (RIL), headquartered in Mumbai, India, is the largest private sector conglomerate in India and a Fortune Global 500 company, founded in 1973 and led by Chairman and Managing Director Mukesh Dhirubhai Ambani. Listed on the National Stock Exchange of India, RIL operates across six core segments: Oil to Chemicals (O2C) — encompassing petroleum refining, petrochemicals, and fuel retailing — Oil & Gas exploration and production, Retail, Digital Services, Financial Services, and Others, with a market capitalization of approximately ₹17.7 trillion INR. The company's retail arm operates India's largest store network under brands such as Reliance Fresh and Reliance Trends, while its telecom subsidiary, Jio, has transformed digital connectivity across India as the country's largest telecommunications provider. With over 347,000 full-time employees and a diversified portfolio that also spans media, entertainment, textiles, and new energy initiatives, RIL remains one of India's most profitable and strategically significant corporations.",
+    "analyst-ratings/RELIANCE.NS": {
+      "consensus": {
+        "averagePriceTarget": null,
+        "medianPriceTarget": null,
+        "highPriceTarget": null,
+        "lowPriceTarget": null,
+        "totalRatings": 0,
+        "bullishCount": 0,
+        "neutralCount": 0,
+        "bearishCount": 0,
+        "consensusRating": "hold",
+        "bullishPercentage": 0.0,
+        "neutralPercentage": 0.0,
+        "bearishPercentage": 0.0
+      },
+      "ratings": []
+    },
+    "prediction-markets/RELIANCE.NS/trending-ticker": [],
+    "market-status/RELIANCE.NS": "closed",
+    "peers/RELIANCE.NS": [
+      {
+        "symbol": "IOC.BO",
+        "name": "Indian Oil Corporation Limited",
+        "change": -2.4,
+        "price": 143.85,
+        "changesPercentage": -1.64103,
+        "marketCap": 2030205710518.0,
+        "currency": "INR",
+        "exchange": "BSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/IOC.BO?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/IOC.BO?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "BPCL.BO",
+        "name": "Bharat Petroleum Corporation Limited",
+        "change": -5.85,
+        "price": 309.85,
+        "changesPercentage": -1.85303,
+        "marketCap": 1346413451300.0,
+        "currency": "INR",
+        "exchange": "BSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/BPCL.BO?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/BPCL.BO?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "HINDPETRO.NS",
+        "name": "Hindustan Petroleum Corporation Limited",
+        "change": -3.65,
+        "price": 409.25,
+        "changesPercentage": -0.88399,
+        "marketCap": 870811365082.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/HINDPETRO.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/HINDPETRO.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "ONGC.NS",
+        "name": "Oil and Natural Gas Corporation Limited",
+        "change": -6.9,
+        "price": 233.1,
+        "changesPercentage": -2.875,
+        "marketCap": 2932463082919.0005,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/ONGC.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/ONGC.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "MRPL.NS",
+        "name": "Mangalore Refinery and Petrochemicals Limited",
+        "change": -2.3,
+        "price": 153.93,
+        "changesPercentage": -1.47219,
+        "marketCap": 269777529744.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/MRPL.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/MRPL.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "CHENNPETRO.NS",
+        "name": "Chennai Petroleum Corporation Limited",
+        "change": -25.8,
+        "price": 1102.2,
+        "changesPercentage": -2.28723,
+        "marketCap": 164130145080.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/CHENNPETRO.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/CHENNPETRO.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "PETRONET.NS",
+        "name": "Petronet LNG Limited",
+        "change": -5.6,
+        "price": 282.25,
+        "changesPercentage": -1.94546,
+        "marketCap": 423375024838.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/PETRONET.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/PETRONET.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "BHARTIARTL.BO",
+        "name": "Bharti Airtel Limited",
+        "change": -26.85,
+        "price": 1850.15,
+        "changesPercentage": -1.43047,
+        "marketCap": 11271040600665.0,
+        "currency": "INR",
+        "exchange": "BSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/BHARTIARTL.BO?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/BHARTIARTL.BO?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "IDEA.BO",
+        "name": "Vodafone Idea Limited",
+        "change": -0.25,
+        "price": 14.07,
+        "changesPercentage": -1.74581,
+        "marketCap": 1523332293250.0,
+        "currency": "INR",
+        "exchange": "BSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/IDEA.BO?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/IDEA.BO?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "DMART.NS",
+        "name": "Avenue Supermarts Limited",
+        "change": -41.4,
+        "price": 4294.6,
+        "changesPercentage": -0.9548,
+        "marketCap": 2801066958000.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/DMART.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/DMART.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "TCS.NS",
+        "name": "Tata Consultancy Services Limited",
+        "change": -14.3,
+        "price": 2094.7,
+        "changesPercentage": -0.67805,
+        "marketCap": 7578807923955.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/TCS.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/TCS.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "GRASIM.NS",
+        "name": "Grasim Industries Limited",
+        "change": -1.3,
+        "price": 3126.6,
+        "changesPercentage": -0.04156143,
+        "marketCap": 2120193123993.0,
+        "currency": "INR",
+        "exchange": "NSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/GRASIM.NS?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/GRASIM.NS?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "OIL.BO",
+        "name": "Oil India Limited",
+        "change": -10.84999,
+        "price": 407.5,
+        "changesPercentage": -2.59352,
+        "marketCap": 662367348088.0,
+        "currency": "INR",
+        "exchange": "BSE",
+        "image": "https://finance-logo.perplexity.ai/ticker/OIL.BO?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/OIL.BO?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "IVL.BK",
+        "name": "Indorama Ventures Public Company Limited",
+        "change": 0.0,
+        "price": 21.0,
+        "changesPercentage": 0.0,
+        "marketCap": 117905592000.0,
+        "currency": "THB",
+        "exchange": "SET",
+        "image": "https://finance-logo.perplexity.ai/ticker/IVL.BK?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/IVL.BK?format=png&fallback=404&size=50&theme=dark"
+      },
+      {
+        "symbol": "PTT.BK",
+        "name": "PTT Public Company Limited",
+        "change": -0.5,
+        "price": 34.5,
+        "changesPercentage": -1.42857,
+        "marketCap": 977189730000.0,
+        "currency": "THB",
+        "exchange": "SET",
+        "image": "https://finance-logo.perplexity.ai/ticker/PTT.BK?format=png&fallback=404&size=50",
+        "imageDark": "https://finance-logo.perplexity.ai/ticker/PTT.BK?format=png&fallback=404&size=50&theme=dark"
+      }
+    ]
   }
 }

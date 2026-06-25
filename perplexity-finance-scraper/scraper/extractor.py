@@ -12,27 +12,33 @@ from datetime import datetime
 class FinanceExtractor:
     """Converts raw API response dicts into structured TickerSnapshot."""
 
-    def extract(self, ticker: str, api_data: dict) -> TickerSnapshot:
-        quote = self._extract_quote(ticker, api_data)
-        profile = self._extract_profile(ticker, api_data)
-        earnings = self._extract_earnings(ticker, api_data)
-        documents = self._extract_documents(ticker, api_data)
-        financials_annual, financials_quarterly = self._extract_financials(
-            ticker, api_data
+    def extract(self, ticker: str, raw_api_data: dict, mode: str = "all") -> TickerSnapshot:
+        """
+        Extracts structured data from the raw API payload.
+        If mode == 'live', heavy datasets like financials and earnings are skipped.
+        """
+        snapshot = TickerSnapshot(
+            ticker=ticker,
+            scraped_at=datetime.utcnow().isoformat(),
+            source_url=f"https://www.perplexity.ai/finance/{ticker}",
+            raw_api=raw_api_data,
         )
 
-        return TickerSnapshot(
-            ticker=ticker,
-            scraped_at=datetime.now().isoformat(),
-            source_url=f"https://www.perplexity.ai/finance/{ticker}",
-            quote=quote,
-            profile=profile,
-            earnings=earnings,
-            documents=documents,
-            financials_annual=financials_annual,
-            financials_quarterly=financials_quarterly,
-            raw_api={k: v for k, v in api_data.items()},
-        )
+        # We always want profile and documents for narrative
+        snapshot.profile = self._extract_profile(ticker, raw_api_data)
+        snapshot.documents = self._extract_documents(ticker, raw_api_data)
+
+        # For pre and post market, get everything
+        if mode != "live":
+            snapshot.quote = self._extract_quote(ticker, raw_api_data)
+            snapshot.earnings = self._extract_earnings(ticker, raw_api_data)
+            annual, quarterly = self._extract_financials(ticker, raw_api_data)
+            snapshot.financials_annual = annual
+            snapshot.financials_quarterly = quarterly
+        else:
+            logger.debug(f"Live mode: skipped parsing quote and financials for {ticker}")
+
+        return snapshot
 
     def _find_api(self, api_data: dict, keyword: str) -> dict | list | None:
         """Find an API response by keyword in the key name."""
