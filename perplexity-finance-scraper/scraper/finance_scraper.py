@@ -37,19 +37,17 @@ CHANGE_PATTERN = re.compile(r'^\d+\.\d+%$')
 SOURCES_PATTERN = re.compile(r'^\d+\s+sources?$')
 
 
-async def scrape_finance_page(browser: PerplexityBrowser, ticker: str) -> PerplexityFinanceSnapshot:
-    """Scrape the full /finance/ page for a ticker using an existing browser.
+async def scrape_finance_page(html: str, ticker: str) -> PerplexityFinanceSnapshot:
+    """Scrape the full /finance/ page for a ticker using raw HTML.
 
     Args:
-        browser: An already-opened PerplexityBrowser context.
+        html: The raw HTML string of the /finance/ page.
         ticker: Stock ticker (e.g. "RELIANCE.NS")
 
     Returns:
         PerplexityFinanceSnapshot with all extracted data.
     """
-    logger.info(f"[FinanceScraper] Scraping /finance/{ticker}")
-
-    html = await browser.scrape_finance_page(ticker)
+    logger.info(f"[FinanceScraper] Parsing /finance/{ticker}")
     soup = BeautifulSoup(html, "html.parser")
     main = soup.select_one("main")
 

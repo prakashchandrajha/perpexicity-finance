@@ -6,7 +6,7 @@ from loguru import logger
 import sys
 
 from config import DATA_DIR
-from scraper.browser import PerplexityBrowser
+from scraper.extension_client import PerplexityExtensionClient
 from scraper.finance_scraper import scrape_finance_page
 from scraper.extractor import extract_signals
 from storage.save import save_phase_output
@@ -26,7 +26,7 @@ async def run(ticker: str, phase: str):
     errors = []
 
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    logger.info("  🔍 PERPLEXITY FINANCE SCRAPER")
+    logger.info("  🔍 PERPLEXITY FINANCE SCRAPER (EXTENSION MODE)")
     logger.info(f"  TICKER : {ticker}")
     logger.info(f"  PHASE  : {phase.upper()}")
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -35,32 +35,34 @@ async def run(ticker: str, phase: str):
     signals = SignalExtraction()
     live_narrative = None
 
-    async with PerplexityBrowser() as browser:
-        if phase in ["pre_market", "post_market"]:
-            # 1. Scrape the /finance/ page for static summaries
-            logger.info(f"━━ STEP 1: Scraping /finance/ page for {phase} ━━")
-            try:
-                finance_data = await scrape_finance_page(browser, ticker)
-                
-                n_analyses = len(finance_data.daily_analysis)
-                n_news = len(finance_data.news_headlines)
-                n_issues = len(finance_data.key_issues)
-                n_peers = len(finance_data.peers)
-                
-                logger.success(f"[Page] ✓ {n_analyses} analyses, {n_news} news, {n_issues} issues, {n_peers} peers")
-                
-            except Exception as e:
-                logger.error(f"[Page] Scrape failed: {e}")
-                errors.append(f"Page scrape error: {e}")
-        else:
-            # LIVE MARKET: Ask conversational AI for breaking catalysts
-            logger.info("━━ STEP 1: Asking live conversational AI for intraday catalysts ━━")
-            query = f"Search the news and tell me: what breaking news, block deals, or macroeconomic shifts are driving {ticker} stock price right now today? Provide a concise intraday synthesis."
-            live_narrative = await browser.ask_finance_live(ticker, query)
+    client = PerplexityExtensionClient()
+
+    if phase in ["pre_market", "post_market"]:
+        # 1. Scrape the /finance/ page for static summaries
+        logger.info(f"━━ STEP 1: Scraping /finance/ page for {phase} ━━")
+        try:
+            html = client.fetch_finance_page_html(ticker)
+            finance_data = await scrape_finance_page(html, ticker)
             
-            if "[ERROR]" in live_narrative or "don’t have live access" in live_narrative or "don't have live market data" in live_narrative:
-                logger.warning("[Live] Perplexity refused live search or threw an error.")
-                errors.append("Perplexity live search blocked/refused.")
+            n_analyses = len(finance_data.daily_analysis)
+            n_news = len(finance_data.news_headlines)
+            n_issues = len(finance_data.key_issues)
+            n_peers = len(finance_data.peers)
+            
+            logger.success(f"[Page] ✓ {n_analyses} analyses, {n_news} news, {n_issues} issues, {n_peers} peers")
+            
+        except Exception as e:
+            logger.error(f"[Page] Scrape failed: {e}")
+            errors.append(f"Page scrape error: {e}")
+    else:
+        # LIVE MARKET: Ask conversational AI for breaking catalysts
+        logger.info("━━ STEP 1: Asking live conversational AI for intraday catalysts ━━")
+        live_narrative = client.ask_finance_live(ticker)
+        if live_narrative and "Error:" not in live_narrative:
+            logger.success(f"[API] Received live answer ({len(live_narrative)} chars)")
+        else:
+            logger.error(f"[API] Live query failed or blocked: {live_narrative}")
+            errors.append(f"Live query failed: {live_narrative}")
 
     # 2. Extract Trading Signals
     logger.info("━━ STEP 2: Extracting trading signals ━━")
