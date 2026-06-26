@@ -28,13 +28,11 @@ Perplexity Finance provides 7 types of data that **no other single free source**
 
 3. **Key Issues with Bull/Bear Framing** — Structured debate questions with explicit bullish and bearish arguments. This is what equity research analysts charge ₹50L+/year to produce.
 
-4. **On-Demand AI Research** — Ask ANY question and get a cited, synthesized answer. "What is the contrarian view on RELIANCE today?" — no API provides this.
+4. **Peer Comparison Data** — Automatic peer identification with real-time relative performance.
 
-5. **Peer Comparison Data** — Automatic peer identification with real-time relative performance.
+5. **Key Stats Snapshot** — Independent verification source against broker data (catches discrepancies on earnings days).
 
-6. **Key Stats Snapshot** — Independent verification source against broker data (catches discrepancies on earnings days).
-
-7. **Company Overview** — Continuously updated, not stale like screener.in profiles.
+6. **Company Overview** — Continuously updated, not stale like screener.in profiles.
 
 ## How It Works
 

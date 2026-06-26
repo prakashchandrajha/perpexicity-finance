@@ -21,10 +21,12 @@ ANSWER_TIMEOUT_MS = 45000      # 45s for AI answer streaming
 STREAM_STABILIZE_SEC = 3       # wait for AI stream to finish
 DOM_RENDER_WAIT_MS = 8000      # wait for finance page to fully render
 
-# ── Rate Limiting (be respectful — Perplexity is a free resource) ────
-MIN_DELAY_BETWEEN_REQUESTS_SEC = 30   # minimum gap between any two requests
-MAX_DELAY_BETWEEN_REQUESTS_SEC = 90   # randomized upper bound
-AI_QUERY_DELAY_SEC = 45               # extra delay for AI queries (heavier)
+# ── Rate Limiting (Optimized for Speed) ─────────────────────────────
+# We dropped the heavy delays to allow fast, multi-ticker scaling.
+# If Perplexity blocks your IP, you will need to add a proxy pool to Camoufox.
+MIN_DELAY_BETWEEN_REQUESTS_SEC = 2    # Just a small human-like pause
+MAX_DELAY_BETWEEN_REQUESTS_SEC = 5    # Max wait
+AI_QUERY_DELAY_SEC = 2                # Small buffer between heavy AI queries
 
 # ── Market Schedule (IST) ────────────────────────────────────────────
 # These define when each phase runs in the scheduler

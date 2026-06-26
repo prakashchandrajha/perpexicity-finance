@@ -1,11 +1,11 @@
 {
   "ticker": "RELIANCE.NS",
   "phase": "pre_market",
-  "timestamp": "2026-06-26T16:58:49.471383+00:00",
+  "timestamp": "2026-06-26T18:17:09.731584+00:00",
   "date": "2026-06-26",
   "finance_page": {
     "ticker": "RELIANCE.NS",
-    "scraped_at": "2026-06-26T16:59:06.285060+00:00",
+    "scraped_at": "2026-06-26T18:17:09.004707+00:00",
     "source_url": "https://www.perplexity.ai/finance/RELIANCE.NS",
     "daily_analysis": [
       {
@@ -159,8 +159,8 @@
         "date": "Jun 19, 2026"
       },
       {
-        "headline": "Ambani's Jio Platforms files for $3.8 billion IPO that could be India's biggest, sources say",
-        "source": "Reuters",
+        "headline": "IPO: Reliance Jio announces what may be India's biggest-ever share sale",
+        "source": "BBC",
         "date": "Jun 19, 2026"
       }
     ],
@@ -209,28 +209,31 @@
     ],
     "company_overview": "Reliance Industries Limited (RIL), headquartered in Mumbai, India, is the largest private sector conglomerate in India and a Fortune Global 500 company, founded in 1973 and led by Chairman and Managing Director Mukesh Dhirubhai Ambani. Listed on the National Stock Exchange of India, RIL operates across six core segments: Oil to Chemicals (O2C) — encompassing petroleum refining, petrochemicals, and fuel retailing — Oil & Gas exploration and production, Retail, Digital Services, Financial Services, and Others, with a market capitalization of approximately ₹17.7 trillion INR. The company's retail arm operates India's largest store network under brands such as Reliance Fresh and Reliance Trends, while its telecom subsidiary, Jio, has transformed digital connectivity across India as the country's largest telecommunications provider. With over 347,000 full-time employees and a diversified portfolio that also spans media, entertainment, textiles, and new energy initiatives, RIL remains one of India's most profitable and strategically significant corporations."
   },
-  "ai_queries": [],
   "signals": {
-    "sentiment_score": 2,
-    "trend_direction": "TRANSITIONING",
+    "sentiment_score": -1,
+    "trend_direction": "MIXED",
     "catalyst_tags": [
       "IPO",
       "EARNINGS",
       "FII",
       "CRUDE",
+      "GEOPOLITICS",
       "REGULATORY",
       "MERGER",
+      "DIVIDEND",
       "TECH_AI",
       "RATES",
       "FOREX",
       "INDEX"
     ],
-    "urgency": "NORMAL",
-    "confidence": 0.5,
+    "urgency": "BREAKING",
+    "confidence": 1.0,
     "key_levels": {
-      "analyst_target": "₹1,699"
+      "analyst_target": "₹1,699",
+      "52w_low": "₹1,290,",
+      "fair_value": "₹1,698.50"
     }
   },
-  "scrape_duration_sec": 17.6,
+  "scrape_duration_sec": 13.7,
   "errors": []
 }

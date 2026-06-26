@@ -1,0 +1,222 @@
+{
+  "ticker": "TCS.NS",
+  "phase": "pre_market",
+  "timestamp": "2026-06-26T18:17:08.530597+00:00",
+  "date": "2026-06-26",
+  "finance_page": {
+    "ticker": "TCS.NS",
+    "scraped_at": "2026-06-26T18:17:07.807922+00:00",
+    "source_url": "https://www.perplexity.ai/finance/TCS.NS",
+    "daily_analysis": [
+      {
+        "date": "Jun 25",
+        "close_price": "₹2,094.70",
+        "change_pct": "0.68%",
+        "analysis": "Tata Consultancy Services closed modestly lower, hovering near its 52-week low, as the stock continued to face headwinds from a broader IT sector selloff and lingering concerns about enterprise technology spending. Sentiment for Indian IT majors has been fragile following Accenture's trimmed revenue guidance and AI disruption fears, which triggered sharp declines in TCS and peers earlier in the week. Adding to the overhang, TCS faces a court-ordered payout of over $213 million to DXC Technology in a trade secrets case after the U.S. Supreme Court declined to intervene—though Wednesday saw a partial recovery in the broader Sensex, supported by RBI rate-hike reassurances, FII buying, and India-US trade deal optimism.",
+        "sources_count": "4 sources"
+      },
+      {
+        "date": "Jun 24",
+        "close_price": "₹2,109.00",
+        "change_pct": "2.40%",
+        "analysis": "Tata Consultancy Services rebounded sharply, rising 2.40% to close near ₹2,109, recovering alongside the broader Indian market after the previous session's tech-led selloff. The bounce came as Sensex surged ~791 points on a confluence of positive catalysts — RBI Governor Malhotra calming rate-hike fears, South Korea's Kospi recovering from its prior 10% plunge, and hopes for an India-US trade deal — even as JPMorgan warned of AI disruption weighing on Indian IT, while simultaneously naming TCS among its preferred picks. Investor focus now turns to TCS's July 9 Q1 earnings, which will kick off the sector season and offer early signals on whether AI-driven projects are offsetting weak traditional IT spending.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 23",
+        "close_price": "₹2,059.60",
+        "change_pct": "3.21%",
+        "analysis": "Tata Consultancy Services declined sharply, touching a 52-week low near ₹2,055, as the Indian IT sector faced renewed selling pressure following Accenture's June 18 revenue guidance cut — a sector-wide shock that has dragged Indian IT names lower. The BSE Sensex fell 893 points on June 23 amid broader market volatility tied to US-Iran geopolitical uncertainty, while the global tech selloff deepened with Nasdaq dropping 1.32% on June 22 and the XLK technology ETF sliding further in pre-market. TCS, already listed among top losers on the NSE on June 20, continues to face headwinds from slowing enterprise IT spending and the structural shift toward targeted AI investments over traditional large-scale outsourcing projects.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 22",
+        "close_price": "₹2,127.80",
+        "change_pct": "0.13%",
+        "analysis": "Tata Consultancy Services closed essentially flat on Monday, edging up just 0.13%, as Indian IT stocks staged a partial recovery following last week's sector-wide rout triggered by Accenture's guidance cut. On June 19, TCS was among the top losers on the NSE as the Nifty IT index plunged ~6.4% after Accenture slashed its FY26 revenue growth outlook and reported weak bookings, stoking fears of a structural slowdown in enterprise IT spending. Monday's modest rebound—with the Sensex closing 291 points higher, aided by IT and pharma gains—offered some relief, but TCS remains near its 52-week low, reflecting persistent investor concern over AI-driven demand shifts and subdued discretionary tech budgets.",
+        "sources_count": "4 sources"
+      },
+      {
+        "date": "Jun 19",
+        "close_price": "₹2,125.00",
+        "change_pct": "3.55%",
+        "analysis": "Tata Consultancy Services declined sharply, touching a near 52-week low, as Accenture's weaker-than-expected revenue guidance sent shockwaves across the Indian IT sector. Accenture cut its FY26 revenue growth forecast to 3–4% from 3–5% and issued soft Q4 guidance, stoking fears of slowing enterprise discretionary spending and prolonged deal decision cycles — concerns that weigh heavily on Indian IT majors that derive a significant portion of revenue from U.S. clients. The selloff was compounded by a $70 million one-time charge TCS must absorb after the U.S. Supreme Court rejected its appeal earlier this week, FII net selling, and broader caution from Citi, which flagged risks from AI disruption, GCC competition, and macro headwinds. The Nifty IT index cratered ~6%, its lowest since April 2023, while TCS volumes surged to nearly 3x the average.",
+        "sources_count": "6 sources"
+      },
+      {
+        "date": "Jun 18",
+        "close_price": "₹2,203.30",
+        "change_pct": "0.89%",
+        "analysis": "Tata Consultancy Services closed modestly lower as investors continued to weigh the impact of the U.S. Supreme Court's decision to reject TCS's appeal in its trade secrets case with DXC Technology, forcing the company to book a $70 million one-time exceptional charge related to the $168 million damages award. The decline came against a broader headwind for Indian IT large-caps, with foreign institutional investors rotating out of legacy blue-chips, and a hawkish Federal Reserve hold — signaling a potential rate hike before year-end — adding pressure on global IT services demand sentiment.",
+        "sources_count": "4 sources"
+      },
+      {
+        "date": "Jun 17",
+        "close_price": "₹2,223.00",
+        "change_pct": "1.09%",
+        "analysis": "Tata Consultancy Services closed modestly higher, outperforming the broader Indian IT sector, buoyed by a pair of fresh contract wins — a multi-year digital transformation deal with Tottenham Hotspur Football Club and an IT operations partnership with Elopak ASA — signaling continued deal momentum. The gains came despite the U.S. Supreme Court rejecting TCS's appeal against a $168 million trade secrets judgment won by DXC Technology, with TCS set to book a one-time $70 million exceptional charge as a result. Tailwinds from falling crude oil prices tied to the U.S.-Iran peace framework and a broader Sensex rally provided a supportive macro backdrop for Indian IT stocks.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 16",
+        "close_price": "₹2,199.00",
+        "change_pct": "1.71%",
+        "analysis": "Tata Consultancy Services closed solidly higher despite absorbing a significant legal setback, as the U.S. Supreme Court rejected TCS's appeal in a $168 million trade secrets case brought by DXC Technology, forcing the company to book a one-time exceptional charge of $70 million in Q1 FY27. Investors appeared to look past the legal headline, buoyed by a broad rally in Indian IT stocks amid the US-Iran peace deal, falling crude oil prices, and a risk-on surge across global markets that lifted the Sensex and the NSE IT sector.",
+        "sources_count": "6 sources"
+      },
+      {
+        "date": "Jun 12",
+        "close_price": "₹2,161.40",
+        "change_pct": "1.21%",
+        "analysis": "Tata Consultancy Services closed modestly higher, buoyed by a broad Indian market rally as hopes of a US-Iran peace deal sent the Sensex surging over 1,700 points and crude oil below $90/barrel — a meaningful tailwind for India's import-heavy economy. Adding company-specific momentum, TCS launched an Oracle AI Data Platform Lab in Kolkata with plans to expand to four more Indian cities, and separately announced a global partnership with Anthropic to accelerate enterprise adoption of the Claude AI model series — moves that reinforce TCS Chairman Chandrasekaran's recent AGM remarks that AI agents could eventually match human headcount at IT firms.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 11",
+        "close_price": "₹2,135.60",
+        "change_pct": "0.85%",
+        "analysis": "Tata Consultancy Services edged lower despite announcing a strategic partnership with Anthropic to drive enterprise AI adoption, under which TCS will deploy Claude across 50,000 associates and establish a dedicated business unit for joint AI solutions. The stock slipped modestly amid a broader risk-off environment in Indian markets, with global headwinds including escalating US-Iran geopolitical tensions, a global AI tech selloff, and continued FII selling weighing on sentiment — while TCS Chairman Chandrasekaran's recent AGM comments that AI agents could eventually match human headcount added near-term uncertainty around the IT sector's hiring outlook.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 9",
+        "close_price": "₹2,151.00",
+        "change_pct": "0.02%",
+        "analysis": "Tata Consultancy Services closed essentially unchanged as two major narratives compete for investor attention: the company launched a dedicated AI-native Global Value & Innovation Centres business unit, and its chairman signaled that AI agents could eventually match human headcount — fueling concerns over slowing hiring and AI's disruptive impact on traditional IT services. These developments come amid a broader sector headwind, with the BSE IT index down over 20% as analysts at Kotak AMC maintain a neutral-to-underweight stance on IT, citing uncertainty around discretionary tech spending and AI-driven pricing pressure. The stock is hovering near its 52-week low, reflecting persistent investor caution even as TCS attempts to reposition itself around the AI opportunity.",
+        "sources_count": "4 sources"
+      },
+      {
+        "date": "Jun 8",
+        "close_price": "₹2,151.40",
+        "change_pct": "2.16%",
+        "analysis": "Tata Consultancy Services declined sharply, touching a fresh 52-week low, as a confluence of global and sector-specific headwinds weighed on Indian IT stocks. TCS announced a multi-year deal with Canada Life to modernize IT infrastructure across European businesses, but the positive contract news was overshadowed by a broader risk-off selloff — the Nifty IT index fell ~1.8%, dragged down by a global tech correction after Nasdaq's worst single-day drop since April 2025 and escalating West Asia tensions driving crude oil above $95. Analysts at Kotak AMC flagged IT as 'neutral to underweight,' citing AI-driven pricing pressure on traditional IT services and weak discretionary tech spending.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 5",
+        "close_price": "₹2,198.90",
+        "change_pct": "1.88%",
+        "analysis": "Tata Consultancy Services closed modestly lower, near its 52-week low, as a fresh wave of AI-related anxiety swept through global tech markets following Broadcom's disappointing AI revenue outlook — its steepest intraday drop since January 2025 — reigniting fears about the pace of AI spending and its impact on traditional IT services firms. The decline follows TCS's worst single-day fall since the COVID-era crash just two sessions prior, when shares plunged over 8%, erasing a brief relief rally and prompting analysts to warn that markets may be 'repricing the entire low-growth IT model.' Compounding pressure on Indian IT, persistent FII outflows, elevated oil prices tied to the unresolved US-Iran conflict, and a cautious RBI policy hold continue to weigh on sentiment.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 4",
+        "close_price": "₹2,241.00",
+        "change_pct": "0.03%",
+        "analysis": "Tata Consultancy Services closed essentially flat on Thursday after suffering its worst single-day decline since the Covid-era crash, having plunged over 8% on Wednesday as AI disruption fears sparked a sector-wide selloff — the Nifty IT index's worst day in four months. The sharp reversal erased TCS's entire prior two-session rally, with analysts warning the rebound was a \"dead cat bounce\" rather than fresh accumulation, and the stock now hovering near its 52-week low of ₹2,206. Morgan Stanley offered a contrarian note, calling Indian IT services a potential \"dark horse\" for AI application development, while TCS also announced a new partnership with Nokian Tyres to deploy AI-driven automation across its IT operations.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 3",
+        "close_price": "₹2,241.70",
+        "change_pct": "8.39%",
+        "analysis": "Tata Consultancy Services closed sharply lower, plunging over 8% to near its 52-week low amid a broad Indian IT sector selloff, with the Nifty IT index falling over 4% as profit-taking followed a powerful three-session, ~8% rally. The decline came despite a significant contract win — TCS secured a deal with Euroclear Group to digitally transform Sweden's Central Securities Depository using its BaNCS and Quartz platforms — as macro headwinds including renewed US-Iran tensions, rising crude oil prices near $97/barrel, a weakening rupee, and persistent FII outflows dominated sentiment across Indian equities.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 2",
+        "close_price": "₹2,446.90",
+        "change_pct": "6.51%",
+        "analysis": "Tata Consultancy Services surged 6.5% to close as the top gainer on the Nifty 50, extending its two-day rally to nearly 9%, as a sharp sentiment shift swept through Indian IT stocks. The catalyst: NVIDIA CEO Jensen Huang's Computex keynote declaring AI an opportunity rather than a threat for the software industry, combined with strong SaaS earnings from Snowflake and IBM, eased long-held fears that AI would disrupt traditional IT services business models. The Nifty IT index jumped 4.2% on the day, bringing its three-session gain to nearly 8%, with TCS, Infosys, and HCL Technologies leading broad-based gains as investors rotated back into a sector that remains down roughly 20-25% in 2026 despite the recent recovery. A weakening rupee also provided an additional tailwind for export-oriented IT names, while technical analysts noted TCS broke above key resistance at ₹2,348 on elevated volume — roughly 2.6x average — with momentum indicators pointing to further potential upside.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "Jun 1",
+        "close_price": "₹2,297.40",
+        "change_pct": "1.70%",
+        "analysis": "Tata Consultancy Services closed higher, outperforming the broader Nifty50 which ended down 0.7%, as the IT sector emerged as one of the few bright spots in an otherwise mixed Indian market session. A key catalyst was Moody's upgrading TCS's long-term local currency issuer rating to A2 from Baa1 — placing it four notches above India's sovereign rating — citing TCS's diversified revenue base, debt-free balance sheet, and robust free cash flow. Adding to positive sentiment, a CLSA report dismissed \"SaaSpocalypse\" fears, finding no negative AI impact on IT services earnings, while TCS also denied reports of losing part of its Royal Bank of Canada mandate and highlighted a new strategic partnership with AI firm Mistral.",
+        "sources_count": "5 sources"
+      },
+      {
+        "date": "May 29",
+        "close_price": "₹2,258.90",
+        "change_pct": "1.11%",
+        "analysis": "Tata Consultancy Services closed modestly lower, underperforming as it emerged among the top losers on Indian exchanges, weighed down by a significant contract setback — TCS lost its long-standing technology partnership with Royal Bank of Canada after nearly 20 years, with the mandate shifting to Accenture and approximately 150 employees set to be rebadged. The loss underscores growing pressure on legacy IT outsourcers as global financial institutions restructure tech engagements around AI-led productivity, adding to broader concerns that AI disruption poses a structural risk to India's IT sector, which has already seen the BSE IT index decline over 20%.",
+        "sources_count": "3 sources"
+      },
+      {
+        "date": "May 27",
+        "close_price": "₹2,289.90",
+        "change_pct": "0.79%",
+        "analysis": "Tata Consultancy Services shares closed modestly lower, underperforming amid persistent headwinds weighing on Indian IT stocks broadly. Sector analysts remain cautious on the FY27 outlook, noting that despite TCS reporting strong Q4 deal wins of $12 billion and FY26 TCV of $40.7 billion — with annualised AI revenue crossing $2.3 billion — conversion into revenue remains slow due to pilot-led deployments and elongated decision cycles. Indian IT stocks have fallen up to 34% year-to-date as AI disrupts the traditional outsourcing model, with global enterprises redirecting tech budgets toward AI infrastructure rather than conventional IT services. Compounding the pressure, FIIs have pulled nearly $24 billion from Indian equities in 2026, with ongoing US-Iran tensions and elevated oil prices clouding India's macroeconomic outlook.",
+        "sources_count": "4 sources"
+      }
+    ],
+    "news_headlines": [
+      {
+        "headline": "DXC gets $213.6M after Supreme Court leaves TCS ruling in place",
+        "source": "Stock Titan",
+        "date": "Jun 23, 2026"
+      },
+      {
+        "headline": "India's TCS to take $70 million hit after US Supreme Court rejects appeal",
+        "source": "Reuters",
+        "date": "Jun 19, 2026"
+      },
+      {
+        "headline": "TCS Launches Dedicated Business Unit to Help Enterprises Build AI-Native Global Capability Centres (GCCs)",
+        "source": "Tata Consultancy Services",
+        "date": "Jun 12, 2026"
+      },
+      {
+        "headline": "TCS and Anthropic partner to bring Claude to regulated industries",
+        "source": "Anthropic",
+        "date": "Jun 9, 2026"
+      }
+    ],
+    "key_issues": [],
+    "key_stats": {
+      "prev_close": "₹2,109.00",
+      "open": "₹2,133.60",
+      "day_range": "₹2,088.00-₹2,148.50",
+      "volume": "4.73M",
+      "market_cap": "₹7.58T",
+      "pe_ratio": "14.54",
+      "eps": "₹144.10",
+      "dividend_yield": "6.68%",
+      "week_52_range": "₹2,055.00-₹3,489.90",
+      "symbol": "TCS.NS",
+      "sector": "Technology",
+      "industry": "Information Technology Services",
+      "country": "India",
+      "exchange": "National Stock Exchange of India",
+      "ceo": "K. Krithivasan",
+      "fulltime_employees": "608K",
+      "ipo_date": "Aug 12, 2002"
+    },
+    "peers": [
+      {
+        "name": "Wipro Limited",
+        "symbol": "WIPRO",
+        "price": "₹175.09",
+        "exchange": "NSE",
+        "change": "0.35%"
+      }
+    ],
+    "company_overview": "Tata Consultancy Services Limited (TCS) is an Indian multinational information technology services, consulting, and business solutions company headquartered in Mumbai, India, and a subsidiary of the Tata Group, one of India's largest conglomerates. Founded in 1968 and listed on both the National Stock Exchange (NSE) and Bombay Stock Exchange (BSE), TCS has grown to become India's largest IT company and one of the most valuable technology firms globally, with a market capitalisation exceeding ₹13 lakh crore and a workforce of over 600,000 employees spanning 55 countries. The company offers a comprehensive portfolio of services including cognitive business operations, digital transformation, AI and data analytics, cloud computing, cybersecurity, application development, engineering services, and enterprise solutions, serving clients across industries such as banking, financial services and insurance, manufacturing, retail, life sciences, and communications. Under the leadership of CEO K. Krithivasan, TCS continues to advance its proprietary platforms — including TCS BaNCS, ignio, TCS iON, and TCS MasterCraft — while pursuing its ambition to become the world's largest AI-led technology services company."
+  },
+  "signals": {
+    "sentiment_score": -2,
+    "trend_direction": "TRANSITIONING",
+    "catalyst_tags": [
+      "EARNINGS",
+      "FII",
+      "CRUDE",
+      "GEOPOLITICS",
+      "REGULATORY",
+      "MERGER",
+      "TECH_AI",
+      "RATES",
+      "FOREX",
+      "INDEX"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.9,
+    "key_levels": {
+      "resistance": "₹2,348",
+      "52w_low": "₹2,055,"
+    }
+  },
+  "scrape_duration_sec": 12.6,
+  "errors": []
+}

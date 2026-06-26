@@ -68,15 +68,6 @@ class KeyStats(BaseModel):
     ipo_date: str = ""
 
 
-class AIQueryResult(BaseModel):
-    """Result from a single Perplexity AI query."""
-    query_id: str                          # e.g. "global_overnight", "why_moving"
-    prompt_used: str                       # The actual prompt sent
-    response: str                          # AI-generated response text
-    char_count: int = 0                    # Length of response
-    timestamp: str = ""                    # When this query was executed
-
-
 class SignalExtraction(BaseModel):
     """Structured signals extracted from AI narratives via post-processing."""
     sentiment_score: int = 0               # -5 (very bearish) to +5 (very bullish)
@@ -115,9 +106,6 @@ class PhaseOutput(BaseModel):
 
     # Data from /finance/{ticker} page scrape
     finance_page: Optional[PerplexityFinanceSnapshot] = None
-
-    # Data from AI queries (/search)
-    ai_queries: list[AIQueryResult] = Field(default_factory=list)
 
     # Post-processed signals (extracted from narratives)
     signals: Optional[SignalExtraction] = None

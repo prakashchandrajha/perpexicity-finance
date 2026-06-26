@@ -11,7 +11,7 @@
 
 import re
 from loguru import logger
-from models.schema import SignalExtraction, AIQueryResult, DailyAnalysisEntry
+from models.schema import SignalExtraction, DailyAnalysisEntry, NewsHeadline, KeyIssue
 
 
 # ── Keyword dictionaries for sentiment analysis ──────────────────────
@@ -72,18 +72,27 @@ URGENCY_KEYWORDS = {
 
 
 def extract_signals(
-    ai_queries: list[AIQueryResult],
-    daily_analysis: list[DailyAnalysisEntry] | None = None,
+    daily_analysis: list[DailyAnalysisEntry],
+    news_headlines: list[NewsHeadline],
+    key_issues: list[KeyIssue],
 ) -> SignalExtraction:
-    """Extract structured trading signals from AI narratives.
+    """Extract structured trading signals from AI narratives."""
 
-    Combines all AI responses and daily analysis text to produce
-    a single SignalExtraction for the trading bot.
-    """
-    # Combine all text for analysis
-    all_text = " ".join(q.response for q in ai_queries if not q.response.startswith("[ERROR]"))
-    if daily_analysis:
-        all_text += " " + " ".join(a.analysis for a in daily_analysis[:3])
+    # 1. Compile all text from the finance page
+    text_chunks = []
+    
+    for entry in daily_analysis:
+        text_chunks.append(entry.analysis)
+        
+    for news in news_headlines:
+        text_chunks.append(news.headline)
+        
+    for issue in key_issues:
+        text_chunks.append(f"Bull: {issue.bullish_view} Bear: {issue.bearish_view}")
+
+    all_text = " ".join(text_chunks)
+    if not all_text:
+        return SignalExtraction()
 
     all_text_lower = all_text.lower()
 
@@ -150,35 +159,24 @@ def extract_signals(
             urgency = "BACKGROUND"
 
     # ── Confidence ───────────────────────────────────────────────────
-    # Base confidence from AI queries
-    successful_queries = sum(
-        1 for q in ai_queries if not q.response.startswith("[ERROR]")
-    )
-    total_queries = len(ai_queries) if ai_queries else 0
-
-    if total_queries > 0:
-        query_score = (successful_queries / total_queries) * 0.6
-    else:
-        query_score = 0.0
-
-    # Page data richness bonus (rewards good page scrape even without AI queries)
+    # Page data richness drives confidence
     page_bonus = 0.0
     if daily_analysis:
         n_analyses = len(daily_analysis)
-        page_bonus += min(0.3, n_analyses * 0.02)  # 19 analyses → 0.3 bonus
+        page_bonus += min(0.6, n_analyses * 0.05)  # 12+ analyses → 0.6 bonus
         # Source count from most recent analysis
         if daily_analysis[0].sources_count:
             try:
                 n = int(daily_analysis[0].sources_count.split()[0])
-                page_bonus += min(0.1, n * 0.02)  # 6 sources → 0.1 bonus
+                page_bonus += min(0.3, n * 0.05)  # 6+ sources → 0.3 bonus
             except (ValueError, IndexError):
                 pass
 
     # Base confidence: always at least 0.1 if we have any data
-    has_any_data = total_queries > 0 or (daily_analysis and len(daily_analysis) > 0)
+    has_any_data = (daily_analysis and len(daily_analysis) > 0)
     base = 0.1 if has_any_data else 0.0
 
-    confidence = min(1.0, base + query_score + page_bonus)
+    confidence = min(1.0, base + page_bonus)
 
     # ── Key Levels (extract from text) ───────────────────────────────
     # Price pattern: ₹1,234.56 or ₹1,234 — must end at word boundary, not trailing period
