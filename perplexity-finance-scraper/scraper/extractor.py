@@ -150,35 +150,75 @@ def extract_signals(
             urgency = "BACKGROUND"
 
     # ── Confidence ───────────────────────────────────────────────────
+    # Base confidence from AI queries
     successful_queries = sum(
         1 for q in ai_queries if not q.response.startswith("[ERROR]")
     )
-    total_queries = len(ai_queries) if ai_queries else 1
-    query_success_ratio = successful_queries / total_queries
+    total_queries = len(ai_queries) if ai_queries else 0
 
-    # Source count from daily analysis adds confidence
-    source_bonus = 0.0
-    if daily_analysis and daily_analysis[0].sources_count:
-        try:
-            n = int(daily_analysis[0].sources_count.split()[0])
-            source_bonus = min(0.2, n * 0.03)
-        except (ValueError, IndexError):
-            pass
+    if total_queries > 0:
+        query_score = (successful_queries / total_queries) * 0.6
+    else:
+        query_score = 0.0
 
-    confidence = min(1.0, (query_success_ratio * 0.7) + source_bonus + 0.1)
+    # Page data richness bonus (rewards good page scrape even without AI queries)
+    page_bonus = 0.0
+    if daily_analysis:
+        n_analyses = len(daily_analysis)
+        page_bonus += min(0.3, n_analyses * 0.02)  # 19 analyses → 0.3 bonus
+        # Source count from most recent analysis
+        if daily_analysis[0].sources_count:
+            try:
+                n = int(daily_analysis[0].sources_count.split()[0])
+                page_bonus += min(0.1, n * 0.02)  # 6 sources → 0.1 bonus
+            except (ValueError, IndexError):
+                pass
+
+    # Base confidence: always at least 0.1 if we have any data
+    has_any_data = total_queries > 0 or (daily_analysis and len(daily_analysis) > 0)
+    base = 0.1 if has_any_data else 0.0
+
+    confidence = min(1.0, base + query_score + page_bonus)
 
     # ── Key Levels (extract from text) ───────────────────────────────
+    # Price pattern: ₹1,234.56 or ₹1,234 — must end at word boundary, not trailing period
+    PRICE_RE = r'₹[\d,]+(?:\.\d{1,2})?'
+
     key_levels = {}
-    # Look for support/resistance mentions with prices
-    support_match = re.search(r'support.*?(₹[\d,]+\.?\d*)', all_text)
+    # Look for support/resistance mentions with prices NEARBY (within 80 chars)
+    support_match = re.search(
+        r'support(?:ed)?\s.{0,80}?(' + PRICE_RE + r')', all_text, re.IGNORECASE
+    )
     if support_match:
         key_levels["support"] = support_match.group(1)
-    resistance_match = re.search(r'resistance.*?(₹[\d,]+\.?\d*)', all_text)
+
+    resistance_match = re.search(
+        r'resistance\s.{0,80}?(' + PRICE_RE + r')', all_text, re.IGNORECASE
+    )
     if resistance_match:
         key_levels["resistance"] = resistance_match.group(1)
-    target_match = re.search(r'(?:target|price target).*?(₹[\d,]+\.?\d*)', all_text)
+
+    # Analyst targets — look for "target" near a price
+    target_match = re.search(
+        r'(?:price\s+)?targets?\s.{0,60}?(' + PRICE_RE + r')', all_text, re.IGNORECASE
+    )
     if target_match:
         key_levels["analyst_target"] = target_match.group(1)
+
+    # 52-week low/high as key levels
+    low_52w_match = re.search(r'52.week\s+low.{0,40}?(' + PRICE_RE + r')', all_text, re.IGNORECASE)
+    if low_52w_match:
+        key_levels["52w_low"] = low_52w_match.group(1)
+    high_52w_match = re.search(r'52.week\s+high.{0,40}?(' + PRICE_RE + r')', all_text, re.IGNORECASE)
+    if high_52w_match:
+        key_levels["52w_high"] = high_52w_match.group(1)
+
+    # Fair value / valuation mentions
+    fv_match = re.search(
+        r'(?:fair\s+value|valuation).{0,60}?(' + PRICE_RE + r')', all_text, re.IGNORECASE
+    )
+    if fv_match:
+        key_levels["fair_value"] = fv_match.group(1)
 
     signal = SignalExtraction(
         sentiment_score=sentiment_score,
