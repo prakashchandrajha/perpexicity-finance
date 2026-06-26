@@ -1,33 +1,67 @@
-# Perplexity Finance Scraper: Project Overview
+# Perplexity Finance Intelligence Extractor — About
 
-## What is this project?
-The **Perplexity Finance Scraper** is an automated data extraction tool built in Python. It is designed to navigate to the financial pages of Perplexity AI (e.g., `https://www.perplexity.ai/finance/NVDA`) and extract highly structured, real-time financial data for any stock ticker (US or international). 
+## What Is This Project?
 
-## How does it work?
-Traditional web scraping often involves downloading the HTML of a page and parsing it using tools like BeautifulSoup. However, modern Single Page Applications (SPAs) like Perplexity load data dynamically using JavaScript, making traditional scraping difficult and fragile. Furthermore, Perplexity is protected by Cloudflare Turnstile, which aggressively blocks automated bots.
+This is a **dedicated data extraction layer** that scrapes financial intelligence exclusively from [Perplexity AI Finance](https://www.perplexity.ai/finance). It is one of 3-4 specialized microservices that together power an intraday trading system.
 
-To solve this, this scraper uses a **Network Interception Approach**:
+**This project's single job:** Extract EVERYTHING useful from `perplexity.ai/finance`, structure it as clean JSON, and make it available for downstream consumption.
 
-1. **Browser Automation:** It launches a headless Chromium browser using Playwright, specially configured to evade basic bot detection.
-2. **Organic Navigation:** The browser navigates to the target stock page exactly like a real user would.
-3. **API Interception:** Instead of waiting for the page to render and parsing the HTML, the scraper "listens" to the network traffic between the browser and Perplexity's backend servers.
-4. **Data Capture:** As Perplexity's frontend requests data to display on the page, our script intercepts the incoming JSON payloads from the internal `/rest/finance/` API endpoints.
-5. **Data Structuring:** The `FinanceExtractor` parses these raw JSON payloads and strictly validates them into standardized Pydantic schemas (`QuoteData`, `ProfileData`, `EarningsEntry`, etc.).
-6. **Persistence:** The clean, structured data is immediately saved to a local `.json` file in the `data/` directory.
+Think of it as your **AI Research Analyst** that works for free, 24/7.
 
-## What data does it extract?
-By intercepting the internal APIs, the scraper captures a wealth of financial information:
-- **Quotes:** Real-time price, currency, daily change, percentage change, and market capitalization.
-- **Company Profiles:** Company name, sector, and industry.
-- **Earnings History:** Historical and estimated quarterly/annual earnings data (EPS, revenue).
-- **Analyst Documents:** Relevant analyst reports or AI-generated financial summaries associated with the ticker.
-- **Financials:** Raw financial statements including balance sheets, income statements, and cash flows (Annual and Quarterly).
+## What Does It NOT Do?
 
-## Why is this useful?
-1. **Completely Free:** Financial data APIs (like Bloomberg, Alpha Vantage, or Polygon) can be incredibly expensive. This project acts as a free alternative by extracting enterprise-grade data directly from Perplexity's platform.
-2. **Bypasses Bot Protection:** By mimicking a real browser and capturing the data organically as it loads, this method inherently bypasses Cloudflare Turnstile without needing to pay for third-party CAPTCHA solvers or proxy services.
-3. **Structured & Ready for AI:** The data is exported as clean, structured JSON, making it immediately usable for downstream applications such as:
-   - Automated trading algorithms
-   - AI-powered financial analysts (e.g., feeding the JSON into an LLM for investment analysis)
-   - Custom financial dashboards and portfolio trackers
-4. **Resilient to UI Changes:** Because the scraper extracts the raw JSON data before it is rendered into HTML, it is completely immune to cosmetic UI changes on the Perplexity website (which would normally break CSS-selector-based scrapers).
+| ❌ Does NOT | Why |
+|-------------|-----|
+| Connect to Zerodha or any broker | Separate project handles broker integration |
+| Use Yahoo Finance | We extract unique Perplexity-only data |
+| Execute trades | This is a data extraction layer only |
+| Provide raw OHLCV data | Zerodha/NSE provides that better |
+| Replace quantitative signals | This provides QUALITATIVE intelligence |
+
+## Why Perplexity Finance?
+
+Perplexity Finance provides 7 types of data that **no other single free source** offers:
+
+1. **AI-Synthesized Daily Analysis** — The "WHY" behind price moves, synthesized from 4-8 cited sources per day. You'd need to manually read Economic Times, Moneycontrol, Reuters, Bloomberg to get the same picture.
+
+2. **Curated News with Source Attribution** — Pre-filtered for relevance. Source names tell you credibility weight (Financial Times > random blog).
+
+3. **Key Issues with Bull/Bear Framing** — Structured debate questions with explicit bullish and bearish arguments. This is what equity research analysts charge ₹50L+/year to produce.
+
+4. **On-Demand AI Research** — Ask ANY question and get a cited, synthesized answer. "What is the contrarian view on RELIANCE today?" — no API provides this.
+
+5. **Peer Comparison Data** — Automatic peer identification with real-time relative performance.
+
+6. **Key Stats Snapshot** — Independent verification source against broker data (catches discrepancies on earnings days).
+
+7. **Company Overview** — Continuously updated, not stale like screener.in profiles.
+
+## How It Works
+
+1. **Camoufox Browser** — Uses a patched Firefox with randomized fingerprints to bypass Cloudflare Turnstile
+2. **DOM Parsing** — Extracts structured data from `/finance/{ticker}` page using chunk-based parsing
+3. **AI Queries** — Sends battle-tested prompts to Perplexity search for narrative intelligence
+4. **Signal Extraction** — Post-processes AI text into structured trading signals (sentiment, catalysts, urgency)
+5. **JSON Storage** — Saves everything in date-organized JSON files for downstream consumption
+
+## How the Trading Bot Consumes This Data
+
+Your trading bot (separate project) reads the JSON files this project produces:
+
+```python
+import json
+
+# Read today's pre-market intelligence
+with open("data/2026-06-27/pre_market_RELIANCE_NS.json") as f:
+    intel = json.load(f)
+
+# Use the signals for trading decisions
+sentiment = intel["signals"]["sentiment_score"]   # -5 to +5
+trend = intel["signals"]["trend_direction"]        # BULLISH/BEARISH/MIXED
+catalysts = intel["signals"]["catalyst_tags"]      # ["IPO", "FII", "CRUDE"]
+urgency = intel["signals"]["urgency"]              # BREAKING/NORMAL/BACKGROUND
+
+# Read the AI narrative for LLM-based decision making
+for query in intel["ai_queries"]:
+    print(f"{query['query_id']}: {query['response'][:200]}...")
+```

@@ -1,6 +1,5 @@
-playwright
-trafilatura
-pydantic
-loguru
+camoufox[geoip]
 beautifulsoup4
-aiofiles
+pydantic>=2.0
+loguru
+pytz
