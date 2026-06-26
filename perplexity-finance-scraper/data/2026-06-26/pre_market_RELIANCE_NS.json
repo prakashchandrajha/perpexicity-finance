@@ -1,11 +1,11 @@
 {
   "ticker": "RELIANCE.NS",
   "phase": "pre_market",
-  "timestamp": "2026-06-26T18:17:09.731584+00:00",
+  "timestamp": "2026-06-26T18:43:16.672795+00:00",
   "date": "2026-06-26",
   "finance_page": {
     "ticker": "RELIANCE.NS",
-    "scraped_at": "2026-06-26T18:17:09.004707+00:00",
+    "scraped_at": "2026-06-26T18:43:15.313120+00:00",
     "source_url": "https://www.perplexity.ai/finance/RELIANCE.NS",
     "daily_analysis": [
       {
@@ -234,6 +234,7 @@
       "fair_value": "₹1,698.50"
     }
   },
-  "scrape_duration_sec": 13.7,
+  "live_catalyst_narrative": null,
+  "scrape_duration_sec": 16.4,
   "errors": []
 }

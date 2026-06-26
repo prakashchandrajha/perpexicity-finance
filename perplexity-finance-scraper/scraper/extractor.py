@@ -75,11 +75,15 @@ def extract_signals(
     daily_analysis: list[DailyAnalysisEntry],
     news_headlines: list[NewsHeadline],
     key_issues: list[KeyIssue],
+    live_narrative: str | None = None
 ) -> SignalExtraction:
     """Extract structured trading signals from AI narratives."""
 
-    # 1. Compile all text from the finance page
+    # 1. Compile all text from the finance page and live query
     text_chunks = []
+    
+    if live_narrative and not live_narrative.startswith("[ERROR]"):
+        text_chunks.append(live_narrative)
     
     for entry in daily_analysis:
         text_chunks.append(entry.analysis)
@@ -145,18 +149,21 @@ def extract_signals(
             catalysts.append(tag)
 
     # ── Urgency ──────────────────────────────────────────────────────
-    urgency = "NORMAL"
-    for keyword in URGENCY_KEYWORDS["BREAKING"]:
-        if keyword in all_text_lower:
-            urgency = "BREAKING"
-            break
-    if urgency == "NORMAL":
-        background_count = sum(
-            1 for kw in URGENCY_KEYWORDS["BACKGROUND"]
-            if kw in all_text_lower
-        )
-        if background_count >= 3:
-            urgency = "BACKGROUND"
+    if live_narrative and not live_narrative.startswith("[ERROR]"):
+        urgency = "BREAKING"
+    else:
+        urgency = "NORMAL"
+        for keyword in URGENCY_KEYWORDS["BREAKING"]:
+            if keyword in all_text_lower:
+                urgency = "BREAKING"
+                break
+        if urgency == "NORMAL":
+            background_count = sum(
+                1 for kw in URGENCY_KEYWORDS["BACKGROUND"]
+                if kw in all_text_lower
+            )
+            if background_count >= 3:
+                urgency = "BACKGROUND"
 
     # ── Confidence ───────────────────────────────────────────────────
     # Page data richness drives confidence
@@ -173,8 +180,8 @@ def extract_signals(
                 pass
 
     # Base confidence: always at least 0.1 if we have any data
-    has_any_data = (daily_analysis and len(daily_analysis) > 0)
-    base = 0.1 if has_any_data else 0.0
+    has_any_data = (daily_analysis and len(daily_analysis) > 0) or (live_narrative and not live_narrative.startswith("[ERROR]"))
+    base = 0.5 if (live_narrative and not live_narrative.startswith("[ERROR]")) else 0.1 if has_any_data else 0.0
 
     confidence = min(1.0, base + page_bonus)
 

@@ -105,11 +105,12 @@ class PhaseOutput(BaseModel):
     date: str                              # "2026-06-27" for file naming
 
     # Data from /finance/{ticker} page scrape
-    finance_page: Optional[PerplexityFinanceSnapshot] = None
-
+    finance_page: PerplexityFinanceSnapshot | None
+    
     # Post-processed signals (extracted from narratives)
-    signals: Optional[SignalExtraction] = None
-
+    signals: SignalExtraction
+    live_catalyst_narrative: str | None = None
+    
     # Metadata
-    scrape_duration_sec: float = 0.0
+    scrape_duration_sec: float
     errors: list[str] = Field(default_factory=list)

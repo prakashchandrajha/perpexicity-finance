@@ -126,3 +126,52 @@ class PerplexityBrowser:
             raise BrowserError(str(e))
         finally:
             await page.close()
+
+    # ── Method 2: Ask Live Intraday Query ────────────────────────────────
+    
+    async def ask_finance_live(self, ticker: str, query: str) -> str:
+        """Ask a live conversational query on Perplexity regarding a ticker.
+        
+        This is optimized for live market intraday use to discover breaking news,
+        block deals, or rumors that the static /finance page hasn't baked in yet.
+        """
+        await self._rate_limit_wait()
+        page = await self._browser.new_page()
+
+        try:
+            logger.info(f"[Browser] Asking live query for {ticker}...")
+            
+            # Go to home page to use the search bar
+            await page.goto("https://www.perplexity.ai/", wait_until="domcontentloaded", timeout=PAGE_TIMEOUT_MS)
+            
+            # Find and fill the search bar
+            search_input_selector = 'textarea, input[type="text"], [contenteditable="true"]'
+            await page.wait_for_selector(search_input_selector, timeout=PAGE_TIMEOUT_MS)
+            await page.fill(search_input_selector, query)
+            await page.keyboard.press('Enter')
+            
+            # Wait for response to generate
+            # Perplexity responses are usually in a div with 'prose' class
+            logger.debug("[Browser] Waiting for AI response stream...")
+            prose_selector = 'div.prose'
+            await page.wait_for_selector(prose_selector, timeout=ANSWER_TIMEOUT_MS)
+            
+            # Allow time for stream to finish
+            await asyncio.sleep(STREAM_STABILIZE_SEC)
+            
+            # Extract text
+            prose_elements = await page.query_selector_all(prose_selector)
+            if prose_elements:
+                # The last prose element is usually the current answer
+                answer = await prose_elements[-1].inner_text()
+                logger.success(f"[Browser] Received live answer ({len(answer)} chars)")
+                return answer
+            else:
+                logger.error("[Browser] Could not find answer text")
+                return "[ERROR] Answer extraction failed"
+                
+        except Exception as e:
+            logger.error(f"[Browser] Live query error: {e}")
+            return f"[ERROR] {str(e)}"
+        finally:
+            await page.close()
