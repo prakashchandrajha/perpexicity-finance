@@ -1,65 +1,109 @@
-# Perplexity Finance Intelligence Extractor — About
+# Perplexity Finance Scraper — "The Ghost Extension" Architecture
 
-## What Is This Project?
+## 📖 Overview
 
-This is a **dedicated data extraction layer** that scrapes financial intelligence exclusively from [Perplexity AI Finance](https://www.perplexity.ai/finance). It is one of 3-4 specialized microservices that together power an intraday trading system.
+This project is a **dedicated data extraction layer** that scrapes financial intelligence and live market sentiment exclusively from [Perplexity AI Finance](https://www.perplexity.ai/finance). 
 
-**This project's single job:** Extract EVERYTHING useful from `perplexity.ai/finance`, structure it as clean JSON, and make it available for downstream consumption.
+Its single job is to act as an automated AI Research Analyst: it asks Perplexity complex financial questions about stock tickers, extracts the conversational response, parses it into structured JSON trading signals (Sentiment, Trend, Catalysts, Urgency), and saves it for downstream algorithmic trading bots to consume.
 
-Think of it as your **AI Research Analyst** that works for free, 24/7.
+### 🚫 What it does NOT do:
+- Connect to Zerodha, AliceBlue, or any broker.
+- Pull OHLCV charts from Yahoo Finance.
+- Execute trades.
+- This is strictly a **qualitative data extraction layer**.
 
-## What Does It NOT Do?
+---
 
-| ❌ Does NOT | Why |
-|-------------|-----|
-| Connect to Zerodha or any broker | Separate project handles broker integration |
-| Use Yahoo Finance | We extract unique Perplexity-only data |
-| Execute trades | This is a data extraction layer only |
-| Provide raw OHLCV data | Zerodha/NSE provides that better |
-| Replace quantitative signals | This provides QUALITATIVE intelligence |
+## 🏗️ The "Ghost Extension" Architecture (Bypassing Cloudflare)
 
-## Why Perplexity Finance?
+Previously, scraping Perplexity with headless browsers (Playwright, Selenium, Camoufox) resulted in instant IP bans and 16-second Cloudflare Turnstile blocks. 
 
-Perplexity Finance provides 7 types of data that **no other single free source** offers:
+This project solves that by shifting the paradigm to a **Local Server + Chrome Extension Bridge**:
 
-1. **AI-Synthesized Daily Analysis** — The "WHY" behind price moves, synthesized from 4-8 cited sources per day. You'd need to manually read Economic Times, Moneycontrol, Reuters, Bloomberg to get the same picture.
+1. **The Python Server (Producer)**: Python runs locally on port `8765`. It generates queries (e.g., "Why is RELIANCE moving today?") and places them in a local queue.
+2. **The Chrome Extension (Consumer)**: A lightweight extension installed in your normal, logged-in Google Chrome browser polls the Python server every 2 seconds. 
+3. **Execution**: When the extension sees a job, it opens a Perplexity tab, uses a "Holy Grail" injection technique (`document.execCommand`) to natively simulate human typing, bypasses React's event blockers, avoids Voice mode overlays, and perfectly captures the streaming AI response.
+4. **Delivery**: The extension POSTs the extracted text back to Python, which parses it into JSON.
 
-2. **Curated News with Source Attribution** — Pre-filtered for relevance. Source names tell you credibility weight (Financial Times > random blog).
+Because the queries execute inside your real browser profile where you are already logged in, Cloudflare sees you as a 100% legitimate human user.
 
-3. **Key Issues with Bull/Bear Framing** — Structured debate questions with explicit bullish and bearish arguments. This is what equity research analysts charge ₹50L+/year to produce.
+---
 
-4. **Peer Comparison Data** — Automatic peer identification with real-time relative performance.
+## ⚙️ Installation & Setup
 
-5. **Key Stats Snapshot** — Independent verification source against broker data (catches discrepancies on earnings days).
-
-6. **Company Overview** — Continuously updated, not stale like screener.in profiles.
-
-## How It Works
-
-1. **Camoufox Browser** — Uses a patched Firefox with randomized fingerprints to bypass Cloudflare Turnstile
-2. **DOM Parsing** — Extracts structured data from `/finance/{ticker}` page using chunk-based parsing
-3. **AI Queries** — Sends battle-tested prompts to Perplexity search for narrative intelligence
-4. **Signal Extraction** — Post-processes AI text into structured trading signals (sentiment, catalysts, urgency)
-5. **JSON Storage** — Saves everything in date-organized JSON files for downstream consumption
-
-## How the Trading Bot Consumes This Data
-
-Your trading bot (separate project) reads the JSON files this project produces:
-
-```python
-import json
-
-# Read today's pre-market intelligence
-with open("data/2026-06-27/pre_market_RELIANCE_NS.json") as f:
-    intel = json.load(f)
-
-# Use the signals for trading decisions
-sentiment = intel["signals"]["sentiment_score"]   # -5 to +5
-trend = intel["signals"]["trend_direction"]        # BULLISH/BEARISH/MIXED
-catalysts = intel["signals"]["catalyst_tags"]      # ["IPO", "FII", "CRUDE"]
-urgency = intel["signals"]["urgency"]              # BREAKING/NORMAL/BACKGROUND
-
-# Read the AI narrative for LLM-based decision making
-for query in intel["ai_queries"]:
-    print(f"{query['query_id']}: {query['response'][:200]}...")
+### Step 1: Install Python Dependencies
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
+
+### Step 2: Install the Chrome Extension
+1. Open Google Chrome and navigate to `chrome://extensions/`
+2. Turn on **Developer Mode** (top right corner).
+3. Click **Load unpacked** (top left).
+4. Select the `extension/` folder located inside this project (`perplexity-finance-scraper/extension`).
+5. **Pin the extension** to your toolbar so you can see the Traffic Light status badge.
+
+### Step 3: Keep-Alive Precaution
+Due to Chrome Manifest V3 rules, background extensions suspend after 30 seconds of inactivity. 
+To prevent this, the extension utilizes a "Heartbeat". **Simply keep one Perplexity.ai tab open anywhere in your Chrome browser.** The extension will inject a silent heartbeat script into that tab, keeping the scraper queue awake 24/7.
+
+---
+
+## 🚦 Extension Traffic Light System
+
+Look at the extension icon in your Chrome toolbar to know exactly what the system is doing:
+
+- ⬜ **IDLE (White/Gray)**: The script is sleeping. The Python queue is empty, or the Python script isn't running.
+- 🟩 **RUN (Green)**: The extension grabbed a job from Python and is actively scraping Perplexity.
+- 🟥 **ERR (Red)**: A catastrophic failure occurred (e.g., Perplexity radically changed their UI, or the 120-second timeout was hit).
+
+---
+
+## 🚀 Usage
+
+Run the Python script from the terminal to queue jobs for the extension to process.
+
+**Run a Pre-Market analysis:**
+```bash
+./venv/bin/python main.py RELIANCE.NS --phase pre_market
+```
+
+**Run a Live-Market narrative check:**
+```bash
+./venv/bin/python main.py RELIANCE.NS --phase live_market
+```
+
+**Run a Post-Market recap:**
+```bash
+./venv/bin/python main.py RELIANCE.NS --phase post_market
+```
+
+---
+
+## 📄 Output Data (JSON)
+
+The output is saved in `data/YYYY-MM-DD/{phase}_{ticker}_{time}.json`. 
+Your trading bot can read these files to make algorithmic decisions.
+
+**Example output:**
+```json
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-06-26T19:59:51.922332+00:00",
+  "signals": {
+    "sentiment_score": 5,
+    "trend_direction": "BULLISH",
+    "catalyst_tags": ["IPO", "EARNINGS", "TECH_AI"],
+    "urgency": "BREAKING",
+    "confidence": 0.8
+  },
+  "live_catalyst_narrative": "Reliance is moving on a mix of stock-specific headline flow..."
+}
+```
+
+## 🛡️ Future-Proofing (Shadow DOM)
+
+If Perplexity's engineers redesign their website and hide the search bar inside Web Components (Shadow DOM) to block scrapers, this extension includes a recursive **Shadow DOM piercing algorithm** that will automatically drill through the encrypted DOM layers to locate the input field and execute the trade query without failing.
