@@ -1,0 +1,22 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-06-26T20:34:40.563405+00:00",
+  "date": "2026-06-26",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": 5,
+    "trend_direction": "BULLISH",
+    "catalyst_tags": [
+      "IPO",
+      "REGULATORY",
+      "RATES"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {}
+  },
+  "live_catalyst_narrative": "Sebi seeks clarification from Jio Platforms on IPO filingThe Economic Times·26 Jun 2026\n\nJio IPO: Top 10 things investors should know from the DRHP filingUpstox·24 Jun 2026\n\nJio confirms filing for IPOTelecompaper·23 Jun 2026\n\nJio DRHP Filed for ₹35,000 Cr IPO: Why RIL Shareholders May Not Get a WindfallNiftyTrader·23 Jun 2026\n\nThe most likely catalyst is the Jio IPO filing itself, with fresh market attention after SEBI reportedly sought clarifications on Jio Platforms’ draft IPO papers on June 25, 2026. Earlier coverage also confirmed that Jio filed its DRHP and that Reliance shares had already rallied on that news, so the current 15-minute spike looks like another reaction to the same IPO-progress theme rather than a brand-new operational update.youtubeWhat the news flow saysJio Platforms filed draft IPO papers in June 2026, setting up a major listing event.On June 25, SEBI asked Jio Platforms for clarifications on the filing, which can trigger fresh trading interest because it signals the IPO process is actively moving.Market reports already linked earlier Reliance strength to the Jio DRHP filing, suggesting the stock is sensitive to any new IPO headline.youtubeInterpretation for the moveThis kind of short, sharp move in RELIANCE.NS is most often driven by headline momentum, not necessarily a full new disclosure. Based on the available breaking items, the catalyst appears to be renewed speculation and confirmation flow around the Jio IPO filing process, especially the SEBI clarification headline.Trading readFor intraday purposes, I would treat this as a news-driven momentum spike tied to the Jio IPO story unless a newer corporate announcement appears. If price is jumping without volume confirmation, it may fade after the headline churn; if volume expands, the market may be repricing the Jio value-unlock angle again.youtube",
+  "scrape_duration_sec": 17.1,
+  "errors": []
+}

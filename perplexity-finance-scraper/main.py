@@ -20,7 +20,7 @@ def configure_logger():
         level="INFO"
     )
 
-async def run(ticker: str, phase: str):
+async def run(ticker: str, phase: str, context: str = None):
     """Orchestrates a single run for a ticker."""
     start_time = time.time()
     errors = []
@@ -57,7 +57,7 @@ async def run(ticker: str, phase: str):
     else:
         # LIVE MARKET: Ask conversational AI for breaking catalysts
         logger.info("━━ STEP 1: Asking live conversational AI for intraday catalysts ━━")
-        live_narrative = client.ask_finance_live(ticker)
+        live_narrative = client.ask_finance_live(ticker, context)
         if live_narrative and "Error:" not in live_narrative:
             logger.success(f"[API] Received live answer ({len(live_narrative)} chars)")
         else:
@@ -122,10 +122,12 @@ def main():
     parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS)")
     parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market"], default="pre_market",
                         help="Trading phase (default: pre_market)")
+    parser.add_argument("--context", type=str, default=None,
+                        help="Optional specific context (e.g., 'Stock dropped 5% in 10 mins') for live market alerts.")
     
     args = parser.parse_args()
     
-    asyncio.run(run(args.ticker, args.phase))
+    asyncio.run(run(args.ticker, args.phase, args.context))
 
 if __name__ == "__main__":
     main()

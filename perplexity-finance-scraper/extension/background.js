@@ -269,11 +269,11 @@ async function executeLiveSearch(query) {
                             const interval = setInterval(() => {
                                 try {
                                     checkCount++;
-                                    const prose = document.querySelector('.prose');
+                                    const proseElements = document.querySelectorAll('.prose');
                                     let answerText = "";
                                     
-                                    if (prose) {
-                                        answerText = prose.textContent;
+                                    if (proseElements && proseElements.length > 0) {
+                                        answerText = Array.from(proseElements).map(el => el.textContent).join('\n\n');
                                     } else {
                                         const paragraphs = Array.from(document.querySelectorAll('main p, div[dir="auto"] p, .break-words p')).map(p => p.textContent).join('\n');
                                         if (paragraphs.length > 50) {

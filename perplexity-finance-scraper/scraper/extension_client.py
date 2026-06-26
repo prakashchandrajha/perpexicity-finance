@@ -50,10 +50,14 @@ class PerplexityExtensionClient:
             logger.error(f"[ExtClient] Failed to fetch HTML via extension: {e}")
             raise
 
-    def ask_finance_live(self, ticker: str) -> str:
+    def ask_finance_live(self, ticker: str, context: str = None) -> str:
         """Queues a job for the extension to run a live conversational search."""
         logger.info(f"[ExtClient] Queueing live_market job for {ticker}...")
-        query = f"Search the web for breaking news right now regarding why {ticker} stock is moving today. What are the specific catalysts?"
+        
+        if context:
+            query = f"CONTEXT: {context} \n\nSearch the web for breaking news right now regarding this specific movement for {ticker} stock. What is the specific catalyst causing this right now?"
+        else:
+            query = f"Search the web for breaking news right now regarding why {ticker} stock is moving today. What are the specific catalysts?"
         
         try:
             res = requests.post(f"{SERVER_URL}/queue_job", json={
