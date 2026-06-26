@@ -3,6 +3,32 @@ const POLL_INTERVAL_MS = 2000;
 let isPolling = false;
 let currentTabId = null;
 
+// Visual Badge Indicator
+function setBadge(state) {
+    try {
+        if (state === 'white') {
+            chrome.action.setBadgeText({ text: "IDLE" });
+            chrome.action.setBadgeBackgroundColor({ color: "#808080" }); // Gray/White means idle
+        } else if (state === 'green') {
+            chrome.action.setBadgeText({ text: "RUN" });
+            chrome.action.setBadgeBackgroundColor({ color: "#00CC00" }); // Green means working
+        } else if (state === 'red') {
+            chrome.action.setBadgeText({ text: "ERR" });
+            chrome.action.setBadgeBackgroundColor({ color: "#FF0000" }); // Red means broken
+        }
+    } catch(e) {}
+}
+setBadge('white');
+
+// Keep-Alive listener to prevent MV3 Service Worker suspension
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "KEEP_ALIVE") {
+        // Simply receiving this resets the idle timer.
+        // Send a dummy response to close the port.
+        sendResponse({ ok: true });
+    }
+});
+
 async function pollForJobs() {
     if (isPolling) return;
     isPolling = true;
@@ -13,11 +39,18 @@ async function pollForJobs() {
             const job = await response.json();
             if (job && job.job_id) {
                 console.log("Received job:", job);
+                setBadge('green');
                 await handleJob(job);
+                // Return to idle after job is fully handled (unless it erred, which is handled below)
+            } else {
+                setBadge('white');
             }
+        } else {
+            setBadge('white');
         }
     } catch (e) {
-        // Server might be down, ignore
+        // Server down
+        setBadge('white');
     } finally {
         isPolling = false;
         setTimeout(pollForJobs, POLL_INTERVAL_MS);
@@ -113,6 +146,12 @@ async function handleJob(job) {
 
 async function submitResult(job_id, data) {
     try {
+        if (data && data.result && data.result.startsWith("Error")) {
+            setBadge('red'); // Ext is not working properly (UI change or timeout)
+        } else {
+            setBadge('white'); // Success, back to idle
+        }
+        
         await fetch(`${SERVER_URL}/submit_job/${job_id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -134,6 +173,19 @@ async function executeLiveSearch(query) {
     return new Promise((resolve) => {
         try {
             let attempts = 0;
+            
+            // Extreme Precaution: Shadow DOM piercing selector
+            const findDeep = (selector, root = document) => {
+                if (root.querySelector(selector)) return root.querySelector(selector);
+                for (const el of root.querySelectorAll('*')) {
+                    if (el.shadowRoot) {
+                        const found = findDeep(selector, el.shadowRoot);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+
             const findInterval = setInterval(() => {
                 try {
                     // Kill any blocking Radix modals/dialogs continuously
@@ -142,8 +194,8 @@ async function executeLiveSearch(query) {
                     document.body.removeAttribute('data-aria-hidden');
                     document.getElementById('root')?.removeAttribute('aria-hidden');
 
-                    // Perplexity uses various elements for the search bar
-                    const inputElement = document.querySelector('textarea, [contenteditable="true"], input[type="text"], input[placeholder*="Ask"]');
+                    // Future-proofed search using Shadow DOM piercing just in case Perplexity switches architecture
+                    const inputElement = findDeep('textarea, [contenteditable="true"], input[type="text"], input[placeholder*="Ask"]');
                     if (inputElement) {
                         clearInterval(findInterval);
                         typeAndSubmit(inputElement);
@@ -176,6 +228,7 @@ async function executeLiveSearch(query) {
                             // Try finding the closest button to the input element
                             let parent = inputElement.parentElement;
                             let targetBtn = null;
+                            let targetBtnClicked = false;
                             for (let i = 0; i < 6; i++) {
                                 if (!parent) break;
                                 
@@ -196,14 +249,17 @@ async function executeLiveSearch(query) {
                                 
                                 if (targetBtn) {
                                     targetBtn.click();
+                                    targetBtnClicked = true;
                                     break;
                                 }
                                 parent = parent.parentElement;
                             }
 
-                            // Also ALWAYS dispatch Enter key as a fallback
-                            const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true, composed: true });
-                            inputElement.dispatchEvent(enterEvent);
+                            // Also ALWAYS dispatch Enter key as a fallback, but only if we didn't click
+                            if (!targetBtnClicked) {
+                                const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true, composed: true });
+                                inputElement.dispatchEvent(enterEvent);
+                            }
                             
                             // Wait for answer to generate
                             let checkCount = 0;
@@ -240,10 +296,10 @@ async function executeLiveSearch(query) {
                                         }
                                     }
 
-                                    // Absolute timeout: 60 seconds
-                                    if (checkCount > 60) { 
+                                    // Absolute timeout: 120 seconds for deep financial reports
+                                    if (checkCount > 120) { 
                                         clearInterval(interval);
-                                        resolve(answerText.length > 50 ? answerText : "Error: No answer found.");
+                                        resolve(answerText.length > 50 ? answerText : "Error: No answer found. Timeout reached.");
                                     }
                                 } catch (e) {
                                     clearInterval(interval);

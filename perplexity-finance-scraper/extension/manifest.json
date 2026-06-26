@@ -15,5 +15,13 @@
   ],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "action": {},
+  "content_scripts": [
+    {
+      "matches": ["*://*.perplexity.ai/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
 }

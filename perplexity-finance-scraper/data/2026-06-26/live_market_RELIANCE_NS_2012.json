@@ -1,0 +1,23 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-06-26T20:12:23.990055+00:00",
+  "date": "2026-06-26",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": 2,
+    "trend_direction": "BULLISH",
+    "catalyst_tags": [
+      "IPO",
+      "EARNINGS",
+      "TECH_AI",
+      "INDEX"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {}
+  },
+  "live_catalyst_narrative": "Reliance is moving mainly on a mix of stock-specific catalysts and broader market sentiment. The strongest live drivers visible in recent coverage are the market’s reaction to Reliance’s AGM-related optimism, expectations around a potential Jio IPO, and index-heavy flows into the stock because it is a major Sensex/Nifty constituent.reuters+1Specific catalystsJio IPO speculation: Recent market commentary says the expected Jio listing could unlock shareholder value and has been a major re-rating narrative for the stock.perplexityAGM-related buzz: Coverage around Reliance’s AGM has kept traders focused on management commentary and internal restructuring signals tied to Jio and digital assets.perplexityTechnical positioning: Several market pages describe the stock as reacting around key support/resistance zones, which can amplify intraday movement when sentiment is already active.tradingview+1Index and sector flows: Reuters notes Reliance has at times led Indian shares higher when broader sentiment improves, so it often moves with heavyweight institutional flows as well.reutersWhat is not clearThere is no single universally confirmed “one-line” trigger in the results I found for today’s move, so the most likely explanation is a combination of newsflow, expectations, and technical trading rather than one isolated event.tradingview+2Practical read for intradayFor intraday trading, watch whether the move is being driven more by:fresh company-specific headlines,follow-through after AGM/Jio-related speculation,or simply index strength/weakness in Nifty and Sensex heavyweights.reuters+1If you want, I can next give you a trader-style breakdown of whether the move looks news-led or technically driven, with key support/resistance levels.",
+  "scrape_duration_sec": 21.1,
+  "errors": []
+}
