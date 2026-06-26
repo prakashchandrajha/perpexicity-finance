@@ -60,12 +60,11 @@ def main():
             run_scrape(args.ticker, "pre_market")
             pre_run = True
             
-        # 2. Live Market Polling
+        # 2. Live Market (Event-Driven)
         elif now >= LIVE_MARKET_START and now < POST_MARKET_TIME:
-            logger.info(f"🕒 Live Market — Polling {args.ticker}")
-            run_scrape(args.ticker, "live_market")
-            logger.info(f"Waiting {args.interval} minutes...")
-            time.sleep(args.interval * 60)
+            # We NO LONGER blindly poll every 15 minutes because Perplexity is a structural narrative tool, not a live price ticker.
+            # Live triggers should come from your trading bot (e.g., via a webhook or subprocess call) when it detects a volume/price anomaly.
+            time.sleep(60)
             
         # 3. Post-Market
         elif not post_run and now >= POST_MARKET_TIME:
