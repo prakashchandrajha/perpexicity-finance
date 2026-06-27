@@ -99,38 +99,47 @@ def _extract_daily_analysis(chunks: list[str]) -> list[DailyAnalysisEntry]:
         chunk = chunks[i].strip()
         if DATE_PATTERN.match(chunk):
             date_str = chunk
-            if i + 4 < len(chunks):
-                price_chunk = chunks[i + 1].strip()
-                change_chunk = chunks[i + 2].strip()
+            price_chunk = ""
+            change_chunk = ""
+            analysis_parts = []
+            sources_str = ""
 
-                if PRICE_PATTERN.match(price_chunk) and CHANGE_PATTERN.match(change_chunk):
-                    analysis_parts = []
-                    j = i + 3
-                    sources_str = ""
-                    while j < len(chunks):
-                        part = chunks[j].strip()
-                        if SOURCES_PATTERN.match(part):
-                            sources_str = part
-                            break
-                        if DATE_PATTERN.match(part):
-                            break
-                        if part in ("View more", "Stories & Analysis", "Stories \u0026 Analysis"):
-                            break
-                        if part:
-                            analysis_parts.append(part)
+            j = i + 1
+            # Look ahead up to 5 elements for price and change to tolerate layout spacers
+            while j < min(i + 5, len(chunks)):
+                if PRICE_PATTERN.match(chunks[j].strip()):
+                    price_chunk = chunks[j].strip()
+                    if j + 1 < len(chunks) and CHANGE_PATTERN.match(chunks[j + 1].strip()):
+                        change_chunk = chunks[j + 1].strip()
                         j += 1
+                    break
+                j += 1
 
-                    analysis_text = " ".join(analysis_parts)
-                    if len(analysis_text) > 30:
-                        entries.append(DailyAnalysisEntry(
-                            date=date_str,
-                            close_price=price_chunk,
-                            change_pct=change_chunk,
-                            analysis=analysis_text,
-                            sources_count=sources_str,
-                        ))
-                    i = j + 1
-                    continue
+            if price_chunk and change_chunk:
+                j += 1
+                while j < len(chunks):
+                    part = chunks[j].strip()
+                    if SOURCES_PATTERN.match(part):
+                        sources_str = part
+                        break
+                    if DATE_PATTERN.match(part):
+                        break
+                    if part in ("View more", "Stories & Analysis", "Stories \u0026 Analysis"):
+                        break
+                    if part:
+                        analysis_parts.append(part)
+                    j += 1
+
+                analysis_text = " ".join(analysis_parts)
+                if len(analysis_text) > 30:
+                    entries.append(DailyAnalysisEntry(
+                        date=date_str,
+                        close_price=price_chunk,
+                        change_pct=change_chunk,
+                        analysis=analysis_text,
+                        sources_count=sources_str,
+                    ))
+                i = j - 1
         i += 1
 
     return entries
@@ -160,18 +169,26 @@ def _extract_news(chunks: list[str]) -> list[NewsHeadline]:
 
         if len(chunk) > 20 and chunk != "·":
             headline = chunk
-            if i + 3 < len(chunks):
-                next1 = chunks[i + 1].strip()
-                next2 = chunks[i + 2].strip()
-                next3 = chunks[i + 3].strip()
-                if next2 == "·":
-                    headlines.append(NewsHeadline(
-                        headline=headline,
-                        source=next1,
-                        date=next3,
-                    ))
-                    i += 4
-                    continue
+            # Look ahead for source and date
+            j = i + 1
+            source = ""
+            date = ""
+            while j < min(i + 5, len(chunks)):
+                if chunks[j].strip() == "·":
+                    if j > i + 1:
+                        source = chunks[j-1].strip()
+                    if j + 1 < len(chunks):
+                        date = chunks[j+1].strip()
+                    break
+                j += 1
+                
+            if source and date:
+                headlines.append(NewsHeadline(
+                    headline=headline,
+                    source=source,
+                    date=date,
+                ))
+                i = j
         i += 1
 
     return headlines
@@ -202,18 +219,24 @@ def _extract_key_issues(chunks: list[str]) -> list[KeyIssue]:
 
             while j < len(chunks):
                 part = chunks[j].strip()
-                if part == "Bullish view" and j + 1 < len(chunks):
-                    issue.bullish_view = chunks[j + 1].strip()
-                    j += 2
-                    if j < len(chunks) and SOURCES_PATTERN.match(chunks[j].strip()):
-                        j += 1
-                    continue
-                elif part == "Bearish view" and j + 1 < len(chunks):
-                    issue.bearish_view = chunks[j + 1].strip()
-                    j += 2
-                    if j < len(chunks) and SOURCES_PATTERN.match(chunks[j].strip()):
-                        j += 1
-                    continue
+                if part == "Bullish view":
+                    k = j + 1
+                    while k < len(chunks):
+                        p = chunks[k].strip()
+                        if p and not SOURCES_PATTERN.match(p):
+                            issue.bullish_view = p
+                            j = k
+                            break
+                        k += 1
+                elif part == "Bearish view":
+                    k = j + 1
+                    while k < len(chunks):
+                        p = chunks[k].strip()
+                        if p and not SOURCES_PATTERN.match(p):
+                            issue.bearish_view = p
+                            j = k
+                            break
+                        k += 1
                 elif part.endswith("?") and len(part) > 10:
                     break
                 elif part == "Symbol":
@@ -221,8 +244,7 @@ def _extract_key_issues(chunks: list[str]) -> list[KeyIssue]:
                 j += 1
 
             issues.append(issue)
-            i = j
-            continue
+            i = j - 1
         i += 1
 
     return issues

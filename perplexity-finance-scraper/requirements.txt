@@ -3,3 +3,4 @@ beautifulsoup4
 pydantic>=2.0
 loguru
 pytz
+vaderSentiment

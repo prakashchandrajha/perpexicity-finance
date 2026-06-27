@@ -11,7 +11,10 @@
 
 import re
 from loguru import logger
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from models.schema import SignalExtraction, DailyAnalysisEntry, NewsHeadline, KeyIssue
+
+analyzer = SentimentIntensityAnalyzer()
 
 
 # ── Keyword dictionaries for sentiment analysis ──────────────────────
@@ -101,6 +104,10 @@ def extract_signals(
     all_text_lower = all_text.lower()
 
     # ── Sentiment Score ──────────────────────────────────────────────
+    vader_scores = analyzer.polarity_scores(all_text)
+    compound = vader_scores['compound']  # -1.0 to 1.0
+
+    # Apply domain-specific overrides
     bull_score = 0
     bear_score = 0
     for keyword, weight in BULLISH_KEYWORDS.items():
@@ -110,14 +117,16 @@ def extract_signals(
         count = all_text_lower.count(keyword)
         bear_score += count * weight
 
-    # Normalize to -5 to +5 range
-    raw_diff = bull_score - bear_score
-    total = bull_score + bear_score
-    if total > 0:
-        normalized = (raw_diff / total) * 5
-        sentiment_score = max(-5, min(5, round(normalized)))
-    else:
-        sentiment_score = 0
+    # Calculate a custom modifier from our keywords (max impact +/- 0.4 on compound)
+    total_custom = bull_score + bear_score
+    custom_modifier = 0.0
+    if total_custom > 0:
+        custom_modifier = ((bull_score - bear_score) / total_custom) * 0.4
+
+    final_compound = max(-1.0, min(1.0, compound + custom_modifier))
+    
+    # Map from [-1.0, 1.0] to [-5, 5]
+    sentiment_score = round(final_compound * 5)
 
     # ── Trend Direction ──────────────────────────────────────────────
     if sentiment_score >= 3:
