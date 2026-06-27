@@ -74,3 +74,25 @@ class PerplexityExtensionClient:
         except Exception as e:
             logger.error(f"[ExtClient] Failed to execute live query via extension: {e}")
             return f"Error: {e}"
+
+    def ask_macro_live(self) -> str:
+        """Queues a job for the extension to run a macro sector scan."""
+        logger.info(f"[ExtClient] Queueing macro_scan job...")
+        
+        query = "Give me the top 3 Indian stock market sectors expected to rotate today based on overnight US market performance, crude oil prices, and recent FII inflows. Provide a detailed fundamental rationale for each."
+        
+        try:
+            res = requests.post(f"{SERVER_URL}/queue_job", json={
+                "type": "macro_scan",
+                "ticker": "MACRO",
+                "query": query
+            })
+            job_id = res.json().get("job_id")
+            result = self._wait_for_result(job_id, timeout=90)
+            
+            if "error" in result:
+                return f"Error: {result['error']}"
+            return result.get("text", "")
+        except Exception as e:
+            logger.error(f"[ExtClient] Failed to execute macro scan via extension: {e}")
+            return f"Error: {e}"

@@ -54,6 +54,14 @@ async def run(ticker: str, phase: str, context: str = None):
         except Exception as e:
             logger.error(f"[Page] Scrape failed: {e}")
             errors.append(f"Page scrape error: {e}")
+    elif phase == "macro_scan":
+        logger.info("━━ STEP 1: Running macro sector scan ━━")
+        live_narrative = client.ask_macro_live()
+        if live_narrative and "Error:" not in live_narrative:
+            logger.success(f"[API] Received macro scan answer ({len(live_narrative)} chars)")
+        else:
+            logger.error(f"[API] Macro query failed or blocked: {live_narrative}")
+            errors.append(f"Macro query failed: {live_narrative}")
     else:
         # LIVE MARKET: Ask conversational AI for breaking catalysts
         logger.info("━━ STEP 1: Asking live conversational AI for intraday catalysts ━━")
@@ -119,15 +127,23 @@ def main():
     configure_logger()
     
     parser = argparse.ArgumentParser(description="Perplexity Finance Intelligence Extractor")
-    parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS)")
-    parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market"], default="pre_market",
+    parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS, or MACRO for macro_scan)")
+    parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market", "macro_scan"], default="pre_market",
                         help="Trading phase (default: pre_market)")
     parser.add_argument("--context", type=str, default=None,
-                        help="Optional specific context (e.g., 'Stock dropped 5% in 10 mins') for live market alerts.")
+                        help="Optional specific context for live market alerts.")
+    parser.add_argument("--anomaly", type=str, default=None,
+                        help="Mathematical anomaly (e.g., 'Volume Spike', 'Flash Crash') for dynamic prompt injection.")
+    parser.add_argument("--price_level", type=str, default=None,
+                        help="Price level associated with the anomaly.")
     
     args = parser.parse_args()
     
-    asyncio.run(run(args.ticker, args.phase, args.context))
+    context = args.context
+    if args.anomaly and args.price_level:
+        context = f"The stock {args.ticker} just experienced a {args.anomaly} at price level {args.price_level}. Analyze the latest SEC filings, news, and social media to explain why."
+    
+    asyncio.run(run(args.ticker, args.phase, context))
 
 if __name__ == "__main__":
     main()

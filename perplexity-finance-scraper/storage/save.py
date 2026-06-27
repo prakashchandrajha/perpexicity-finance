@@ -15,11 +15,33 @@
 
 import os
 import json
+import sqlite3
 from datetime import datetime
 from loguru import logger
 
 from config import DATA_DIR
 from models.schema import PhaseOutput
+
+DB_PATH = os.path.join(DATA_DIR, "perplexity_warehouse.db")
+
+def init_db():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS scrapes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT,
+                ticker TEXT,
+                phase TEXT,
+                sentiment_score INTEGER,
+                trend TEXT,
+                catalysts TEXT,
+                urgency TEXT,
+                raw_json TEXT
+            )
+        ''')
+        conn.commit()
 
 
 def save_phase_output(output: PhaseOutput) -> str:
@@ -53,10 +75,37 @@ def save_phase_output(output: PhaseOutput) -> str:
 
     # Serialize with Pydantic and save
     data = output.model_dump(mode="json")
+    json_str = json.dumps(data, ensure_ascii=False)
+    
     with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write(json.dumps(data, indent=2, ensure_ascii=False))
 
-    logger.info(f"[Storage] Saved → {filepath}")
+    logger.info(f"[Storage] Saved JSON → {filepath}")
+    
+    # Save to SQLite Warehouse
+    try:
+        init_db()
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            catalysts_str = ",".join(output.signals.catalyst_tags) if output.signals.catalyst_tags else ""
+            cursor.execute('''
+                INSERT INTO scrapes (timestamp, ticker, phase, sentiment_score, trend, catalysts, urgency, raw_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                output.timestamp,
+                output.ticker,
+                output.phase,
+                output.signals.sentiment_score,
+                output.signals.trend_direction,
+                catalysts_str,
+                output.signals.urgency,
+                json_str
+            ))
+            conn.commit()
+        logger.info(f"[Storage] Saved to SQLite Warehouse → {DB_PATH}")
+    except Exception as e:
+        logger.error(f"[Storage] Failed to save to SQLite: {e}")
+
     return filepath
 
 

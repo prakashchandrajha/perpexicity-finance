@@ -2,9 +2,9 @@
 
 ## 📖 Overview
 
-This project is a **dedicated data extraction layer** that scrapes financial intelligence and live market sentiment exclusively from [Perplexity AI Finance](https://www.perplexity.ai/finance). 
+This project is a **dedicated data extraction layer** that scrapes financial intelligence and live market sentiment exclusively from [Perplexity AI Finance](https://www.perplexity.ai/finance) and Perplexity Search. 
 
-Its single job is to act as an automated AI Research Analyst: it asks Perplexity complex financial questions about stock tickers, extracts the conversational response, parses it into structured JSON trading signals (Sentiment, Trend, Catalysts, Urgency), and saves it for downstream algorithmic trading bots to consume.
+Its single job is to act as an automated AI Research Analyst: it asks Perplexity complex financial questions about stock tickers (and broad macro conditions), extracts the conversational response, parses it using a VADER NLP Sentiment Engine into structured JSON trading signals (Sentiment, Trend, Catalysts, Urgency), and saves it to an SQLite Data Warehouse for algorithmic trading bots to consume.
 
 ### 🚫 What it does NOT do:
 - Connect to Zerodha, AliceBlue, or any broker.
@@ -16,16 +16,32 @@ Its single job is to act as an automated AI Research Analyst: it asks Perplexity
 
 ## 🏗️ The "Ghost Extension" Architecture (Bypassing Cloudflare)
 
-Previously, scraping Perplexity with headless browsers (Playwright, Selenium, Camoufox) resulted in instant IP bans and 16-second Cloudflare Turnstile blocks. 
+Previously, scraping Perplexity with headless browsers (Playwright, Selenium, Camoufox) resulted in instant IP bans and 16-second Cloudflare Turnstile blocks. Paid alternatives like ScrapeGraphAI are expensive and redundant.
 
 This project solves that by shifting the paradigm to a **Local Server + Chrome Extension Bridge**:
 
-1. **The Python Server (Producer)**: Python runs locally on port `8765`. It generates queries (e.g., "Why is RELIANCE moving today?") and places them in a local queue.
+1. **The Python Server (Producer)**: Python runs locally on port `8765`. It generates queries and places them in a local queue.
 2. **The Chrome Extension (Consumer)**: A lightweight extension installed in your normal, logged-in Google Chrome browser polls the Python server every 2 seconds. 
 3. **Execution**: When the extension sees a job, it opens a Perplexity tab, uses a "Holy Grail" injection technique (`document.execCommand`) to natively simulate human typing, bypasses React's event blockers, avoids Voice mode overlays, and perfectly captures the streaming AI response.
 4. **Delivery**: The extension POSTs the extracted text back to Python, which parses it into JSON.
 
 Because the queries execute inside your real browser profile where you are already logged in, Cloudflare sees you as a 100% legitimate human user.
+
+---
+
+## 🧠 Phase 2 Intelligence Upgrades
+
+### 1. VADER NLP Sentiment Engine
+Instead of just counting positive/negative words, this scraper feeds the raw AI narrative through the **VADER Sentiment Engine** to understand context (e.g., negations, punctuation). It then applies mathematical modifiers based on a domain-specific financial dictionary (e.g., "drhp", "sebi action"). 
+
+### 2. SQLite Data Warehousing
+Every single scrape (Pre-market, Live-market, and Macro) is automatically inserted into a lightweight, local SQLite database (`data/perplexity_warehouse.db`) alongside the JSON file. This gives your trading bot long-term memory for algorithmic backtesting.
+
+### 3. Dynamic Anomaly Context Injection
+Your trading bot can inject real-time mathematical triggers (e.g. Volume Spikes, Breakouts) into the Perplexity prompt using the `--anomaly` and `--price_level` arguments.
+
+### 4. Macro Sector Scanning
+A dedicated `--phase macro_scan` queries Perplexity's root search to predict intraday sector rotation based on global cues (US markets, Crude Oil, FII flows), completely bypassing stock-specific pages.
 
 ---
 
@@ -63,47 +79,54 @@ Look at the extension icon in your Chrome toolbar to know exactly what the syste
 
 ## 🚀 Usage
 
-Run the Python script from the terminal to queue jobs for the extension to process.
+You must run the Python queue server in a separate terminal before running the client scripts:
 
-**Run a Pre-Market analysis:**
+**Terminal 1 (Start the Server):**
+```bash
+./venv/bin/python scraper/extension_server.py
+```
+
+**Terminal 2 (Client Commands):**
+
+**Run a Pre-Market stock analysis:**
 ```bash
 ./venv/bin/python main.py RELIANCE.NS --phase pre_market
 ```
 
-**Run a Live-Market narrative check:**
+**Run a Macro Sector Scan (9:00 AM):**
 ```bash
-./venv/bin/python main.py RELIANCE.NS --phase live_market
+./venv/bin/python main.py MACRO --phase macro_scan
 ```
 
-**Run a Post-Market recap:**
+**Run a Live-Market narrative check with Anomaly Injection:**
 ```bash
-./venv/bin/python main.py RELIANCE.NS --phase post_market
+./venv/bin/python main.py RELIANCE.NS --phase live_market --anomaly "Volume Spike" --price_level "₹3000"
 ```
 
 ---
 
-## 📄 Output Data (JSON)
+## 📄 Output Data (SQLite & JSON)
 
-The output is saved in `data/YYYY-MM-DD/{phase}_{ticker}_{time}.json`. 
-Your trading bot can read these files to make algorithmic decisions.
+The output is saved as flat files in `data/YYYY-MM-DD/{phase}_{ticker}_{time}.json` AND injected into the SQLite database.
 
-**Example output:**
+**Querying the Database:**
+```bash
+sqlite3 data/perplexity_warehouse.db "SELECT ticker, phase, sentiment_score FROM scrapes;"
+```
+
+**Example JSON output:**
 ```json
 {
-  "ticker": "RELIANCE.NS",
-  "phase": "live_market",
-  "timestamp": "2026-06-26T19:59:51.922332+00:00",
+  "ticker": "MACRO",
+  "phase": "macro_scan",
+  "timestamp": "2026-06-27T11:06:42.771845+00:00",
   "signals": {
     "sentiment_score": 5,
     "trend_direction": "BULLISH",
-    "catalyst_tags": ["IPO", "EARNINGS", "TECH_AI"],
+    "catalyst_tags": ["FII", "CRUDE", "FOREX", "INDEX"],
     "urgency": "BREAKING",
-    "confidence": 0.8
+    "confidence": 0.5
   },
-  "live_catalyst_narrative": "Reliance is moving on a mix of stock-specific headline flow..."
+  "live_catalyst_narrative": "Top 3 sectors likely to rotate today: Banking (Financials)..."
 }
 ```
-
-## 🛡️ Future-Proofing (Shadow DOM)
-
-If Perplexity's engineers redesign their website and hide the search bar inside Web Components (Shadow DOM) to block scrapers, this extension includes a recursive **Shadow DOM piercing algorithm** that will automatically drill through the encrypted DOM layers to locate the input field and execute the trade query without failing.

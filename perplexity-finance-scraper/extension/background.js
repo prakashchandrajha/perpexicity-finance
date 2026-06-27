@@ -63,7 +63,7 @@ async function handleJob(job) {
     
     if (type === "pre_market" || type === "post_market") {
         url = `https://www.perplexity.ai/finance/${ticker}`;
-    } else if (type === "live_market") {
+    } else if (type === "live_market" || type === "macro_scan") {
         url = "https://www.perplexity.ai/";
     } else {
         await submitResult(job_id, { error: "Unknown job type" });
