@@ -188,7 +188,7 @@ def _extract_news(chunks: list[str]) -> list[NewsHeadline]:
                     source=source,
                     date=date,
                 ))
-                i = j
+                i = j + 1
         i += 1
 
     return headlines

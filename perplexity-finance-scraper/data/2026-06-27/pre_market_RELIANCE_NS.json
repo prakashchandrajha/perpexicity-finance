@@ -1,11 +1,11 @@
 {
   "ticker": "RELIANCE.NS",
   "phase": "pre_market",
-  "timestamp": "2026-06-27T10:28:34.201911+00:00",
+  "timestamp": "2026-06-27T10:55:33.799126+00:00",
   "date": "2026-06-27",
   "finance_page": {
     "ticker": "RELIANCE.NS",
-    "scraped_at": "2026-06-27T10:28:34.186229+00:00",
+    "scraped_at": "2026-06-27T10:55:33.763175+00:00",
     "source_url": "https://www.perplexity.ai/finance/RELIANCE.NS",
     "daily_analysis": [],
     "news_headlines": [
@@ -40,22 +40,22 @@
         "date": "19 June 2026 at 16:29"
       },
       {
-        "headline": "19 June 2026 at 16:29",
+        "headline": "Reliance Industries Unit Jio Platforms Approves Draft IPO Papers",
         "source": "MT Newswires",
         "date": "17 June 2026 at 10:54"
       },
       {
-        "headline": "17 June 2026 at 10:54",
+        "headline": "Market Chatter: Reliance Industries Likely to File for Jio Infocomm in Next Few Days",
         "source": "MT Newswires",
         "date": "12 June 2026 at 10:46"
       },
       {
-        "headline": "12 June 2026 at 10:46",
+        "headline": "Market Chatter: Reliance, Vedanta, Adani Eye Andhra Pradesh Rare Earth Processing Projects",
         "source": "MT Newswires",
         "date": "10 June 2026 at 08:41"
       },
       {
-        "headline": "10 June 2026 at 08:41",
+        "headline": "Meta, Reliance Industries to Establish AI-Enabled Data Center in Jamnagar, India",
         "source": "MT Newswires",
         "date": "1 June 2026 at 05:52"
       },
@@ -65,7 +65,23 @@
         "date": "21 May 2026 at 15:21"
       }
     ],
-    "key_issues": [],
+    "key_issues": [
+      {
+        "issue": "New energy and data centre diversification: Growth engine or capital allocation risk?",
+        "bullish_view": "RIL's strategic pivot toward green energy, data centres, and AI infrastructure — including a high-profile Meta partnership for a data centre in Gujarat — is seen as a long-term rerating catalyst. Analysts at Geojit Investments and Equinomics Research expect these ventures to reduce dependence on cyclical oil & gas revenues and unlock significant upside over a one-to-three-year horizon.",
+        "bearish_view": "Despite promising announcements, the market remains in a wait-and-see mode on new energy capex execution, with the stock consolidating in a tight range near multi-month lows. Yahoo Finance notes key risks around high capital investment in new ventures and significant petrochemical exposure, raising concerns about whether returns will justify the scale of spending."
+      },
+      {
+        "issue": "Jio IPO and subsidiary restructuring: Imminent value unlock or prolonged uncertainty?",
+        "bullish_view": "",
+        "bearish_view": ""
+      },
+      {
+        "issue": "Geopolitical and macroeconomic headwinds: Manageable near-term noise or structural earnings threat?",
+        "bullish_view": "",
+        "bearish_view": ""
+      }
+    ],
     "key_stats": {
       "prev_close": "₹1,313.60",
       "open": "₹1,318.00",
@@ -124,6 +140,6 @@
     "key_levels": {}
   },
   "live_catalyst_narrative": null,
-  "scrape_duration_sec": 5.2,
+  "scrape_duration_sec": 6.3,
   "errors": []
 }
