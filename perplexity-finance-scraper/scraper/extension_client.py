@@ -51,13 +51,79 @@ class PerplexityExtensionClient:
             raise
 
     def ask_finance_live(self, ticker: str, context: str = None) -> str:
-        """Queues a job for the extension to run a live conversational search."""
+        """Queues a job for the extension to run a live conversational search.
+        
+        Uses smart situational prompts that focus ONLY on what Perplexity
+        uniquely provides — AI narrative interpretation, cross-source synthesis,
+        and reasoning that no broker API (Zerodha, etc.) can give.
+        """
         logger.info(f"[ExtClient] Queueing live_market job for {ticker}...")
         
         if context:
-            query = f"CONTEXT: {context} \n\nSearch the web for breaking news right now regarding this specific movement for {ticker} stock. What is the specific catalyst causing this right now?"
+            # Parse the context for situational awareness
+            ctx_lower = context.lower()
+            
+            if any(w in ctx_lower for w in ["crash", "plunge", "tank", "dump", "drop", "fell", "down"]):
+                # CRASH scenario — ask for the WHY, not the what
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: Explain the SPECIFIC ROOT CAUSE of this decline. "
+                    f"Is this due to company-specific news (earnings miss, regulatory action, management change) "
+                    f"or broader market/sector weakness? "
+                    f"Check if there are any SEBI filings, insider transactions, or institutional block deal "
+                    f"reports in the last 48 hours that explain this. "
+                    f"Is this retail panic or institutional distribution?"
+                )
+            elif any(w in ctx_lower for w in ["spike", "surge", "breakout", "rally", "up", "gap", "jump"]):
+                # BREAKOUT scenario
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: What is the SPECIFIC CATALYST behind this upward move? "
+                    f"Is this driven by institutional accumulation (check recent block deals/FII data), "
+                    f"a news event (M&A, upgrade, contract win), or sector rotation? "
+                    f"Is this a sustainable trend change or a short-squeeze/dead cat bounce?"
+                )
+            elif any(w in ctx_lower for w in ["volume", "unusual", "activity"]):
+                # HIGH VOLUME BUT FLAT scenario
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: Volume is abnormally high. Investigate whether this is "
+                    f"accumulation (smart money buying) or distribution (institutions offloading). "
+                    f"Check for any upcoming corporate actions, board meetings, or SEBI disclosures "
+                    f"that would explain unusual activity. Are there block deal reports?"
+                )
+            elif any(w in ctx_lower for w in ["earnings", "results", "quarterly", "q1", "q2", "q3", "q4"]):
+                # EARNINGS REACTION scenario
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: Summarize the key takeaways from the latest earnings announcement. "
+                    f"Did management raise or lower forward guidance? "
+                    f"What did the CEO say about growth outlook in the earnings call? "
+                    f"Is the stock reaction justified based on the actual numbers vs expectations?"
+                )
+            elif any(w in ctx_lower for w in ["sebi", "regulatory", "rbi", "compliance", "notice"]):
+                # REGULATORY scenario
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: What is the exact nature of the regulatory action? "
+                    f"Is this a show-cause notice, penalty, or investigation? "
+                    f"What is the historical precedent — how have similar regulatory actions "
+                    f"affected other Indian companies? Is this material to the business or procedural?"
+                )
+            else:
+                # GENERIC but still focused on narrative
+                query = (
+                    f"CONTEXT: {context}\n\n"
+                    f"For {ticker} stock: Search the web for breaking news explaining this specific movement. "
+                    f"Focus on the root cause — is it company-specific, sector-wide, or macro-driven? "
+                    f"What is the market narrative around this stock right now?"
+                )
         else:
-            query = f"Search the web for breaking news right now regarding why {ticker} stock is moving today. What are the specific catalysts?"
+            query = (
+                f"For {ticker} stock: What are the key narratives and catalysts driving this stock TODAY? "
+                f"Focus on news developments, analyst commentary, and institutional activity "
+                f"that explain the current price action. What is the market consensus on near-term direction?"
+            )
         
         try:
             res = requests.post(f"{SERVER_URL}/queue_job", json={
@@ -66,13 +132,51 @@ class PerplexityExtensionClient:
                 "query": query
             })
             job_id = res.json().get("job_id")
-            result = self._wait_for_result(job_id, timeout=90) # Give AI time to type
+            result = self._wait_for_result(job_id, timeout=90)
             
             if "error" in result:
                 return f"Error: {result['error']}"
             return result.get("text", "")
         except Exception as e:
             logger.error(f"[ExtClient] Failed to execute live query via extension: {e}")
+            return f"Error: {e}"
+
+    def ask_earnings_intel(self, ticker: str) -> str:
+        """Ask Perplexity for AI-interpreted earnings intelligence.
+        
+        This extracts what ONLY Perplexity can provide:
+        - AI summary of the latest earnings call transcript
+        - Forward guidance interpretation
+        - Management tone and key quotes
+        
+        NOT raw EPS/revenue numbers (Zerodha gives those).
+        """
+        logger.info(f"[ExtClient] Queueing earnings intelligence job for {ticker}...")
+        
+        query = (
+            f"For {ticker} stock: Summarize the LATEST earnings call. Focus on:\n"
+            f"1. What did management say about FORWARD GUIDANCE for next quarter?\n"
+            f"2. Did they raise, maintain, or lower expectations?\n"
+            f"3. What are the KEY RISKS management highlighted?\n"
+            f"4. Any major strategic announcements (new products, M&A, capex plans)?\n"
+            f"5. What was the overall TONE of the management commentary — confident, cautious, or defensive?\n"
+            f"Do NOT give me raw financial numbers. I need the NARRATIVE and INTERPRETATION only."
+        )
+        
+        try:
+            res = requests.post(f"{SERVER_URL}/queue_job", json={
+                "type": "live_market",
+                "ticker": ticker,
+                "query": query
+            })
+            job_id = res.json().get("job_id")
+            result = self._wait_for_result(job_id, timeout=90)
+            
+            if "error" in result:
+                return f"Error: {result['error']}"
+            return result.get("text", "")
+        except Exception as e:
+            logger.error(f"[ExtClient] Failed to execute earnings query via extension: {e}")
             return f"Error: {e}"
 
     def ask_macro_live(self) -> str:

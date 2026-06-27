@@ -9,7 +9,7 @@ from config import DATA_DIR
 from scraper.extension_client import PerplexityExtensionClient
 from scraper.finance_scraper import scrape_finance_page
 from scraper.extractor import extract_signals
-from storage.save import save_phase_output
+from storage.save import save_phase_output, compute_sentiment_drift
 from models.schema import PhaseOutput, SignalExtraction
 
 def configure_logger():
@@ -20,87 +20,48 @@ def configure_logger():
         level="INFO"
     )
 
-async def run(ticker: str, phase: str, context: str = None):
-    """Orchestrates a single run for a ticker."""
-    start_time = time.time()
-    errors = []
+from bot_api import PerplexityTraderAPI
 
+async def run(ticker: str, phase: str, context: str = None):
+    """Orchestrates a single run for a ticker using the Trader API."""
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     logger.info("  🔍 PERPLEXITY FINANCE SCRAPER (EXTENSION MODE)")
     logger.info(f"  TICKER : {ticker}")
     logger.info(f"  PHASE  : {phase.upper()}")
     logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
-    finance_data = None
-    signals = SignalExtraction()
-    live_narrative = None
+    api = PerplexityTraderAPI()
+    
+    if phase == "sentiment_check":
+        logger.info("━━ STEP 1: Running local sentiment drift analysis ━━")
+        start_time = time.time()
+        drift = await api.analyze(ticker, phase, context)
+        duration = time.time() - start_time
+        
+        print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print(f"  📊 SENTIMENT DRIFT ANALYSIS — {ticker}")
+        print(f"  TOTAL SCRAPES : {drift['total_scrapes']}")
+        print(f"  LATEST SCORE  : {drift['latest_sentiment']}")
+        print(f"  AVG SCORE     : {drift['avg_sentiment']}")
+        print(f"  DELTA         : {drift['sentiment_delta']}")
+        print(f"  LATEST TREND  : {drift['latest_trend']}")
+        print(f"  PREVIOUS TREND: {drift['previous_trend']}")
+        print(f"  REVERSAL      : {'YES ⚠️' if drift['trend_reversal'] else 'No'}")
+        if drift['catalyst_frequency']:
+            top_cats = ', '.join(f"{k}({v})" for k, v in list(drift['catalyst_frequency'].items())[:5])
+            print(f"  TOP CATALYSTS : {top_cats}")
+        print(f"  VERDICT       : {drift['verdict']}")
+        print(f"  DURATION      : {duration:.1f}s")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        return
 
-    client = PerplexityExtensionClient()
-
-    if phase in ["pre_market", "post_market"]:
-        # 1. Scrape the /finance/ page for static summaries
-        logger.info(f"━━ STEP 1: Scraping /finance/ page for {phase} ━━")
-        try:
-            html = client.fetch_finance_page_html(ticker)
-            finance_data = await scrape_finance_page(html, ticker)
-            
-            n_analyses = len(finance_data.daily_analysis)
-            n_news = len(finance_data.news_headlines)
-            n_issues = len(finance_data.key_issues)
-            n_peers = len(finance_data.peers)
-            
-            logger.success(f"[Page] ✓ {n_analyses} analyses, {n_news} news, {n_issues} issues, {n_peers} peers")
-            
-        except Exception as e:
-            logger.error(f"[Page] Scrape failed: {e}")
-            errors.append(f"Page scrape error: {e}")
-    elif phase == "macro_scan":
-        logger.info("━━ STEP 1: Running macro sector scan ━━")
-        live_narrative = client.ask_macro_live()
-        if live_narrative and "Error:" not in live_narrative:
-            logger.success(f"[API] Received macro scan answer ({len(live_narrative)} chars)")
-        else:
-            logger.error(f"[API] Macro query failed or blocked: {live_narrative}")
-            errors.append(f"Macro query failed: {live_narrative}")
-    else:
-        # LIVE MARKET: Ask conversational AI for breaking catalysts
-        logger.info("━━ STEP 1: Asking live conversational AI for intraday catalysts ━━")
-        live_narrative = client.ask_finance_live(ticker, context)
-        if live_narrative and "Error:" not in live_narrative:
-            logger.success(f"[API] Received live answer ({len(live_narrative)} chars)")
-        else:
-            logger.error(f"[API] Live query failed or blocked: {live_narrative}")
-            errors.append(f"Live query failed: {live_narrative}")
-
-    # 2. Extract Trading Signals
-    logger.info("━━ STEP 2: Extracting trading signals ━━")
-    if finance_data or live_narrative:
-        signals = extract_signals(
-            daily_analysis=finance_data.daily_analysis if finance_data else [],
-            news_headlines=finance_data.news_headlines if finance_data else [],
-            key_issues=finance_data.key_issues if finance_data else [],
-            live_narrative=live_narrative
-        )
-    else:
-        logger.warning("No finance data or live narrative to extract signals from.")
-
-    # 3. Save Output
+    # All other phases
+    start_time = time.time()
+    output = await api.analyze(ticker, phase, context, save_to_db=True)
+    signals = output.signals
+    finance_data = output.finance_page
     duration = time.time() - start_time
-    now_utc = datetime.now(timezone.utc)
-    
-    output = PhaseOutput(
-        ticker=ticker,
-        phase=phase,
-        timestamp=now_utc.isoformat(),
-        date=now_utc.strftime("%Y-%m-%d"),
-        finance_page=finance_data,
-        signals=signals,
-        live_catalyst_narrative=live_narrative,
-        scrape_duration_sec=round(duration, 1),
-        errors=errors
-    )
-    
-    save_path = save_phase_output(output)
+    save_path = f"data/YYYY-MM-DD/{phase}_{ticker}.json and SQLite"
 
     # 4. Print Summary
     print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -128,7 +89,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Perplexity Finance Intelligence Extractor")
     parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS, or MACRO for macro_scan)")
-    parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market", "macro_scan"], default="pre_market",
+    parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market", "macro_scan", "earnings", "sentiment_check"], default="pre_market",
                         help="Trading phase (default: pre_market)")
     parser.add_argument("--context", type=str, default=None,
                         help="Optional specific context for live market alerts.")

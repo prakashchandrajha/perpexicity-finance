@@ -164,3 +164,86 @@ def list_today_outputs(date: str = "") -> list[str]:
         return []
 
     return sorted(f for f in os.listdir(date_dir) if f.endswith(".json"))
+
+
+def compute_sentiment_drift(ticker: str, lookback_days: int = 3) -> dict:
+    """Analyze sentiment drift from SQLite warehouse — ZERO Perplexity queries.
+    
+    Computes:
+    - Current sentiment vs N-day average (the delta)
+    - Trend reversal flag (did it flip?)
+    - Catalyst persistence (same catalysts repeating = sticky, changing = volatile)
+    
+    Returns a dict with the analysis that main.py can print/save.
+    """
+    init_db()
+    result = {
+        "ticker": ticker,
+        "lookback_days": lookback_days,
+        "total_scrapes": 0,
+        "latest_sentiment": None,
+        "avg_sentiment": None,
+        "sentiment_delta": None,
+        "trend_reversal": False,
+        "latest_trend": None,
+        "previous_trend": None,
+        "catalyst_frequency": {},
+        "verdict": "INSUFFICIENT_DATA",
+    }
+    
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        
+        # Get all scrapes for this ticker in the lookback window
+        cursor.execute('''
+            SELECT timestamp, sentiment_score, trend, catalysts
+            FROM scrapes
+            WHERE ticker = ?
+            ORDER BY timestamp DESC
+        ''', (ticker,))
+        
+        rows = cursor.fetchall()
+    
+    if not rows:
+        logger.warning(f"[Drift] No historical data for {ticker}")
+        return result
+    
+    result["total_scrapes"] = len(rows)
+    result["latest_sentiment"] = rows[0][1]
+    result["latest_trend"] = rows[0][2]
+    
+    # Compute average sentiment across all stored scrapes
+    scores = [r[1] for r in rows]
+    result["avg_sentiment"] = round(sum(scores) / len(scores), 1)
+    result["sentiment_delta"] = round(result["latest_sentiment"] - result["avg_sentiment"], 1)
+    
+    # Check for trend reversal (latest vs second-latest)
+    if len(rows) >= 2:
+        result["previous_trend"] = rows[1][2]
+        if result["latest_trend"] != result["previous_trend"]:
+            result["trend_reversal"] = True
+    
+    # Catalyst frequency analysis
+    catalyst_counts = {}
+    for r in rows:
+        if r[3]:  # catalysts string
+            for cat in r[3].split(","):
+                cat = cat.strip()
+                if cat:
+                    catalyst_counts[cat] = catalyst_counts.get(cat, 0) + 1
+    result["catalyst_frequency"] = dict(sorted(catalyst_counts.items(), key=lambda x: x[1], reverse=True))
+    
+    # Generate verdict
+    delta = result["sentiment_delta"]
+    if result["trend_reversal"]:
+        result["verdict"] = f"⚠️ TREND REVERSAL: {result['previous_trend']} → {result['latest_trend']}"
+    elif delta is not None and abs(delta) >= 3:
+        direction = "IMPROVING" if delta > 0 else "DETERIORATING"
+        result["verdict"] = f"🔔 SENTIMENT {direction} (delta: {delta:+.1f})"
+    elif delta is not None and abs(delta) >= 1:
+        direction = "slightly improving" if delta > 0 else "slightly weakening"
+        result["verdict"] = f"📊 Sentiment {direction} (delta: {delta:+.1f})"
+    else:
+        result["verdict"] = "✅ STABLE — no significant drift detected"
+    
+    return result

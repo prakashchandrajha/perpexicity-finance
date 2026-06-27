@@ -1,0 +1,25 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-06-27T17:07:42.803865+00:00",
+  "date": "2026-06-27",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": -5,
+    "trend_direction": "BEARISH",
+    "catalyst_tags": [
+      "EARNINGS",
+      "CRUDE",
+      "REGULATORY",
+      "MERGER",
+      "INDEX",
+      "BLOCK_DEAL"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {}
+  },
+  "live_catalyst_narrative": "The available evidence points more toward market/sector pressure and technical selling than a fresh company-specific shock. A recent Reuters item says Reliance’s earlier 3%+ declines were tied to weaker quarterly results, oil-and-gas softness, retail slowdown, and broader sentiment, while another report attributes a 3% fall to external factors with no company-specific announcement linked to it.reuters+1What likely caused the dropThe most consistent catalyst in the recent reports is earnings disappointment / segment weakness rather than a regulatory or management event.reuters+1One Reuters report specifically says the stock fell after missing profit estimates, driven by weakness in oil and gas and slower retail earnings growth.reutersAnother market note says the drop was largely due to external factors and explicitly states there was no company-specific announcement linked to that move.kotakneoSEBI, insider, and block-deal angleFrom the material available here, I do not see evidence of a fresh SEBI filing, insider transaction, or institutional block deal in the last 48 hours explaining this decline.tradingview+1The filing/disclosure page available in the search results is a general disclosures page, but the result set does not show a recent filing that would clearly explain today’s volume spike.tradingviewBecause no recent institutional print or insider trigger appears in the retrieved reports, the move looks more like distribution into weakness or broad profit-taking than a single-event panic.youtubekotakneoRetail panic or institutional distributionHeavy volume with no matching company announcement usually suggests institutional supply or a sector-led de-rating rather than pure retail panic.kotakneoyoutubeThe commentary in one report also points to technical/derivatives-driven unwinding and margin-related pressure, which fits institutional activity more than scattered retail selling.youtubeSo the best read is: not a clean company-specific shock; more likely sector weakness plus technical/institutional selling.reuters+1youtubePractical read for RELIANCE.NSIf this is today’s move, the first thing to check is whether the fall coincided with Nifty weakness, crude moves, or a brokerage note rather than a corporate announcement.kotakneoyoutubeIf you want the most precise intraday diagnosis, the next best evidence would be the exact trading timestamp, block-deal data, and the latest exchange disclosure snapshot.",
+  "scrape_duration_sec": 19.1,
+  "errors": []
+}
