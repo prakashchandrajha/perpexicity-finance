@@ -63,11 +63,11 @@ class PerplexityExtensionClient:
             # MASTER PROMPT for advanced "Double Cross Questions"
             query = (
                 f"As an expert Indian intraday trader, analyze this situation for {ticker}:\n"
-                f"CONTEXT & MARKET OBSERVATION: {context}\n\n"
-                f"Please provide the exact narrative explanation. Cross-reference global macro data, institutional flows, "
-                f"correlated assets, and recent breaking news to find the real edge.\n"
-                f"Why is this happening? Are there divergences between correlated assets?\n"
-                f"Do NOT give me current prices, PE ratios, or generic static stats (I have that on Zerodha). "
+                f"CONTEXT & MARKET OBSERVATION (INCLUDING FUNDAMENTALS): {context}\n\n"
+                f"Please provide the exact narrative explanation. Synthesize the fundamental data provided above "
+                f"with global macro data, institutional flows, correlated assets, and breaking news to find the real edge.\n"
+                f"Why is this happening? Are the weak/strong fundamentals structurally driving this news move?\n"
+                f"Do NOT waste time searching for generic static stats (I provided the necessary fundamentals above). "
                 f"I only need the 'WHY' — the raw, predictive narrative and causal chain."
             )
         else:

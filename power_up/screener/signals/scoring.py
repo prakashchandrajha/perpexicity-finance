@@ -45,7 +45,7 @@ def score_candidate(candidate: ScreenCandidate) -> ScreenCandidate:
     blocked: list[str] = []
     tags: list[str] = []
 
-    market_cap = parse_number(first_metric(row, ["market capitalization", "market cap"]))
+    market_cap = parse_number(first_metric(row, ["market capitalization", "market cap", "mar cap"]))
     price = parse_number(first_metric(row, ["current price", "cmp"]))
     pe = parse_number(first_metric(row, ["price to earning", "stock p/e", "p/e"]))
     roce = parse_number(first_metric(row, ["roce", "return on capital"]))
@@ -55,8 +55,8 @@ def score_candidate(candidate: ScreenCandidate) -> ScreenCandidate:
     interest_cover = parse_number(first_metric(row, ["interest coverage"]))
     sales_growth = parse_number(first_metric(row, ["sales growth", "sales growth 3years"]))
     profit_growth = parse_number(first_metric(row, ["profit growth", "profit growth 3years"]))
-    q_sales_growth = parse_number(first_metric(row, ["yoy quarterly sales growth", "qoq sales", "quarterly sales"]))
-    q_profit_growth = parse_number(first_metric(row, ["yoy quarterly profit growth", "qoq profits", "quarterly profit"]))
+    q_sales_growth = parse_number(first_metric(row, ["yoy quarterly sales growth", "qoq sales", "quarterly sales", "qtr sales var"]))
+    q_profit_growth = parse_number(first_metric(row, ["yoy quarterly profit growth", "qoq profits", "quarterly profit", "qtr profit var"]))
     promoter = parse_number(first_metric(row, ["promoter holding", "promoter"]))
 
     if market_cap is not None and market_cap >= 3000:

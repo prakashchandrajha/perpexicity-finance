@@ -22,6 +22,14 @@ def run_screen(screen_name: str, phase: Phase, context: str | None) -> Path:
     return save_phase_output(output, screen_name)
 
 
+def run_dynamic_query(query_string: str, phase: Phase, context: str | None) -> Path:
+    job = ScreenerJob(job_type="screen", phase=phase, screen_name="dynamic_query", query=query_string, context=context)
+    raw = ScreenerExtensionClient().submit_and_wait(job)
+    candidates = [score_candidate(candidate) for candidate in parse_screen_candidates(raw)]
+    output = PhaseOutput(phase=phase, context=context, screen_candidates=candidates, raw_result=raw)
+    return save_phase_output(output, "dynamic_query")
+
+
 def run_company(symbol: str, phase: Phase, context: str | None) -> Path:
     job = ScreenerJob(job_type="company", phase=phase, symbol=symbol.upper(), context=context)
     raw = ScreenerExtensionClient().submit_and_wait(job)
@@ -45,6 +53,11 @@ def main() -> None:
     screen_parser.add_argument("name", choices=sorted(DEFAULT_SCREENS))
     screen_parser.add_argument("--phase", default="pre_market", choices=["pre_market", "live_market", "post_market"])
     screen_parser.add_argument("--context")
+    
+    query_parser = subparsers.add_parser("query")
+    query_parser.add_argument("query_string", help="Raw Screener query string")
+    query_parser.add_argument("--phase", default="live_market", choices=["pre_market", "live_market", "post_market"])
+    query_parser.add_argument("--context")
 
     company_parser = subparsers.add_parser("company")
     company_parser.add_argument("symbol")
@@ -64,6 +77,9 @@ def main() -> None:
     logger.info("Source: {}", SCREENER_BASE_URL)
     if args.command == "screen":
         path = run_screen(args.name, args.phase, args.context)
+        print(f"SAVED TO: {path}")
+    elif args.command == "query":
+        path = run_dynamic_query(args.query_string, args.phase, args.context)
         print(f"SAVED TO: {path}")
     elif args.command == "company":
         path = run_company(args.symbol, args.phase, args.context)

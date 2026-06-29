@@ -13,6 +13,12 @@
   },
   "action": {
     "default_title": "Screener Bot Bridge"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.screener.in/*"],
+      "js": ["content.js"]
+    }
+  ]
 }
 

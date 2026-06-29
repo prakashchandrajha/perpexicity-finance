@@ -122,3 +122,8 @@ async function poll() {
 
 setInterval(poll, POLL_MS);
 poll();
+
+// Keep-alive heartbeat listener
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.ping === "keepAlive") sendResponse({ pong: true });
+});

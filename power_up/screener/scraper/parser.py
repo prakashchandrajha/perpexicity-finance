@@ -38,6 +38,9 @@ def parse_screen_candidates(raw: RawScreenerResult) -> list[ScreenCandidate]:
     candidates: list[ScreenCandidate] = []
     for row in rows[:50]:
         name = first_metric(row, ["name", "company"]) or "Unknown"
+        # Skip header rows that leaked through DOM extraction
+        if name.strip().lower() in ("name", "company", "unknown", "s.no."):
+            continue
         symbol = first_metric(row, ["symbol", "nse code", "bse code"]) or symbol_from_href(row.get("_href"))
         candidate = ScreenCandidate(
             name=name,
