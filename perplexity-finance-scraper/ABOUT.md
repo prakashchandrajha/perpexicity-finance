@@ -118,20 +118,19 @@ Keep one `perplexity.ai` tab open in Chrome at all times. The extension injects 
 | `./venv/bin/python main.py RELIANCE.NS --phase live_market --context "Stock crashed 4%"` | Context-aware prompt: asks for ROOT CAUSE, institutional vs retail, SEBI filings | Yes |
 | `./venv/bin/python main.py RELIANCE.NS --phase live_market --anomaly "Volume Spike" --price_level "₹3000"` | Auto-generates structured anomaly prompt | Yes |
 | `./venv/bin/python main.py RELIANCE.NS --phase earnings` | AI interpretation of latest earnings call: forward guidance, management tone, key risks | Yes |
-| `./venv/bin/python main.py RELIANCE.NS --phase post_market` | Same as pre_market, end-of-day snapshot | Yes |
 | `./venv/bin/python main.py MACRO --phase macro_scan` | Top 3 Indian sectors to rotate today based on US markets, crude, FII flows | Yes |
 | `./venv/bin/python main.py RELIANCE.NS --phase sentiment_check` | Local SQLite drift analysis — delta, reversal flags, catalyst persistence | **No (instant)** |
 
 ### scheduler.py — Full Trading Day Automation
 
 ```bash
-# Auto-run pre → live → post based on IST market hours
+# Auto-run pre_market once at 8 AM, then idle (live queries triggered by your bot)
 ./venv/bin/python scheduler.py RELIANCE.NS --mode auto
 
-# Run only pre-market
+# Run only pre-market immediately
 ./venv/bin/python scheduler.py RELIANCE.NS --mode pre
 
-# Test all 3 phases back-to-back
+# Test both phases back-to-back
 ./venv/bin/python scheduler.py RELIANCE.NS --mode test
 ```
 
@@ -156,7 +155,7 @@ Keep one `perplexity.ai` tab open in Chrome at all times. The extension injects 
 | `confidence` | float | 0.0 – 1.0 | Based on source count and data richness |
 | `key_levels` | dict | `{"support": "₹X", "resistance": "₹Y"}` | Price levels extracted from the narrative |
 
-### Finance Page Data (from `finance_page` object — pre/post market only)
+### Finance Page Data (from `finance_page` object — pre_market only)
 
 | Field | What It Contains |
 |-------|-----------------|
@@ -374,16 +373,7 @@ This is **the #1 feature Zerodha can't give you.** Your broker gives you raw EPS
 
 ---
 
-### 🕞 3:35 PM — Post-Market: "End-of-day snapshot"
 
-Same as pre_market — scrapes the /finance page again to capture end-of-day stats, updated news, and final analysis.
-
-```bash
-./venv/bin/python main.py RELIANCE.NS --phase post_market
-```
-
-**Where it saves:**
-- JSON → `data/2026-06-27/post_market_RELIANCE_NS.json`
 
 ---
 
@@ -423,16 +413,13 @@ Runs **entirely locally** from your SQLite database. Zero Perplexity queries bur
 Let the scheduler handle everything automatically based on IST market hours:
 
 ```bash
-# Fully automatic: runs pre at 8AM, waits through market, runs post at 3:35PM
+# Fully automatic: runs pre_market at 8AM, waits through live market for bot triggers
 ./venv/bin/python scheduler.py RELIANCE.NS --mode auto
 
-# Only pre-market
+# Only pre-market immediately
 ./venv/bin/python scheduler.py RELIANCE.NS --mode pre
 
-# Only post-market
-./venv/bin/python scheduler.py RELIANCE.NS --mode post
-
-# Test mode: runs all 3 phases back-to-back immediately
+# Test mode: runs both phases back-to-back immediately
 ./venv/bin/python scheduler.py RELIANCE.NS --mode test
 ```
 

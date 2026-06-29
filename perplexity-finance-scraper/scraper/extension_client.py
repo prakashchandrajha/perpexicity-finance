@@ -13,7 +13,7 @@ class PerplexityExtensionClient:
     def __init__(self):
         pass
 
-    def _wait_for_result(self, job_id: str, timeout: int = 60) -> dict:
+    def _wait_for_result(self, job_id: str, timeout: int = 150) -> dict:
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
@@ -60,69 +60,20 @@ class PerplexityExtensionClient:
         logger.info(f"[ExtClient] Queueing live_market job for {ticker}...")
         
         if context:
-            # Parse the context for situational awareness
-            ctx_lower = context.lower()
-            
-            if any(w in ctx_lower for w in ["crash", "plunge", "tank", "dump", "drop", "fell", "down"]):
-                # CRASH scenario — ask for the WHY, not the what
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: Explain the SPECIFIC ROOT CAUSE of this decline. "
-                    f"Is this due to company-specific news (earnings miss, regulatory action, management change) "
-                    f"or broader market/sector weakness? "
-                    f"Check if there are any SEBI filings, insider transactions, or institutional block deal "
-                    f"reports in the last 48 hours that explain this. "
-                    f"Is this retail panic or institutional distribution?"
-                )
-            elif any(w in ctx_lower for w in ["spike", "surge", "breakout", "rally", "up", "gap", "jump"]):
-                # BREAKOUT scenario
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: What is the SPECIFIC CATALYST behind this upward move? "
-                    f"Is this driven by institutional accumulation (check recent block deals/FII data), "
-                    f"a news event (M&A, upgrade, contract win), or sector rotation? "
-                    f"Is this a sustainable trend change or a short-squeeze/dead cat bounce?"
-                )
-            elif any(w in ctx_lower for w in ["volume", "unusual", "activity"]):
-                # HIGH VOLUME BUT FLAT scenario
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: Volume is abnormally high. Investigate whether this is "
-                    f"accumulation (smart money buying) or distribution (institutions offloading). "
-                    f"Check for any upcoming corporate actions, board meetings, or SEBI disclosures "
-                    f"that would explain unusual activity. Are there block deal reports?"
-                )
-            elif any(w in ctx_lower for w in ["earnings", "results", "quarterly", "q1", "q2", "q3", "q4"]):
-                # EARNINGS REACTION scenario
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: Summarize the key takeaways from the latest earnings announcement. "
-                    f"Did management raise or lower forward guidance? "
-                    f"What did the CEO say about growth outlook in the earnings call? "
-                    f"Is the stock reaction justified based on the actual numbers vs expectations?"
-                )
-            elif any(w in ctx_lower for w in ["sebi", "regulatory", "rbi", "compliance", "notice"]):
-                # REGULATORY scenario
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: What is the exact nature of the regulatory action? "
-                    f"Is this a show-cause notice, penalty, or investigation? "
-                    f"What is the historical precedent — how have similar regulatory actions "
-                    f"affected other Indian companies? Is this material to the business or procedural?"
-                )
-            else:
-                # GENERIC but still focused on narrative
-                query = (
-                    f"CONTEXT: {context}\n\n"
-                    f"For {ticker} stock: Search the web for breaking news explaining this specific movement. "
-                    f"Focus on the root cause — is it company-specific, sector-wide, or macro-driven? "
-                    f"What is the market narrative around this stock right now?"
-                )
+            # MASTER PROMPT for advanced "Double Cross Questions"
+            query = (
+                f"As an expert Indian intraday trader, analyze this situation for {ticker}:\n"
+                f"CONTEXT & MARKET OBSERVATION: {context}\n\n"
+                f"Please provide the exact narrative explanation. Cross-reference global macro data, institutional flows, "
+                f"correlated assets, and recent breaking news to find the real edge.\n"
+                f"Why is this happening? Are there divergences between correlated assets?\n"
+                f"Do NOT give me current prices, PE ratios, or generic static stats (I have that on Zerodha). "
+                f"I only need the 'WHY' — the raw, predictive narrative and causal chain."
+            )
         else:
             query = (
-                f"For {ticker} stock: What are the key narratives and catalysts driving this stock TODAY? "
-                f"Focus on news developments, analyst commentary, and institutional activity "
-                f"that explain the current price action. What is the market consensus on near-term direction?"
+                f"What is the single most important breaking narrative driving {ticker} right now? "
+                f"Ignore generic stats, give me the exact causal chain for today's price action."
             )
         
         try:
@@ -170,7 +121,7 @@ class PerplexityExtensionClient:
                 "query": query
             })
             job_id = res.json().get("job_id")
-            result = self._wait_for_result(job_id, timeout=90)
+            result = self._wait_for_result(job_id, timeout=150)
             
             if "error" in result:
                 return f"Error: {result['error']}"
@@ -192,7 +143,7 @@ class PerplexityExtensionClient:
                 "query": query
             })
             job_id = res.json().get("job_id")
-            result = self._wait_for_result(job_id, timeout=90)
+            result = self._wait_for_result(job_id, timeout=150)
             
             if "error" in result:
                 return f"Error: {result['error']}"

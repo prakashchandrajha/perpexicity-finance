@@ -1,0 +1,26 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-06-29T15:13:32.216751+00:00",
+  "date": "2026-06-29",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": -5,
+    "trend_direction": "BEARISH",
+    "catalyst_tags": [
+      "IPO",
+      "EARNINGS",
+      "FII",
+      "CRUDE",
+      "GEOPOLITICS",
+      "MERGER",
+      "INDEX"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {}
+  },
+  "live_catalyst_narrative": "Reliance is likely not reacting to crude the way an upstream oil stock would, because the market is pricing it as a refinery-and-consumer conglomerate with offsetting headwinds, not a pure oil beneficiary. The real narrative is: higher crude can hurt its refining/input economics, while near-term stock-specific overhangs and broader institutional risk appetite can easily neutralize the crude tailwind.business-standard+2Causal chainCrude up does not automatically mean Reliance up. For Reliance, higher oil often raises feedstock cost pressure and compresses refining / marketing sentiment, so the crude move can be read as a margin risk rather than a profit boost.freepressjournal+1The market has also been dealing with a broader foreign-outflow backdrop in Indian equities, which tends to cap large-cap beta names even when a sectoral macro input turns supportive.reuters+2Reliance-specific event risk has mattered more than the crude tape: Reuters reported approval of draft papers for Jio Platforms’ IPO, which shifts attention to structuring, valuation, and holdco discount questions instead of a clean “oil up = Reliance up” trade.reuters+2Reuters also flagged Reliance’s gross refining margins as expected to narrow, which reinforces the idea that the street is focusing on earnings quality, not just headline oil direction.reutersIf global oil is rising on geopolitical tension, that can still be bearish for Indian equities broadly because it raises inflation/import-bill concerns; in that setup, Reliance often behaves like a market-cap-heavy index stock that gets dragged by de-risking flows rather than a direct crude proxy.upstox+1What is suppressing itThe most plausible suppressor is margin compression fear in the refining/energy chain, not a lack of exposure to oil.business-standard+1The second suppressor is institutional positioning: persistent foreign selling in India has been strong enough to mute single-name positives unless there is a decisive catalyst.reuters+1The third is event overhang from Jio IPO papers, which can create valuation cross-currents: long-term value creation is positive, but near-term the market often waits for the exact deal structure, size, and implied sum-of-parts outcome before bidding the parent aggressively.reuters+2Correlated-asset divergencesIf crude is up but Brent-linked Indian energy equities are not outperforming, that is a tell that the move is being read as a cost shock, not a demand boom.reuters+1If Reliance is flat while upstream names or oil-service names move, that is a classic divergence showing the market is separating producer economics from downstream/refining economics.freepressjournal+1If the broader Nifty is also struggling under foreign outflows, Reliance may simply be absorbing index-level supply instead of expressing its own fundamental view.reuters+1Intraday readFor intraday trading, the edge is to treat Reliance as a stock whose direction is driven by the interaction of three forces: crude, institutional flow, and company-specific narrative. When crude rises but the stock does not, the market is usually saying “this oil move is not helping Reliance’s earnings mix enough to offset margin and positioning risk”.reuters+2The cleanest working thesis is: the crude rally is being interpreted as inflationary and margin-negative for Reliance, while Jio IPO uncertainty and persistent flow pressure are absorbing any positive beta.reuters+3",
+  "scrape_duration_sec": 27.1,
+  "errors": []
+}

@@ -91,16 +91,14 @@ class PerplexityFinanceSnapshot(BaseModel):
     daily_analysis: list[DailyAnalysisEntry] = Field(default_factory=list)
     news_headlines: list[NewsHeadline] = Field(default_factory=list)
     key_issues: list[KeyIssue] = Field(default_factory=list)
-    key_stats: Optional[KeyStats] = None
-    peers: list[PeerStock] = Field(default_factory=list)
     company_overview: str = ""
 
 
 class PhaseOutput(BaseModel):
-    """Final output for a single phase (pre_market / live_market / post_market).
-    This is what gets saved to disk and consumed by the trading bot project."""
+    """Final output for a single phase (pre_market / live_market).
+    """
     ticker: str
-    phase: str                             # "pre_market", "live_market", "post_market"
+    phase: str                             # "pre_market", "live_market"
     timestamp: str                         # ISO format with timezone
     date: str                              # "2026-06-27" for file naming
 

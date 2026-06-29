@@ -89,7 +89,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Perplexity Finance Intelligence Extractor")
     parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS, or MACRO for macro_scan)")
-    parser.add_argument("--phase", choices=["pre_market", "live_market", "post_market", "macro_scan", "earnings", "sentiment_check"], default="pre_market",
+    parser.add_argument("--phase", choices=["pre_market", "live_market", "macro_scan", "earnings", "sentiment_check"], default="pre_market",
                         help="Trading phase (default: pre_market)")
     parser.add_argument("--context", type=str, default=None,
                         help="Optional specific context for live market alerts.")

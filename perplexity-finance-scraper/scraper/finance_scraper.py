@@ -6,9 +6,7 @@
 #   1. Daily AI-generated market analysis (20+ days with source citations)
 #   2. Key Issues with Bull/Bear cases
 #   3. Breaking news headlines with dates/sources
-#   4. Key financial stats (P/E, EPS, Market Cap, etc.)
-#   5. Peer comparison data
-#   6. Company overview narrative
+#   4. Company overview narrative
 # ─────────────────────────────────────────────────────────────────────
 
 import re
@@ -21,8 +19,7 @@ from models.schema import (
     DailyAnalysisEntry,
     NewsHeadline,
     KeyIssue,
-    PeerStock,
-    KeyStats,
+    KeyIssue,
 )
 from scraper.browser import PerplexityBrowser
 
@@ -70,8 +67,6 @@ async def scrape_finance_page(html: str, ticker: str) -> PerplexityFinanceSnapsh
         daily_analysis=_extract_daily_analysis(chunks),
         news_headlines=_extract_news(chunks),
         key_issues=_extract_key_issues(chunks),
-        key_stats=_extract_key_stats(main),
-        peers=_extract_peers(chunks),
         company_overview=_extract_company_overview(chunks),
     )
 
@@ -79,8 +74,7 @@ async def scrape_finance_page(html: str, ticker: str) -> PerplexityFinanceSnapsh
         f"[FinanceScraper] Extracted: "
         f"{len(snapshot.daily_analysis)} daily analyses, "
         f"{len(snapshot.news_headlines)} news, "
-        f"{len(snapshot.key_issues)} key issues, "
-        f"{len(snapshot.peers)} peers"
+        f"{len(snapshot.key_issues)} key issues"
     )
 
     return snapshot
@@ -249,93 +243,6 @@ def _extract_key_issues(chunks: list[str]) -> list[KeyIssue]:
 
     return issues
 
-
-def _extract_key_stats(main: Tag) -> KeyStats:
-    """Extract key financial stats from [data-testid] elements."""
-    stats = {}
-    testid_els = main.select("[data-testid]")
-
-    for el in testid_els:
-        text = el.get_text(separator=" ", strip=True)
-        pairs = re.findall(
-            r'(Prev Close|Market Cap|Open|P/E Ratio|Day Range|Dividend Yield|52W Range|EPS|Volume)\s+'
-            r'([\S]+(?:\s*-\s*[\S]+)?)',
-            text
-        )
-        for key, val in pairs:
-            stats[key.lower().replace(" ", "_").replace("/", "")] = val.strip()
-
-    # Also extract from data-testid gap elements (Symbol, CEO, etc.)
-    for el in testid_els:
-        text = el.get_text(separator="|||", strip=True)
-        parts = text.split("|||")
-        if len(parts) == 2:
-            k, v = parts[0].strip(), parts[1].strip()
-            if k in ("Symbol", "IPO Date", "CEO", "Fulltime Employees",
-                      "Sector", "Industry", "Country", "Exchange"):
-                stats[k.lower().replace(" ", "_")] = v
-
-    return KeyStats(
-        prev_close=stats.get("prev_close", ""),
-        open=stats.get("open", ""),
-        day_range=stats.get("day_range", ""),
-        volume=stats.get("volume", ""),
-        market_cap=stats.get("market_cap", ""),
-        pe_ratio=stats.get("pe_ratio", ""),
-        eps=stats.get("eps", ""),
-        dividend_yield=stats.get("dividend_yield", ""),
-        week_52_range=stats.get("52w_range", ""),
-        symbol=stats.get("symbol", ""),
-        sector=stats.get("sector", ""),
-        industry=stats.get("industry", ""),
-        country=stats.get("country", ""),
-        exchange=stats.get("exchange", ""),
-        ceo=stats.get("ceo", ""),
-        fulltime_employees=stats.get("fulltime_employees", ""),
-        ipo_date=stats.get("ipo_date", ""),
-    )
-
-
-def _extract_peers(chunks: list[str]) -> list[PeerStock]:
-    """Extract peer stocks."""
-    peers = []
-    start_idx = None
-    for i, chunk in enumerate(chunks):
-        if chunk.strip() == "Peers":
-            start_idx = i + 1
-            break
-
-    if start_idx is None:
-        return []
-
-    i = start_idx
-    while i < len(chunks):
-        chunk = chunks[i].strip()
-        if chunk in ("See all", "Financial info", "Financial information provided by"):
-            break
-
-        if "Limited" in chunk or "Corporation" in chunk:
-            name = chunk
-            if i + 6 < len(chunks):
-                price = chunks[i + 1].strip()
-                symbol = chunks[i + 2].strip()
-                exchange = chunks[i + 4].strip()
-                sign = chunks[i + 5].strip()
-                change = chunks[i + 6].strip()
-
-                if PRICE_PATTERN.match(price):
-                    peers.append(PeerStock(
-                        name=name,
-                        price=price,
-                        symbol=symbol,
-                        exchange=exchange,
-                        change=f"{sign}{change}" if sign == "-" else change,
-                    ))
-                    i += 7
-                    continue
-        i += 1
-
-    return peers
 
 
 def _extract_company_overview(chunks: list[str]) -> str:

@@ -61,7 +61,7 @@ async function handleJob(job) {
     const { job_id, type, ticker, query } = job;
     let url = "";
     
-    if (type === "pre_market" || type === "post_market") {
+    if (type === "pre_market") {
         url = `https://www.perplexity.ai/finance/${ticker}`;
     } else if (type === "live_market" || type === "macro_scan") {
         url = "https://www.perplexity.ai/";
@@ -120,11 +120,11 @@ async function handleJob(job) {
         });
     });
 
-    // Short delay to let React hydrate
-    await new Promise(r => setTimeout(r, 2000));
+    // Delay to let React hydrate fully before extracting DOM or searching
+    await new Promise(r => setTimeout(r, 5000));
 
     try {
-        if (type === "pre_market" || type === "post_market") {
+        if (type === "pre_market") {
             const results = await chrome.scripting.executeScript({
                 target: { tabId: currentTabId },
                 func: extractStaticHtml
@@ -199,9 +199,9 @@ async function executeLiveSearch(query) {
                     if (inputElement) {
                         clearInterval(findInterval);
                         typeAndSubmit(inputElement);
-                    } else if (attempts > 10) {
+                    } else if (attempts > 40) { // 20 seconds
                         clearInterval(findInterval);
-                        resolve("Error: Could not find search bar.");
+                        resolve("Error: Could not find search bar (Timeout after 20s).");
                     }
                     attempts++;
                 } catch (e) {

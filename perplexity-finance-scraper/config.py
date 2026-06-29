@@ -21,12 +21,14 @@ ANSWER_TIMEOUT_MS = 45000      # 45s for AI answer streaming
 STREAM_STABILIZE_SEC = 3       # wait for AI stream to finish
 DOM_RENDER_WAIT_MS = 8000      # wait for finance page to fully render
 
-# ── Rate Limiting (Optimized for Speed) ─────────────────────────────
-# We dropped the heavy delays to allow fast, multi-ticker scaling.
-# If Perplexity blocks your IP, you will need to add a proxy pool to Camoufox.
-MIN_DELAY_BETWEEN_REQUESTS_SEC = 2    # Just a small human-like pause
-MAX_DELAY_BETWEEN_REQUESTS_SEC = 5    # Max wait
-AI_QUERY_DELAY_SEC = 2                # Small buffer between heavy AI queries
+# ── Bot Pacing (Extremely Important) ──────────────────────────────────
+# WARNING: Do not blast the API with 10 queries per minute! 
+# The Ghost Extension uses your real logged-in Chrome profile. If you loop 
+# queries too fast, Perplexity will flag your account. 
+# Keep your trading bot's live anomalies sparse (e.g. max 5-10 per day).
+MIN_DELAY_BETWEEN_REQUESTS_SEC = 2    
+MAX_DELAY_BETWEEN_REQUESTS_SEC = 5    
+AI_QUERY_DELAY_SEC = 2
 
 # ── Market Schedule (IST) ────────────────────────────────────────────
 # These define when each phase runs in the scheduler
@@ -34,10 +36,6 @@ PRE_MARKET_START_HOUR = 8
 PRE_MARKET_START_MIN = 0
 MARKET_OPEN_HOUR = 9
 MARKET_OPEN_MIN = 15
-MARKET_CLOSE_HOUR = 15
-MARKET_CLOSE_MIN = 30
-POST_MARKET_HOUR = 15
-POST_MARKET_MIN = 35
 
 # ── Live Polling ─────────────────────────────────────────────────────
 DEFAULT_LIVE_INTERVAL_MIN = 15  # how often to refresh during live market

@@ -23,7 +23,7 @@ class PerplexityTraderAPI:
         
         Args:
             ticker: The stock ticker (e.g., "RELIANCE.NS")
-            phase: "pre_market", "live_market", "post_market", "macro_scan", "earnings", "sentiment_check"
+            phase: "pre_market", "live_market", "macro_scan", "earnings", "sentiment_check"
             context: Optional context for live_market anomalies
             save_to_db: Whether to save the output to SQLite/JSON (default: True, needed for drift tracking)
             
@@ -43,7 +43,7 @@ class PerplexityTraderAPI:
             # Local only — zero Perplexity queries
             return compute_sentiment_drift(ticker)
             
-        elif phase in ["pre_market", "post_market"]:
+        elif phase == "pre_market":
             try:
                 html = self.client.fetch_finance_page_html(ticker)
                 finance_data = await scrape_finance_page(html, ticker)

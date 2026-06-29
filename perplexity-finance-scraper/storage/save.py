@@ -8,7 +8,7 @@
 #   │   ├── live_market_RELIANCE_NS_0930.json
 #   │   ├── live_market_RELIANCE_NS_0945.json
 #   │   ├── live_market_RELIANCE_NS_1000.json
-#   │   └── post_market_RELIANCE_NS.json
+#   │   └── live_market_RELIANCE_NS_1245.json
 #   └── 2026-06-28/
 #       └── ...
 # ─────────────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ def load_latest_phase_output(ticker: str, phase: str, date: str = "") -> PhaseOu
 
     Args:
         ticker: Stock ticker (e.g. "RELIANCE.NS")
-        phase: One of "pre_market", "live_market", "post_market"
+        phase: One of "pre_market", "live_market"
         date: Date string "YYYY-MM-DD". If empty, uses today.
 
     Returns:
