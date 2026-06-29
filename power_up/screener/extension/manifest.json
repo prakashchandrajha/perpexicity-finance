@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Screener Bot Bridge",
+  "version": "0.1.0",
+  "description": "Runs queued Screener.in extraction jobs for the local trading-bot intelligence server.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "https://www.screener.in/*",
+    "http://127.0.0.1:8776/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Screener Bot Bridge"
+  }
+}
+
