@@ -23,10 +23,18 @@ setBadge('white');
 // Keep-Alive listener to prevent MV3 Service Worker suspension
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "KEEP_ALIVE") {
-        // Simply receiving this resets the idle timer.
-        // Send a dummy response to close the port.
         sendResponse({ ok: true });
     }
+});
+
+// Service Worker initialized
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "KEEP_ALIVE") {
+        // Keep service worker awake
+        sendResponse({status: "ok"});
+    }
+    return true;
 });
 
 async function pollForJobs() {

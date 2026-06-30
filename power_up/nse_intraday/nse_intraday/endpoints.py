@@ -35,7 +35,7 @@ CATALOG: list[EndpointSeed] = [
     ),
     EndpointSeed(
         "indices",
-        "/api/equity-stockIndices",
+        "/api/equity-stock-indices",
         "Index constituents with OHLC, last price, change, volume, value, FNO/SLB metadata.",
         {"index": "NIFTY 50"},
         update_frequency="live",
@@ -44,7 +44,7 @@ CATALOG: list[EndpointSeed] = [
     ),
     EndpointSeed(
         "indices",
-        "/api/equity-stockIndices",
+        "/api/equity-stock-indices",
         "Bank Nifty constituents and banking-sector pressure.",
         {"index": "NIFTY BANK"},
         update_frequency="live",
@@ -53,7 +53,7 @@ CATALOG: list[EndpointSeed] = [
     ),
     EndpointSeed(
         "indices",
-        "/api/equity-stockIndices",
+        "/api/equity-stock-indices",
         "IT-sector constituents and sector pressure.",
         {"index": "NIFTY IT"},
         update_frequency="live",
@@ -62,7 +62,7 @@ CATALOG: list[EndpointSeed] = [
     ),
     EndpointSeed(
         "indices",
-        "/api/equity-stockIndices",
+        "/api/equity-stock-indices",
         "Auto-sector constituents and sector pressure.",
         {"index": "NIFTY AUTO"},
         update_frequency="live",
@@ -111,20 +111,24 @@ CATALOG: list[EndpointSeed] = [
     EndpointSeed(
         "option_chain",
         "/api/option-chain-indices",
-        "Index option chain with strike-wise CE/PE OI, change in OI, IV, volume, LTP.",
+        "Index option chain with strike-wise CE/PE OI, change in OI, IV, volume, LTP. NOTE: Currently blocked by Cloudflare for requests-based access.",
         {"symbol": "NIFTY"},
         update_frequency="live",
         bot_value="OI build-up, PCR, max pain candidates, gamma zones",
         priority=1,
+        collect_by_default=False,
+        probe_by_default=False,
     ),
     EndpointSeed(
         "option_chain",
         "/api/option-chain-indices",
-        "Bank Nifty option chain.",
+        "Bank Nifty option chain. NOTE: Currently blocked by Cloudflare for requests-based access.",
         {"symbol": "BANKNIFTY"},
         update_frequency="live",
         bot_value="banking index OI, IV, and strike pressure",
         priority=1,
+        collect_by_default=False,
+        probe_by_default=False,
     ),
     EndpointSeed(
         "option_chain",

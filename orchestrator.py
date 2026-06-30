@@ -114,7 +114,7 @@ def cmd_pre_market() -> None:
 
 def load_latest_screener_context(base_symbol: str) -> tuple[str, float, str, str]:
     snapshot_rows = query_screener_db(
-        "SELECT risk_bucket, position_size_multiplier, blocked_reasons, ratios, risk_flags "
+        "SELECT risk_bucket, position_size_multiplier, blocked_reasons, ratios, risk_flags, financial_tables "
         "FROM company_snapshots WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1",
         (base_symbol,),
     )
@@ -128,15 +128,36 @@ def load_latest_screener_context(base_symbol: str) -> tuple[str, float, str, str
         )
 
     if snapshot_rows:
-        risk, size, blocked, ratios_json, flags_json = snapshot_rows[0]
+        risk, size, blocked, ratios_json, flags_json, tables_json = snapshot_rows[0]
         try:
             ratios = json.loads(ratios_json) if ratios_json else {}
             flags = json.loads(flags_json) if flags_json else []
+            tables = json.loads(tables_json) if tables_json else []
         except Exception:
-            ratios, flags = {}, []
+            ratios, flags, tables = {}, [], []
 
         context = "\n--- SCREENER FUNDAMENTAL DATA ---\n"
         context += f"Company ratios: {json.dumps(ratios, ensure_ascii=False)}\n"
+        
+        # Extract Earnings Momentum from Quarters table
+        if tables:
+            for t in tables:
+                if t.get("heading", "").lower().startswith("quarter"):
+                    rows = t.get("rows", [])
+                    headers = t.get("headers", [])
+                    if headers and len(headers) >= 3 and len(rows) >= 1:
+                        last_q = headers[-1]
+                        prev_q = headers[-2]
+                        sales_row = next((r for r in rows if r.get("col_1", "").lower().startswith("sales")), None)
+                        profit_row = next((r for r in rows if r.get("col_1", "").lower().startswith("net profit")), None)
+                        
+                        context += f"\nEarnings Momentum:\n"
+                        if sales_row:
+                            context += f"- Sales: {prev_q} = {sales_row.get(prev_q, 'N/A')} Cr -> {last_q} = {sales_row.get(last_q, 'N/A')} Cr\n"
+                        if profit_row:
+                            context += f"- Net Profit: {prev_q} = {profit_row.get(prev_q, 'N/A')} Cr -> {last_q} = {profit_row.get(last_q, 'N/A')} Cr\n"
+                    break
+
         if flags:
             context += f"Risk flags: {', '.join(flags)}\n"
         return risk, float(size or 0), blocked or "[]", context
@@ -168,7 +189,7 @@ def load_latest_screener_context(base_symbol: str) -> tuple[str, float, str, str
 
 
 def fetch_trendlyne_context(ticker: str) -> str:
-    print("\n[2] Fetching institutional context from Trendlyne MarketMind...")
+    print("\n[2] Fetching institutional context from Trendlyne...")
     try:
         result = run_python(
             TRENDLYNE_PYTHON,
@@ -188,20 +209,154 @@ def fetch_trendlyne_context(ticker: str) -> str:
                 if t_file.exists():
                     with open(t_file, "r", encoding="utf-8") as file:
                         t_data = json.load(file)
+
                     structured = t_data.get("structured_context", {})
                     response = t_data.get("response", "")
-                    print("Trendlyne context collected.")
+                    tables = t_data.get("tables", [])
+                    print(f"✅ Trendlyne DOM Extracted ({len(tables)} tables).")
                     return (
                         "\n--- TRENDLYNE INSTITUTIONAL DATA ---\n"
                         f"Structured context: {json.dumps(structured, ensure_ascii=False)}\n"
-                        f"MarketMind response: {response}\n"
+                        f"DOM Extract: {response}\n"
                     )
 
-        print("Trendlyne query succeeded but no data file was returned.")
+        print("⚠️ Trendlyne query succeeded but no data file was returned.")
     except subprocess.CalledProcessError as exc:
-        print(f"Trendlyne query failed. Ensure the extension is running and logged in. Error: {exc.stderr}")
+        print(f"⚠️ Trendlyne query failed. Ensure the extension is running and logged in. Error: {exc.stderr}")
     except Exception as exc:
-        print(f"Failed to get Trendlyne context: {exc}")
+        print(f"⚠️ Failed to get Trendlyne context: {exc}")
+    return ""
+
+
+def fetch_nse_context(base_symbol: str) -> str:
+    """Collect live NSE exchange data — market status, breadth, pre-open, most active."""
+    print("\n[2.5] Collecting NSE exchange intelligence (market status, breadth, activity)...")
+    NSE_INTRADAY_DIR = ROOT_DIR / "power_up" / "nse_intraday"
+    NSE_DB = NSE_INTRADAY_DIR / "data" / "nse_intraday.db"
+
+    try:
+        nse_python = resolve_python(NSE_INTRADAY_DIR, PERPLEXITY_PYTHON)
+        result = subprocess.run(
+            [str(nse_python), "main.py", "collect", "--gold-only"],
+            cwd=NSE_INTRADAY_DIR,
+            env=project_env(NSE_INTRADAY_DIR),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        if not NSE_DB.exists():
+            print("⚠️ NSE collection ran but no database was created.")
+            return ""
+
+        with sqlite3.connect(NSE_DB) as conn:
+            cursor = conn.cursor()
+            pieces = []
+            SECTOR_MAP = {
+                "TCS": "NIFTY IT",
+                "INFY": "NIFTY IT",
+                "HCLTECH": "NIFTY IT",
+                "WIPRO": "NIFTY IT",
+                "TECHM": "NIFTY IT",
+                "HDFCBANK": "NIFTY BANK",
+                "ICICIBANK": "NIFTY BANK",
+                "SBIN": "NIFTY BANK",
+                "AXISBANK": "NIFTY BANK",
+                "KOTAKBANK": "NIFTY BANK",
+                "TATAMOTORS": "NIFTY AUTO",
+                "M&M": "NIFTY AUTO",
+                "MARUTI": "NIFTY AUTO",
+                "BAJAJ-AUTO": "NIFTY AUTO",
+            }
+            target_index = SECTOR_MAP.get(base_symbol, "NIFTY 50")
+
+            # 1. Market status
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='market_status' ORDER BY observed_at DESC LIMIT 1"
+            )
+            row = cursor.fetchone()
+            if row:
+                status = json.loads(row[0])
+                pieces.append(f"Market Status: {status.get('market', 'N/A')} — {status.get('marketStatus', 'N/A')}")
+
+            # 2. Breadth (advances/declines from allIndices for target_index)
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='indices' AND signal_type='breadth' "
+                "AND index_name=? ORDER BY observed_at DESC LIMIT 1",
+                (target_index,)
+            )
+            row = cursor.fetchone()
+            if row:
+                idx = json.loads(row[0])
+                pieces.append(
+                    f"{target_index} Sector Breadth: {idx.get('last', 'N/A')} ({idx.get('percentChange', idx.get('pChange', 'N/A'))}%) "
+                    f"| Advances: {idx.get('advances', 'N/A')} Declines: {idx.get('declines', 'N/A')}"
+                )
+
+            # 3. Check if this specific symbol is in the most active list
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='live_analysis' AND symbol=? "
+                "ORDER BY observed_at DESC LIMIT 1",
+                (base_symbol,),
+            )
+            row = cursor.fetchone()
+            if row:
+                active = json.loads(row[0])
+                pieces.append(
+                    f"NSE Most Active: {base_symbol} is in the most active list — "
+                    f"Volume: {active.get('totalTradedVolume', 'N/A')}, Value: {active.get('totalTradedValue', 'N/A')}"
+                )
+
+            # 4. Pre-open gap for this symbol
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='pre_open' AND signal_type='gap_context' "
+                "AND symbol=? ORDER BY observed_at DESC LIMIT 1",
+                (base_symbol,),
+            )
+            row = cursor.fetchone()
+            if row:
+                pre = json.loads(row[0])
+                pieces.append(
+                    f"Pre-Open Gap: {base_symbol} opened at {pre.get('iep', 'N/A')} "
+                    f"({pre.get('gap_pct', 'N/A')}% from prev close {pre.get('previousClose', 'N/A')})"
+                )
+
+            # 5. Top 5 gainers
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='live_analysis' AND signal_type='momentum_gainer' "
+                "AND index_name='NIFTY' ORDER BY observed_at DESC LIMIT 5"
+            )
+            gainer_rows = cursor.fetchall()
+            if gainer_rows:
+                gainer_names = []
+                for r in gainer_rows:
+                    g = json.loads(r[0])
+                    gainer_names.append(f"{g.get('symbol', '?')} ({g.get('pChange', '?')}%)")
+                pieces.append(f"NIFTY Top Gainers: {', '.join(gainer_names)}")
+
+            # 6. Corporate announcements for this symbol
+            cursor.execute(
+                "SELECT payload_json FROM gold_snapshots WHERE category='corporate' AND symbol=? "
+                "ORDER BY observed_at DESC LIMIT 3",
+                (base_symbol,),
+            )
+            corp_rows = cursor.fetchall()
+            if corp_rows:
+                for r in corp_rows:
+                    c = json.loads(r[0])
+                    pieces.append(f"Corporate Filing: {c.get('sub', c.get('subject', 'N/A'))}")
+
+            if pieces:
+                nse_context = "\n--- NSE EXCHANGE INTELLIGENCE ---\n" + "\n".join(pieces) + "\n"
+                print(f"✅ NSE: Collected {len(pieces)} exchange data points.")
+                return nse_context
+            else:
+                print("⚠️ NSE collection produced no relevant gold for this symbol.")
+
+    except subprocess.TimeoutExpired:
+        print("⚠️ NSE collection timed out (30s). Skipping.")
+    except Exception as exc:
+        print(f"⚠️ NSE context failed: {exc}")
     return ""
 
 
@@ -226,9 +381,16 @@ def cmd_anomaly(ticker: str, context: str) -> None:
         return
 
     trendlyne_context = fetch_trendlyne_context(ticker)
+    nse_context = fetch_nse_context(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context
+    ai_directive = (
+        "\n--- AI DIRECTIVE ---\n"
+        "I have already provided the fundamental data and real-time exchange data above. "
+        "DO NOT hallucinate or guess numbers. Your ONLY job is to search the web for the latest "
+        f"breaking news, brokerage upgrades/downgrades, block deals, and macro/sector tailwinds for {ticker} today."
+    )
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(

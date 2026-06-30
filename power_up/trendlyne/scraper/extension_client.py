@@ -43,7 +43,7 @@ class TrendlyneExtensionClient:
                         result = data.get("result", {})
                         if "error" in result:
                             raise TrendlyneClientError(f"Extension error: {result['error']}")
-                        return result.get("text", "")
+                        return result
             except requests.RequestException:
                 pass
                 

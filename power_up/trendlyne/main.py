@@ -99,9 +99,18 @@ def main() -> None:
     client = TrendlyneExtensionClient()
 
     try:
-        response = client.ask_marketmind(args.ticker, args.query)
-        structured_context = extract_trendlyne_signals(response)
-        logger.success(f"\n--- TRENDLYNE MARKETMIND AI RESPONSE ---\n{response}\n")
+        response_data = client.ask_marketmind(args.ticker, args.query)
+        if isinstance(response_data, dict):
+            raw_text = response_data.get("text", "")
+            tables = response_data.get("tables", [])
+            response_str = f"{raw_text}\n\nExtracted {len(tables)} tables."
+        else:
+            raw_text = str(response_data)
+            tables = []
+            response_str = raw_text
+
+        structured_context = extract_trendlyne_signals(raw_text)
+        logger.success(f"\n--- TRENDLYNE DOM EXTRACT ---\n{response_str}\n")
         logger.info(f"Structured context: {structured_context}")
 
         root_dir = Path(__file__).resolve().parent
@@ -116,7 +125,8 @@ def main() -> None:
             "timestamp": datetime.now().isoformat(),
             "query": args.query,
             "structured_context": structured_context,
-            "response": response,
+            "response": response_str,
+            "tables": tables,
         }
 
         with open(file_path, "w", encoding="utf-8") as file:

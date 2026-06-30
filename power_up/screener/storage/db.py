@@ -52,7 +52,8 @@ def init_db():
             risk_flags TEXT,           -- JSON list
             allowed_bot_actions TEXT,  -- JSON list
             blocked_reasons TEXT,      -- JSON list
-            ratios TEXT                -- JSON dict
+            ratios TEXT,               -- JSON dict
+            financial_tables TEXT      -- JSON dict
         )
     """)
     
@@ -109,8 +110,8 @@ def insert_company_snapshot(snapshot: CompanySnapshot, timestamp: str = None):
         INSERT INTO company_snapshots (
             timestamp, symbol, name, bot_score, risk_bucket, position_size_hint, 
             position_size_multiplier, risk_flags, allowed_bot_actions, 
-            blocked_reasons, ratios
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            blocked_reasons, ratios, financial_tables
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         timestamp,
         snapshot.symbol,
@@ -122,7 +123,8 @@ def insert_company_snapshot(snapshot: CompanySnapshot, timestamp: str = None):
         json.dumps(snapshot.risk_flags),
         json.dumps(snapshot.allowed_bot_actions),
         json.dumps(snapshot.blocked_reasons),
-        json.dumps(snapshot.ratios)
+        json.dumps(snapshot.ratios),
+        json.dumps(snapshot.financial_tables) if hasattr(snapshot, 'financial_tables') else "{}"
     ))
     
     conn.commit()
