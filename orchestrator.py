@@ -7,7 +7,15 @@ import os
 import sqlite3
 import subprocess
 import sys
+import uuid
 from pathlib import Path
+from typing import Any
+
+try:
+    from tradingview_ta import TA_Handler, Interval
+    HAS_TRADINGVIEW = True
+except ImportError:
+    HAS_TRADINGVIEW = False
 
 ROOT_DIR = Path(__file__).resolve().parent
 SCREENER_DIR = ROOT_DIR / "power_up" / "screener"
@@ -360,6 +368,51 @@ def fetch_nse_context(base_symbol: str) -> str:
     return ""
 
 
+def fetch_tradingview_technicals(base_symbol: str) -> str:
+    """Collect technical analysis ratings and indicators from TradingView."""
+    if not HAS_TRADINGVIEW:
+        return ""
+    
+    print("\n[2.8] Fetching TradingView Technicals (Daily & 15m)...")
+    try:
+        # Fetch Daily
+        handler_daily = TA_Handler(
+            symbol=base_symbol,
+            screener="india",
+            exchange="NSE",
+            interval=Interval.INTERVAL_1_DAY
+        )
+        daily_analysis = handler_daily.get_analysis()
+        
+        # Fetch 15-minute
+        handler_15m = TA_Handler(
+            symbol=base_symbol,
+            screener="india",
+            exchange="NSE",
+            interval=Interval.INTERVAL_15_MINUTES
+        )
+        m15_analysis = handler_15m.get_analysis()
+        
+        context = "\n--- TRADINGVIEW TECHNICALS ---\n"
+        context += "Daily (Swing) Momentum:\n"
+        context += f"Rating: {daily_analysis.summary.get('RECOMMENDATION', 'UNKNOWN')} "
+        context += f"(Buy: {daily_analysis.summary.get('BUY', 0)}, Sell: {daily_analysis.summary.get('SELL', 0)})\n"
+        context += f"RSI: {round(daily_analysis.indicators.get('RSI', 0), 2)} | "
+        context += f"MACD: {round(daily_analysis.indicators.get('MACD.macd', 0), 2)}\n\n"
+        
+        context += "15-Minute (Intraday) Momentum:\n"
+        context += f"Rating: {m15_analysis.summary.get('RECOMMENDATION', 'UNKNOWN')} "
+        context += f"(Buy: {m15_analysis.summary.get('BUY', 0)}, Sell: {m15_analysis.summary.get('SELL', 0)})\n"
+        context += f"RSI: {round(m15_analysis.indicators.get('RSI', 0), 2)} | "
+        context += f"MACD: {round(m15_analysis.indicators.get('MACD.macd', 0), 2)}\n"
+        
+        print("✅ TradingView: Collected Daily and 15m technical signals.")
+        return context
+    except Exception as exc:
+        print(f"⚠️ TradingView technicals failed: {exc}")
+        return ""
+
+
 def cmd_anomaly(ticker: str, context: str) -> None:
     print(f"=== ORCHESTRATOR: LIVE ANOMALY FOR {ticker} ===")
     base_symbol = normalize_symbol(ticker)
@@ -382,15 +435,18 @@ def cmd_anomaly(ticker: str, context: str) -> None:
 
     trendlyne_context = fetch_trendlyne_context(ticker)
     nse_context = fetch_nse_context(base_symbol)
+    tv_context = fetch_tradingview_technicals(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
     ai_directive = (
         "\n--- AI DIRECTIVE ---\n"
-        "I have already provided the fundamental data and real-time exchange data above. "
-        "DO NOT hallucinate or guess numbers. Your ONLY job is to search the web for the latest "
-        f"breaking news, brokerage upgrades/downgrades, block deals, and macro/sector tailwinds for {ticker} today."
+        "I've shared the fundamental and real-time exchange data above. "
+        "Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
+        "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals.\n"
+        "When you wrap up your analysis, I'd really appreciate it if you could just drop your final sentiment score in a simple `<SCORE>X</SCORE>` tag (where X is -5 for Strong Sell to +5 for Strong Buy). "
+        "Also, just let me know the expected duration in a `<TIMEFRAME>Y</TIMEFRAME>` tag (like 'Intraday' or '1-3 Days'). Thanks!"
     )
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + ai_directive
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + tv_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(
@@ -430,6 +486,57 @@ def cmd_custom_screen(query: str) -> None:
     print("\n=== CUSTOM SCREEN ROUTINE COMPLETE ===")
 
 
+def cmd_live_loop(scanner_name: str, interval_min: int) -> None:
+    print(f"=== ORCHESTRATOR: LIVE HUNTING LOOP ({scanner_name}) ===")
+    import time
+    
+    CHARTINK_DIR = ROOT_DIR / "power_up" / "chartink"
+    CHARTINK_PYTHON = resolve_python(CHARTINK_DIR, PERPLEXITY_PYTHON)
+    
+    while True:
+        print(f"\n[{time.strftime('%H:%M:%S')}] Polling Chartink for breakouts...")
+        
+        run_python(CHARTINK_PYTHON, ["main.py", "scan", scanner_name], CHARTINK_DIR)
+        
+        json_path = CHARTINK_DIR / "data" / f"{scanner_name}_latest.json"
+        if not json_path.exists():
+            print("Failed to get Chartink data.")
+        else:
+            with open(json_path, "r") as f:
+                data = json.load(f)
+                
+            stocks = data.get("stocks", [])
+            if not stocks:
+                print("No breakout stocks found right now.")
+            else:
+                print(f"Found {len(stocks)} breakout candidates. Validating fundamentals...")
+                
+                # Sort by change_pct to get top 2
+                stocks = sorted(stocks, key=lambda x: x.get("change_pct", 0), reverse=True)[:2]
+                
+                for stock in stocks:
+                    symbol = stock["symbol"]
+                    ticker = with_nse_suffix(symbol)
+                    print(f"\n--- Investigating: {ticker} ---")
+                    
+                    risk, size, blocked, fundamental_context = load_latest_screener_context(symbol)
+                    if risk == "unknown":
+                        print(f"No local Screener data for {symbol}. Fetching on-the-fly...")
+                        run_python(SCREENER_PYTHON, ["main.py", "company", symbol, "--phase", "live_market"], SCREENER_DIR)
+                        risk, size, blocked, fundamental_context = load_latest_screener_context(symbol)
+                    
+                    if risk == "high" or (blocked and blocked != "[]"):
+                        print(f"❌ REJECTED: {symbol} has High Fundamental Risk (Risk: {risk}, Blocked: {blocked}). Skipping.")
+                        continue
+                        
+                    print(f"✅ ACCEPTED: {symbol} is fundamentally safe. Triggering anomaly workflow...")
+                    context = f"This stock just triggered a live intraday breakout on the '{scanner_name}' Chartink scanner. Volume: {stock.get('volume')}, Price Change: {stock.get('change_pct')}%. Find out WHY it is breaking out right now."
+                    cmd_anomaly(ticker, context)
+                    
+        print(f"\nSleeping for {interval_min} minutes before next scan...")
+        time.sleep(interval_min * 60)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Master Orchestrator - Trading Bot Brain")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -443,6 +550,10 @@ def main() -> None:
     custom_parser = subparsers.add_parser("custom-screen", help="Run a dynamic query and investigate results")
     custom_parser.add_argument("query", help="Screener query string")
 
+    live_loop_parser = subparsers.add_parser("live-loop", help="Run a continuous Chartink breakout hunting loop")
+    live_loop_parser.add_argument("scanner", help="Chartink scanner name (e.g. 15_min_volume_breakout)")
+    live_loop_parser.add_argument("--interval", type=int, default=5, help="Minutes to sleep between scans")
+
     args = parser.parse_args()
 
     if args.command == "pre-market":
@@ -451,6 +562,8 @@ def main() -> None:
         cmd_anomaly(args.ticker, args.context)
     elif args.command == "custom-screen":
         cmd_custom_screen(args.query)
+    elif args.command == "live-loop":
+        cmd_live_loop(args.scanner, args.interval)
 
 
 if __name__ == "__main__":

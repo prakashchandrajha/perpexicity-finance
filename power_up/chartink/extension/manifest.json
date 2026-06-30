@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Chartink Intraday Bridge",
+  "version": "1.0",
+  "description": "Scrapes live technical breakouts from Chartink for the trading bot.",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://chartink.com/*",
+    "http://127.0.0.1:8777/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

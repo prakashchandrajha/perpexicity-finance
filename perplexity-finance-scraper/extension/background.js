@@ -220,6 +220,24 @@ async function executeLiveSearch(query) {
 
             function typeAndSubmit(inputElement) {
                 try {
+                    // Attempt to auto-enable Pro Search
+                    try {
+                        const allButtons = Array.from(document.querySelectorAll('button'));
+                        const proToggle = allButtons.find(b => {
+                            const isProText = (b.innerText || "").toLowerCase().includes('pro');
+                            const parentText = (b.parentElement && b.parentElement.innerText || "").toLowerCase();
+                            const isUnchecked = b.getAttribute('aria-checked') === 'false';
+                            const isSwitch = b.getAttribute('role') === 'switch';
+                            return (isProText && isUnchecked) || (isSwitch && isUnchecked && parentText.includes('pro'));
+                        });
+                        if (proToggle) {
+                            proToggle.click();
+                            console.log("Enabled Pro Search");
+                        }
+                    } catch (e) {
+                        console.log("Could not toggle Pro Search", e);
+                    }
+
                     // Holy Grail React Input Injection
                     inputElement.focus();
                     if (inputElement.isContentEditable) {

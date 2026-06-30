@@ -110,7 +110,7 @@ async function processJob(job) {
                         let relevantBlocks = blocks.filter(b => b.toLowerCase().includes('delivery') || b.toLowerCase().includes('fii') || b.toLowerCase().includes('deal'));
                         
                         return {
-                            text: `Trendlyne DOM Extract for ${sym}:\n\n` + relevantBlocks.join("\n\n---\n\n") + `\n\nRaw Excerpt: ${rawText.slice(0, 5000)}`,
+                            text: `Trendlyne DOM Extract for ${sym}:\n\n` + relevantBlocks.join("\n\n---\n\n"),
                             tables: tables
                         };
                     } catch (e) {

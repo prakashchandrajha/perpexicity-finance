@@ -10,9 +10,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://trendlyne.com/marketmind*"],
+      "matches": ["https://trendlyne.com/*"],
       "js": ["content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "current_expiry": "30-Jun-2026",
+  "max_call_oi_strike": 23900,
+  "max_put_oi_strike": 23850,
+  "pcr": 0.823,
+  "resistance_level": 23900,
+  "rows_parsed": 1990,
+  "sentiment": "BEARISH",
+  "source": "dom",
+  "support_level": 23850,
+  "symbol": "RELIANCE",
+  "total_call_oi": 42410964,
+  "total_put_oi": 34912470,
+  "underlying_price": 23865.75
+}

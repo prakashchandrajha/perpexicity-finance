@@ -39,6 +39,16 @@ class PerplexityTraderAPI:
 
         logger.info(f"[TraderAPI] Starting {phase.upper()} for {ticker} (context: {context})")
 
+        # Fetch Options Chain Data for Indices or Stocks
+        is_index = ticker in ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY", "NIFTYNXT50"]
+        symbol = ticker.split(".")[0] # Strip .NS if present
+        options_data = {}
+        
+        if phase in ["pre_market", "live_market"]:
+            options_data = self.client.fetch_options_chain(symbol, is_index)
+            if "error" in options_data:
+                errors.append(f"Options chain error: {options_data['error']}")
+
         if phase == "sentiment_check":
             # Local only — zero Perplexity queries
             return compute_sentiment_drift(ticker)
@@ -63,7 +73,7 @@ class PerplexityTraderAPI:
                 
         else:
             # live_market
-            live_narrative = self.client.ask_finance_live(ticker, context)
+            live_narrative = self.client.ask_finance_live(ticker, context, options_data)
             if not live_narrative or "Error:" in live_narrative:
                 errors.append(f"Live query failed: {live_narrative}")
 
@@ -76,6 +86,22 @@ class PerplexityTraderAPI:
                 live_narrative=live_narrative
             )
         
+        if phase in ["pre_market", "live_market"] and "error" not in options_data:
+            signals.options_data = options_data
+            if options_data.get("support_level"):
+                signals.key_levels["options_support"] = str(options_data["support_level"])
+            if options_data.get("resistance_level"):
+                signals.key_levels["options_resistance"] = str(options_data["resistance_level"])
+            
+            # Adjust AI sentiment based on options data
+            pcr = options_data.get("pcr", 1.0)
+            if pcr > 1.2:
+                signals.sentiment_score = min(5, signals.sentiment_score + 1)
+                signals.trend_direction = "BULLISH" if signals.trend_direction == "MIXED" else signals.trend_direction
+            elif pcr < 0.8:
+                signals.sentiment_score = max(-5, signals.sentiment_score - 1)
+                signals.trend_direction = "BEARISH" if signals.trend_direction == "MIXED" else signals.trend_direction
+
         # Build Output Object
         duration = time.time() - start_time
         now_utc = datetime.now(timezone.utc)

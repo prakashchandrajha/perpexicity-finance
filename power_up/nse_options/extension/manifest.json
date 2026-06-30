@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "NSE Intraday Bridge",
+  "version": "1.0",
+  "description": "Bypasses Cloudflare to extract live Option Chain JSON.",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://www.nseindia.com/*",
+    "http://127.0.0.1:8778/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

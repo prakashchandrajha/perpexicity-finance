@@ -1,0 +1,45 @@
+{
+  "ticker": "NIFTY",
+  "phase": "pre_market",
+  "timestamp": "2026-06-30T18:20:04.524799+00:00",
+  "date": "2026-06-30",
+  "finance_page": {
+    "ticker": "NIFTY",
+    "scraped_at": "2026-06-30T18:19:57.498111+00:00",
+    "source_url": "https://www.perplexity.ai/finance/NIFTY",
+    "daily_analysis": [],
+    "news_headlines": [],
+    "key_issues": [],
+    "company_overview": ""
+  },
+  "signals": {
+    "sentiment_score": 0,
+    "trend_direction": "MIXED",
+    "timeframe": null,
+    "catalyst_tags": [],
+    "urgency": "NORMAL",
+    "confidence": 0.0,
+    "key_levels": {
+      "options_support": "23850",
+      "options_resistance": "23900"
+    },
+    "options_data": {
+      "current_expiry": "30-Jun-2026",
+      "max_call_oi_strike": 23900,
+      "max_put_oi_strike": 23850,
+      "pcr": 0.824,
+      "resistance_level": 23900,
+      "rows_parsed": 2086,
+      "sentiment": "BEARISH",
+      "source": "dom",
+      "support_level": 23850,
+      "symbol": "NIFTY",
+      "total_call_oi": 45580332,
+      "total_put_oi": 37547762,
+      "underlying_price": 23865.75
+    }
+  },
+  "live_catalyst_narrative": null,
+  "scrape_duration_sec": 16.2,
+  "errors": []
+}

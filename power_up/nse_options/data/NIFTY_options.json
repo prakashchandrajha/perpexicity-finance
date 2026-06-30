@@ -1,0 +1,15 @@
+{
+  "current_expiry": "30-Jun-2026",
+  "max_call_oi_strike": 23900,
+  "max_put_oi_strike": 23850,
+  "pcr": 0.824,
+  "resistance_level": 23900,
+  "rows_parsed": 2086,
+  "sentiment": "BEARISH",
+  "source": "dom",
+  "support_level": 23850,
+  "symbol": "NIFTY",
+  "total_call_oi": 45580332,
+  "total_put_oi": 37547762,
+  "underlying_price": 23865.75
+}

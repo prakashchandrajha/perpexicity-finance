@@ -6,7 +6,7 @@
 # ─────────────────────────────────────────────────────────────────────
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 
 
@@ -72,10 +72,12 @@ class SignalExtraction(BaseModel):
     """Structured signals extracted from AI narratives via post-processing."""
     sentiment_score: int = 0               # -5 (very bearish) to +5 (very bullish)
     trend_direction: str = "MIXED"         # BULLISH, BEARISH, MIXED, TRANSITIONING
+    timeframe: str | None = None           # e.g., "Intraday", "1-3 Days"
     catalyst_tags: list[str] = Field(default_factory=list)  # ["IPO", "FII", "CRUDE", ...]
     urgency: str = "NORMAL"               # BREAKING, NORMAL, BACKGROUND
     confidence: float = 0.0               # 0.0 to 1.0 based on source quality/count
     key_levels: dict[str, str] = Field(default_factory=dict)  # {"support": "₹1,253", ...}
+    options_data: dict[str, Any] = Field(default_factory=dict) # {"pcr": 0.8, "support_level": 23800, ...}
 
 
 # ═══════════════════════════════════════════════════════════════════════
