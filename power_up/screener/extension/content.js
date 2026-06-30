@@ -1,3 +1,4 @@
 setInterval(() => {
-  chrome.runtime.sendMessage({ ping: "keepAlive" }).catch(() => {});
+  chrome.runtime.sendMessage({ type: "PING" }).catch(() => {});
 }, 10000);
+

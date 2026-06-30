@@ -52,14 +52,21 @@ function extractScreenerPage(job) {
   });
 
   const ratios = {};
-  document.querySelectorAll("#top-ratios li, .company-ratios li, li").forEach((li) => {
+  const allowedRatioNames = [
+    "Market Cap", "Current Price", "Stock P/E", "Book Value", "Dividend Yield",
+    "ROCE", "ROE", "Face Value", "High / Low", "Debt to equity",
+    "Promoter holding", "Pledged percentage", "Interest Coverage Ratio"
+  ];
+  const ratioItems = Array.from(document.querySelectorAll("#top-ratios li, .company-ratios li"));
+  ratioItems.forEach((li) => {
     const text = clean(li.innerText);
-    const match = text.match(/^(.+?)\s+(-?[\d,.]+%?|[\d,.]+ Cr\.?|.+)$/);
-    if (match && text.length < 80) {
-      ratios[clean(match[1])] = clean(match[2]);
+    const matchedName = allowedRatioNames.find((name) => text.toLowerCase().startsWith(name.toLowerCase()));
+    if (!matchedName) return;
+    const value = clean(text.slice(matchedName.length));
+    if (value && value.length < 60) {
+      ratios[matchedName] = value;
     }
   });
-
   return {
     job_id: job.id,
     job_type: job.job_type,
@@ -111,12 +118,9 @@ async function runJob(job) {
       },
     });
   } finally {
-    if (tab.id) {
-      chrome.tabs.remove(tab.id);
-    }
+    // Keep the user's Screener tab alive for session continuity and future jobs.
   }
 }
-
 async function poll() {
   if (busy) return;
   try {
@@ -138,7 +142,7 @@ poll();
 
 // Keep-alive heartbeat listener
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.type === "PING") {
+  if (msg.type === "PING" || msg.ping === "keepAlive") {
     sendResponse({ status: "PONG" });
   }
 });
@@ -153,3 +157,5 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     poll();
   }
 });
+
+

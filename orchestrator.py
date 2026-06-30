@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import argparse
+import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -7,19 +11,63 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent
 SCREENER_DIR = ROOT_DIR / "power_up" / "screener"
+TRENDLYNE_DIR = ROOT_DIR / "power_up" / "trendlyne"
 PERPLEXITY_DIR = ROOT_DIR / "perplexity-finance-scraper"
-
-# Virtual environments
-SCREENER_PYTHON = SCREENER_DIR / "venv" / "bin" / "python"
-if not SCREENER_PYTHON.exists():
-    SCREENER_PYTHON = PERPLEXITY_DIR / "venv" / "bin" / "python"
-PERPLEXITY_PYTHON = PERPLEXITY_DIR / "venv" / "bin" / "python"
 
 SCREENER_DB = SCREENER_DIR / "data" / "screener_warehouse.db"
 
-def run_subprocess(cmd: list[str], cwd: Path):
-    print(f"\\n> Running: {' '.join(cmd)}")
-    subprocess.run(cmd, cwd=cwd, check=True)
+
+def resolve_python(project_dir: Path, fallback: Path | None = None) -> Path:
+    """Return a Python executable that works on Linux and Windows."""
+    if os.name == "nt":
+        candidates = [
+            project_dir / "venv" / "Scripts" / "python.exe",
+            project_dir / ".venv" / "Scripts" / "python.exe",
+            project_dir / "venv" / "bin" / "python",
+            project_dir / ".venv" / "bin" / "python",
+        ]
+    else:
+        candidates = [
+            project_dir / "venv" / "bin" / "python",
+            project_dir / ".venv" / "bin" / "python",
+            project_dir / "venv" / "Scripts" / "python.exe",
+            project_dir / ".venv" / "Scripts" / "python.exe",
+        ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return fallback or Path(sys.executable)
+
+
+PERPLEXITY_PYTHON = resolve_python(PERPLEXITY_DIR)
+SCREENER_PYTHON = resolve_python(SCREENER_DIR, PERPLEXITY_PYTHON)
+TRENDLYNE_PYTHON = resolve_python(TRENDLYNE_DIR, PERPLEXITY_PYTHON)
+
+
+def project_env(project_dir: Path) -> dict[str, str]:
+    """Preserve the host environment and prepend the project to PYTHONPATH."""
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    paths = [str(project_dir)]
+    if existing:
+        paths.append(existing)
+    env["PYTHONPATH"] = os.pathsep.join(paths)
+    return env
+
+
+def run_python(python_exe: Path, args: list[str], cwd: Path, *, capture: bool = False) -> subprocess.CompletedProcess[str]:
+    cmd = [str(python_exe), *args]
+    print(f"\n> Running in {cwd}: {' '.join(cmd)}")
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        env=project_env(cwd),
+        check=True,
+        capture_output=capture,
+        text=True,
+    )
+
 
 def query_screener_db(sql: str, params: tuple = ()) -> list[tuple]:
     if not SCREENER_DB.exists():
@@ -29,81 +77,56 @@ def query_screener_db(sql: str, params: tuple = ()) -> list[tuple]:
         cursor.execute(sql, params)
         return cursor.fetchall()
 
-def cmd_pre_market():
+
+def normalize_symbol(ticker: str) -> str:
+    return ticker.upper().replace(".NS", "").replace(".BO", "")
+
+
+def with_nse_suffix(symbol: str) -> str:
+    return symbol if symbol.endswith(".NS") or symbol.endswith(".BO") else f"{symbol}.NS"
+
+
+def cmd_pre_market() -> None:
     print("=== ORCHESTRATOR: PRE-MARKET ROUTINE ===")
-    print("[1] Building Screener Universe...")
-    
-    env = {"PYTHONPATH": str(SCREENER_DIR)}
-    cmd = [str(SCREENER_PYTHON), "main.py", "phase", "pre_market"]
-    subprocess.run(cmd, cwd=SCREENER_DIR, env=env, check=True)
-    
-    print("\\n[2] Identifying Top Candidates...")
+    print("[1] Building Screener universe...")
+
+    run_python(SCREENER_PYTHON, ["main.py", "phase", "pre_market"], SCREENER_DIR)
+
+    print("\n[2] Identifying top low-risk candidates...")
     rows = query_screener_db(
         "SELECT symbol, name, bot_score FROM screen_universe "
         "WHERE risk_bucket = 'low' AND timestamp > datetime('now', '-2 hour') "
         "ORDER BY bot_score DESC LIMIT 5"
     )
-    
+
     if not rows:
         print("No low-risk candidates found in Screener DB. Skipping Perplexity narrative.")
         return
-        
-    print(f"Found {len(rows)} top candidates. Fetching Perplexity AI Narrative for each...")
-    
-    for symbol, name, score in rows:
-        print(f"\\n--- Querying Perplexity for {symbol} ({name}) [Score: {score}] ---")
-        ticker = symbol if symbol.endswith(".NS") or symbol.endswith(".BO") else f"{symbol}.NS"
-        cmd = [str(PERPLEXITY_PYTHON), "main.py", ticker, "--phase", "pre_market"]
-        subprocess.run(cmd, cwd=PERPLEXITY_DIR, check=True)
-        
-    print("\\n=== PRE-MARKET ROUTINE COMPLETE ===")
 
-def cmd_anomaly(ticker: str, context: str):
-    print(f"=== ORCHESTRATOR: LIVE ANOMALY FOR {ticker} ===")
-    
-    base_symbol = ticker.replace(".NS", "").replace(".BO", "")
-    import json
-    
-    # 1. Try to get a deep company snapshot
-    print("[1] Checking local Screener DB for safety...")
+    print(f"Found {len(rows)} top candidates. Fetching Perplexity narrative for each...")
+    for symbol, name, score in rows:
+        ticker = with_nse_suffix(symbol)
+        print(f"\n--- Perplexity: {ticker} ({name}) [Screener score: {score}] ---")
+        run_python(PERPLEXITY_PYTHON, ["main.py", ticker, "--phase", "pre_market"], PERPLEXITY_DIR)
+
+    print("\n=== PRE-MARKET ROUTINE COMPLETE ===")
+
+
+def load_latest_screener_context(base_symbol: str) -> tuple[str, float, str, str]:
     snapshot_rows = query_screener_db(
         "SELECT risk_bucket, position_size_multiplier, blocked_reasons, ratios, risk_flags "
-        "FROM company_snapshots WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1", 
-        (base_symbol,)
+        "FROM company_snapshots WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1",
+        (base_symbol,),
     )
-    
-    # 2. If no snapshot, try to get a pre-market screen result
-    universe_rows = []
+
+    universe_rows: list[tuple] = []
     if not snapshot_rows:
         universe_rows = query_screener_db(
             "SELECT risk_bucket, position_size_multiplier, blocked_reasons, metrics, reasons, warnings "
-            "FROM screen_universe WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1", 
-            (base_symbol,)
+            "FROM screen_universe WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1",
+            (base_symbol,),
         )
-        
-    # 3. If neither exists, trigger a live company scan
-    if not snapshot_rows and not universe_rows:
-        print(f"⚠️ {ticker} not found in local Screener DB. Triggering on-the-fly company scan...")
-        env = {"PYTHONPATH": str(SCREENER_DIR)}
-        cmd = [str(SCREENER_PYTHON), "main.py", "company", base_symbol, "--phase", "live_market"]
-        subprocess.run(cmd, cwd=SCREENER_DIR, env=env, check=True)
-        
-        # Re-query the snapshots table (since company scan saves there)
-        snapshot_rows = query_screener_db(
-            "SELECT risk_bucket, position_size_multiplier, blocked_reasons, ratios, risk_flags "
-            "FROM company_snapshots WHERE symbol = ? ORDER BY timestamp DESC LIMIT 1", 
-            (base_symbol,)
-        )
-        if not snapshot_rows:
-            print("❌ Failed to extract Screener data on the fly. ABORTING TRADE.")
-            return
 
-    # Extract the data based on which table it came from
-    fundamental_context = "\\n--- SCREENER FUNDAMENTAL DATA ---\\n"
-    risk = "unknown"
-    size = 0.0
-    blocked = "[]"
-    
     if snapshot_rows:
         risk, size, blocked, ratios_json, flags_json = snapshot_rows[0]
         try:
@@ -111,12 +134,14 @@ def cmd_anomaly(ticker: str, context: str):
             flags = json.loads(flags_json) if flags_json else []
         except Exception:
             ratios, flags = {}, []
-            
-        fundamental_context += f"Deep Dive Ratios: {json.dumps(ratios)}\\n"
+
+        context = "\n--- SCREENER FUNDAMENTAL DATA ---\n"
+        context += f"Company ratios: {json.dumps(ratios, ensure_ascii=False)}\n"
         if flags:
-            fundamental_context += f"Historical Risk Flags: {', '.join(flags)}\\n"
-            
-    elif universe_rows:
+            context += f"Risk flags: {', '.join(flags)}\n"
+        return risk, float(size or 0), blocked or "[]", context
+
+    if universe_rows:
         risk, size, blocked, metrics_json, reasons_json, warnings_json = universe_rows[0]
         try:
             metrics = json.loads(metrics_json) if metrics_json else {}
@@ -124,110 +149,140 @@ def cmd_anomaly(ticker: str, context: str):
             warnings = json.loads(warnings_json) if warnings_json else []
         except Exception:
             metrics, reasons, warnings = {}, [], []
-            
-        fundamental_context += (
-            f"P/E: {metrics.get('P/E', 'N/A')} | Market Cap: {metrics.get('Market Capitalization', metrics.get('Mar Cap Rs.Cr.', 'N/A'))} Cr | "
-            f"ROCE: {metrics.get('ROCE %', 'N/A')}% | Debt to Equity: {metrics.get('Debt to equity', 'N/A')} | "
-            f"Promoter Holding: {metrics.get('Promoter holding', 'N/A')}%\\n"
+
+        context = "\n--- SCREENER FUNDAMENTAL DATA ---\n"
+        context += (
+            f"P/E: {metrics.get('P/E', 'N/A')} | "
+            f"Market Cap: {metrics.get('Market Capitalization', metrics.get('Mar Cap Rs.Cr.', 'N/A'))} Cr | "
+            f"ROCE: {metrics.get('ROCE %', 'N/A')}% | "
+            f"Debt to Equity: {metrics.get('Debt to equity', 'N/A')} | "
+            f"Promoter Holding: {metrics.get('Promoter holding', 'N/A')}%\n"
         )
         if reasons:
-            fundamental_context += f"Positives: {', '.join(reasons)}\\n"
+            context += f"Positives: {', '.join(reasons)}\n"
         if warnings:
-            fundamental_context += f"Negatives: {', '.join(warnings)}\\n"
+            context += f"Negatives: {', '.join(warnings)}\n"
+        return risk, float(size or 0), blocked or "[]", context
 
-    print(f"Screener Result -> Risk: {risk}, Size Multiplier: {size}x, Blocked: {blocked}")
-    
-    if risk == 'high' or (blocked and blocked != '[]'):
-        print("❌ Screener says this stock is UNSAFE (High Debt/Pledge/Risk). ABORTING.")
-        print("💡 Saved a Perplexity query!")
-        return
-        
-    print("\\n[2] Fetching Institutional Context from Trendlyne MarketMind...")
-    trendlyne_context = ""
+    return "unknown", 0.0, "[]", "\n--- SCREENER FUNDAMENTAL DATA ---\nNo local Screener data found.\n"
+
+
+def fetch_trendlyne_context(ticker: str) -> str:
+    print("\n[2] Fetching institutional context from Trendlyne MarketMind...")
     try:
-        TRENDLYNE_DIR = ROOT_DIR / "power_up" / "trendlyne"
-        TRENDLYNE_PYTHON = TRENDLYNE_DIR / "venv" / "bin" / "python"
-        if not TRENDLYNE_PYTHON.exists():
-            TRENDLYNE_PYTHON = PERPLEXITY_PYTHON
-        
-        env = {"PYTHONPATH": str(TRENDLYNE_DIR)}
-        # We ask specifically about delivery volume, block deals, and FII changes
-        t_cmd = [
-            str(TRENDLYNE_PYTHON), "main.py", ticker, 
-            "--query", "What is the delivery volume trend and are there any recent block deals or changes in FII holding?"
-        ]
-        result = subprocess.run(t_cmd, cwd=TRENDLYNE_DIR, env=env, capture_output=True, text=True, check=True)
-        
-        # Extract the saved file path from stdout
+        result = run_python(
+            TRENDLYNE_PYTHON,
+            [
+                "main.py",
+                ticker,
+                "--query",
+                "What is the delivery volume trend and are there any recent block deals or changes in FII holding?",
+            ],
+            TRENDLYNE_DIR,
+            capture=True,
+        )
+
         for line in result.stdout.splitlines():
             if line.startswith("TRENDLYNE_DATA_FILE="):
-                t_file = Path(line.split("=")[1])
+                t_file = Path(line.split("=", 1)[1].strip())
                 if t_file.exists():
-                    with open(t_file, "r", encoding="utf-8") as f:
-                        t_data = json.load(f)
-                        trendlyne_context = "\\n--- TRENDLYNE INSTITUTIONAL DATA ---\\n" + t_data.get("response", "") + "\\n"
-                break
-                
-        if trendlyne_context:
-            print("✅ Successfully gathered Trendlyne institutional flow data.")
-        else:
-            print("⚠️ Trendlyne query succeeded but no data file was returned.")
-            
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️ Trendlyne query failed. Ensure the extension is running and logged in. Error: {e.stderr}")
-    except Exception as e:
-        print(f"⚠️ Failed to get Trendlyne context: {e}")
+                    with open(t_file, "r", encoding="utf-8") as file:
+                        t_data = json.load(file)
+                    structured = t_data.get("structured_context", {})
+                    response = t_data.get("response", "")
+                    print("Trendlyne context collected.")
+                    return (
+                        "\n--- TRENDLYNE INSTITUTIONAL DATA ---\n"
+                        f"Structured context: {json.dumps(structured, ensure_ascii=False)}\n"
+                        f"MarketMind response: {response}\n"
+                    )
 
-    print("\\n[3] Stock is SAFE. Constructing ultra-prompt and asking Perplexity...")
-    ultra_context = context + "\\n" + fundamental_context + trendlyne_context
-    print(f"\\n[Injecting Context]:\\n{ultra_context}\\n")
-    
-    cmd = [str(PERPLEXITY_PYTHON), "main.py", ticker, "--phase", "live_market", "--context", ultra_context]
-    subprocess.run(cmd, cwd=PERPLEXITY_DIR, check=True)
-    print("\\n=== LIVE ANOMALY ROUTINE COMPLETE ===")
+        print("Trendlyne query succeeded but no data file was returned.")
+    except subprocess.CalledProcessError as exc:
+        print(f"Trendlyne query failed. Ensure the extension is running and logged in. Error: {exc.stderr}")
+    except Exception as exc:
+        print(f"Failed to get Trendlyne context: {exc}")
+    return ""
 
-def cmd_custom_screen(query: str):
+
+def cmd_anomaly(ticker: str, context: str) -> None:
+    print(f"=== ORCHESTRATOR: LIVE ANOMALY FOR {ticker} ===")
+    base_symbol = normalize_symbol(ticker)
+
+    print("[1] Checking local Screener DB for safety...")
+    risk, size, blocked, fundamental_context = load_latest_screener_context(base_symbol)
+
+    if risk == "unknown":
+        print(f"{ticker} not found in local Screener DB. Triggering on-the-fly company scan...")
+        run_python(SCREENER_PYTHON, ["main.py", "company", base_symbol, "--phase", "live_market"], SCREENER_DIR)
+        risk, size, blocked, fundamental_context = load_latest_screener_context(base_symbol)
+        if risk == "unknown":
+            print("Failed to extract Screener data on the fly. Aborting trade.")
+            return
+
+    print(f"Screener Result -> Risk: {risk}, Size Multiplier: {size}x, Blocked: {blocked}")
+    if risk == "high" or (blocked and blocked != "[]"):
+        print("Screener says this stock is unsafe. Aborting and saving a Perplexity query.")
+        return
+
+    trendlyne_context = fetch_trendlyne_context(ticker)
+
+    print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context
+    print(f"\n[Injecting Context]:\n{ultra_context}\n")
+
+    run_python(
+        PERPLEXITY_PYTHON,
+        ["main.py", ticker, "--phase", "live_market", "--context", ultra_context],
+        PERPLEXITY_DIR,
+    )
+    print("\n=== LIVE ANOMALY ROUTINE COMPLETE ===")
+
+
+def cmd_custom_screen(query: str) -> None:
     print("=== ORCHESTRATOR: CUSTOM DYNAMIC SCREEN ===")
     print(f"[1] Querying Screener for: {query}")
-    
-    env = {"PYTHONPATH": str(SCREENER_DIR)}
-    cmd = [str(SCREENER_PYTHON), "main.py", "query", query, "--phase", "live_market"]
-    subprocess.run(cmd, cwd=SCREENER_DIR, env=env, check=True)
-    
+
+    run_python(SCREENER_PYTHON, ["main.py", "query", query, "--phase", "live_market"], SCREENER_DIR)
+
     rows = query_screener_db(
         "SELECT symbol, name, bot_score FROM screen_universe "
         "WHERE timestamp > datetime('now', '-2 minute') "
         "ORDER BY bot_score DESC LIMIT 3"
     )
-    
+
     if rows:
-        print("\\n[2] Top candidates found. Investigating top 3 with Perplexity...")
+        print("\n[2] Top candidates found. Investigating top 3 with Perplexity...")
         for symbol, name, score in rows:
-            print(f"\\n--- Querying Perplexity for {symbol} ({name}) [Score: {score}] ---")
-            ticker = symbol if symbol.endswith(".NS") else f"{symbol}.NS"
+            ticker = with_nse_suffix(symbol)
             context = f"This stock appeared in a custom technical/fundamental screen: {query}"
-            cmd = [str(PERPLEXITY_PYTHON), "main.py", ticker, "--phase", "live_market", "--context", context]
-            subprocess.run(cmd, cwd=PERPLEXITY_DIR, check=True)
+            print(f"\n--- Perplexity: {ticker} ({name}) [Screener score: {score}] ---")
+            run_python(
+                PERPLEXITY_PYTHON,
+                ["main.py", ticker, "--phase", "live_market", "--context", context],
+                PERPLEXITY_DIR,
+            )
     else:
         print("No results matched the query.")
-        
-    print("\\n=== CUSTOM SCREEN ROUTINE COMPLETE ===")
 
-def main():
+    print("\n=== CUSTOM SCREEN ROUTINE COMPLETE ===")
+
+
+def main() -> None:
     parser = argparse.ArgumentParser(description="Master Orchestrator - Trading Bot Brain")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    
+
     subparsers.add_parser("pre-market", help="Run overnight screens and fetch AI narratives")
-    
+
     anomaly_parser = subparsers.add_parser("anomaly", help="Investigate a live market anomaly")
     anomaly_parser.add_argument("ticker", help="Stock ticker (e.g. RELIANCE.NS)")
-    anomaly_parser.add_argument("--context", required=True, help="What the anomaly is (e.g. 'Volume spiked 5x on 2% drop')")
-    
+    anomaly_parser.add_argument("--context", required=True, help="What the anomaly is, e.g. 'Volume spiked 5x on a 2 percent drop'")
+
     custom_parser = subparsers.add_parser("custom-screen", help="Run a dynamic query and investigate results")
     custom_parser.add_argument("query", help="Screener query string")
-    
+
     args = parser.parse_args()
-    
+
     if args.command == "pre-market":
         cmd_pre_market()
     elif args.command == "anomaly":
@@ -235,5 +290,7 @@ def main():
     elif args.command == "custom-screen":
         cmd_custom_screen(args.query)
 
+
 if __name__ == "__main__":
     main()
+

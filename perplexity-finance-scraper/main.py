@@ -102,7 +102,7 @@ def main():
     
     context = args.context
     if args.anomaly and args.price_level:
-        context = f"The stock {args.ticker} just experienced a {args.anomaly} at price level {args.price_level}. Analyze the latest SEC filings, news, and social media to explain why."
+        context = f"The stock {args.ticker} just experienced a {args.anomaly} at price level {args.price_level}. For Indian intraday trading, check NSE/BSE exchange announcements, SEBI/regulatory updates, FII/DII flow narrative, sector movement, crude/rates/FX context, and reliable market news to explain why."
     
     asyncio.run(run(args.ticker, args.phase, context))
 
