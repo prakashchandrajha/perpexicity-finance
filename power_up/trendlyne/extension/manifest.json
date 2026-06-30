@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Trendlyne Bot Bridge",
+  "version": "1.0",
+  "description": "Bridges local Python scripts to Trendlyne MarketMind AI",
+  "permissions": ["activeTab", "scripting", "alarms"],
+  "host_permissions": ["https://trendlyne.com/*", "http://127.0.0.1:8787/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://trendlyne.com/marketmind*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

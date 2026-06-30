@@ -142,8 +142,44 @@ def cmd_anomaly(ticker: str, context: str):
         print("💡 Saved a Perplexity query!")
         return
         
-    print("\\n[2] Stock is SAFE. Constructing ultra-prompt and asking Perplexity...")
-    ultra_context = context + "\\n" + fundamental_context
+    print("\\n[2] Fetching Institutional Context from Trendlyne MarketMind...")
+    trendlyne_context = ""
+    try:
+        TRENDLYNE_DIR = ROOT_DIR / "power_up" / "trendlyne"
+        TRENDLYNE_PYTHON = TRENDLYNE_DIR / "venv" / "bin" / "python"
+        if not TRENDLYNE_PYTHON.exists():
+            TRENDLYNE_PYTHON = PERPLEXITY_PYTHON
+        
+        env = {"PYTHONPATH": str(TRENDLYNE_DIR)}
+        # We ask specifically about delivery volume, block deals, and FII changes
+        t_cmd = [
+            str(TRENDLYNE_PYTHON), "main.py", ticker, 
+            "--query", "What is the delivery volume trend and are there any recent block deals or changes in FII holding?"
+        ]
+        result = subprocess.run(t_cmd, cwd=TRENDLYNE_DIR, env=env, capture_output=True, text=True, check=True)
+        
+        # Extract the saved file path from stdout
+        for line in result.stdout.splitlines():
+            if line.startswith("TRENDLYNE_DATA_FILE="):
+                t_file = Path(line.split("=")[1])
+                if t_file.exists():
+                    with open(t_file, "r", encoding="utf-8") as f:
+                        t_data = json.load(f)
+                        trendlyne_context = "\\n--- TRENDLYNE INSTITUTIONAL DATA ---\\n" + t_data.get("response", "") + "\\n"
+                break
+                
+        if trendlyne_context:
+            print("✅ Successfully gathered Trendlyne institutional flow data.")
+        else:
+            print("⚠️ Trendlyne query succeeded but no data file was returned.")
+            
+    except subprocess.CalledProcessError as e:
+        print(f"⚠️ Trendlyne query failed. Ensure the extension is running and logged in. Error: {e.stderr}")
+    except Exception as e:
+        print(f"⚠️ Failed to get Trendlyne context: {e}")
+
+    print("\\n[3] Stock is SAFE. Constructing ultra-prompt and asking Perplexity...")
+    ultra_context = context + "\\n" + fundamental_context + trendlyne_context
     print(f"\\n[Injecting Context]:\\n{ultra_context}\\n")
     
     cmd = [str(PERPLEXITY_PYTHON), "main.py", ticker, "--phase", "live_market", "--context", ultra_context]

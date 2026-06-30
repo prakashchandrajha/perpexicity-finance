@@ -75,11 +75,24 @@ function extractScreenerPage(job) {
 
 async function runJob(job) {
   const url = buildUrl(job);
-  const tab = await chrome.tabs.create({ url, active: false });
+  let allTabs = await chrome.tabs.query({});
+  let screenerTabs = allTabs.filter(t => t.url && t.url.includes('screener.in'));
+  let targetTab;
+  if (screenerTabs.length === 0) {
+      console.log("[Screener Bridge] No tab found, creating one...");
+      targetTab = await chrome.tabs.create({url: 'https://www.screener.in/'});
+      await sleep(6000); // Wait for page to load
+  } else {
+      targetTab = screenerTabs[0];
+      await chrome.tabs.update(targetTab.id, {active: true});
+  }
+  
+  let tabId = targetTab.id;
   try {
+    await chrome.tabs.update(tabId, { url });
     await sleep(7000);
     const [result] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId: tabId },
       func: extractScreenerPage,
       args: [job],
     });
@@ -125,5 +138,18 @@ poll();
 
 // Keep-alive heartbeat listener
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.ping === "keepAlive") sendResponse({ pong: true });
+  if (msg.type === "PING") {
+    sendResponse({ status: "PONG" });
+  }
+});
+
+console.log("[Screener Bridge] Service Worker Started.");
+
+// Keep service worker alive with alarms
+chrome.alarms.create("keepAlive", { periodInMinutes: 1 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "keepAlive") {
+    console.log("[Screener Bridge] Alarm woke up Service Worker.");
+    poll();
+  }
 });

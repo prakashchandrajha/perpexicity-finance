@@ -1,7 +1,7 @@
 {
   "phase": "live_market",
   "source": "screener.in",
-  "timestamp": "2026-06-29T17:09:03.720743+00:00",
+  "timestamp": "2026-06-29T18:34:48.493441+00:00",
   "context": null,
   "strategy_note": "Screener output gates universe selection and position sizing only; entries/exits must come from broker/chart data.",
   "screen_candidates": [],
@@ -1653,11 +1653,11 @@
     "blocked_reasons": []
   },
   "raw_result": {
-    "job_id": "b01bb5c600dd4707a9b19fcd1b1168bb",
+    "job_id": "ba17c47830aa460b828d8913526944f1",
     "job_type": "company",
     "url": "https://www.screener.in/company/RELIANCE/consolidated/",
     "title": "Reliance Industries Ltd",
-    "captured_at": "2026-06-29T17:09:02.564Z",
+    "captured_at": "2026-06-29T18:34:46.564Z",
     "tables": [
       {
         "headers": [
