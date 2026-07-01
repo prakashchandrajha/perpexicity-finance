@@ -57,6 +57,43 @@ async def run(ticker: str, phase: str, context: str = None):
 
     # All other phases
     start_time = time.time()
+    
+    if phase == "trendlyne_scan":
+        output = await api.analyze(ticker, phase, context, save_to_db=False)
+        duration = time.time() - start_time
+        print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print(f"  📈 TRENDLYNE SCAN — {ticker}")
+        if "error" in output:
+            print(f"  ERROR     : {output['error']}")
+        else:
+            print(f"  DVM SCORE : {output.get('dvm_score_raw')}")
+            print(f"  DURABILITY: {output.get('durability')}")
+            print(f"  VALUATION : {output.get('valuation')}")
+            print(f"  MOMENTUM  : {output.get('momentum')}")
+            if output.get('alerts'):
+                print(f"  ALERTS    : {', '.join(output['alerts'])}")
+        print(f"  DURATION  : {duration:.1f}s")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        return
+        
+    if phase == "stockgro_scan":
+        output = await api.analyze(ticker, phase, context, save_to_db=False)
+        duration = time.time() - start_time
+        print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        print(f"  📈 STOCKGRO SCAN")
+        if "error" in output:
+            print(f"  ERROR     : {output['error']}")
+        else:
+            print(f"  HIGH UPSIDE STOCKS : {len(output.get('high_upside_stocks', []))}")
+            for stock in output.get('high_upside_stocks', []):
+                print(f"    - {stock}")
+            print(f"  EXPERT TRADE IDEAS : {len(output.get('trade_ideas', []))}")
+            for idea in output.get('trade_ideas', []):
+                print(f"    - {idea}")
+        print(f"  DURATION  : {duration:.1f}s")
+        print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        return
+        
     output = await api.analyze(ticker, phase, context, save_to_db=True)
     signals = output.signals
     finance_data = output.finance_page
@@ -89,7 +126,7 @@ def main():
     
     parser = argparse.ArgumentParser(description="Perplexity Finance Intelligence Extractor")
     parser.add_argument("ticker", help="Stock ticker (e.g., RELIANCE.NS, or MACRO for macro_scan)")
-    parser.add_argument("--phase", choices=["pre_market", "live_market", "macro_scan", "earnings", "sentiment_check"], default="pre_market",
+    parser.add_argument("--phase", choices=["pre_market", "live_market", "macro_scan", "earnings", "sentiment_check", "trendlyne_scan", "stockgro_scan"], default="pre_market",
                         help="Trading phase (default: pre_market)")
     parser.add_argument("--context", type=str, default=None,
                         help="Optional specific context for live market alerts.")

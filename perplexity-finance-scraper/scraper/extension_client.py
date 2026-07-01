@@ -1,6 +1,8 @@
 import json
 import time
 import requests
+import re
+import requests
 from loguru import logger
 
 SERVER_URL = "http://127.0.0.1:8765"
@@ -21,17 +23,35 @@ class PerplexityExtensionClient:
                 if res.status_code == 200:
                     data = res.json()
                     # If it has status (e.g. running, pending), it's not done yet.
-                    # If it has html, text, or error, it's the result object.
-                    if "status" not in data or data.get("status") == "success":
-                        if "html" in data or "text" in data or "error" in data:
-                            return data
+                    if isinstance(data, dict) and data.get("status") in ["running", "pending"]:
+                        continue
+                    # Otherwise, it's the result payload or an error
+                    return data
             except requests.exceptions.ConnectionError:
                 logger.error(f"[ExtClient] Cannot connect to {SERVER_URL}. Is extension_server.py running?")
                 return {"error": "Server not running"}
             
             time.sleep(1)
         return {"error": "Timeout waiting for extension"}
-
+    def execute_script(self, url: str, script: str, wait_ms: int = 0, timeout: int = 150) -> dict:
+        """Sends a raw JS script to the extension server to be executed on a specific URL."""
+        logger.info(f"[ExtClient] Queueing dynamic JS script for {url}...")
+        try:
+            res = requests.post(f"{SERVER_URL}/queue_job", json={
+                "type": "execute_script",
+                "url": url,
+                "script": script,
+                "wait_ms": wait_ms
+            })
+            job_id = res.json().get("job_id")
+            result = self._wait_for_result(job_id, timeout=timeout)
+            
+            if "error" in result:
+                return {"error": result["error"]}
+            return result
+        except Exception as e:
+            logger.error(f"[ExtClient] Failed to execute script via extension: {e}")
+            return {"error": str(e)}
     def fetch_finance_page_html(self, ticker: str) -> str:
         """Queues a job for the extension to fetch the static HTML."""
         # Map generic indices to Perplexity's specific Yahoo Finance style tickers
@@ -196,4 +216,68 @@ class PerplexityExtensionClient:
                     return data.get("raw_data", {})
             return {"error": "Timeout waiting for NSE Extension"}
         except Exception as e:
+            return {"error": str(e)}
+
+    def fetch_trendlyne_data(self, ticker: str) -> dict:
+        """Queues a job to silently search Trendlyne and extract DVM scores + alerts."""
+        logger.info(f"[ExtClient] Queueing trendlyne_scan job for {ticker}...")
+        try:
+            res = requests.post(f"{SERVER_URL}/queue_job", json={
+                "type": "trendlyne_scan",
+                "ticker": ticker
+            })
+            job_id = res.json().get("job_id")
+            result = self._wait_for_result(job_id, timeout=30)
+            
+            if "error" in result:
+                return {"error": result["error"]}
+            return result
+        except Exception as e:
+            logger.error(f"[ExtClient] Failed to execute trendlyne scan via extension: {e}")
+            return {"error": str(e)}
+
+    def fetch_stockgro_data(self) -> dict:
+        """Queues a job to silently scrape StockGro expert portfolios and ideas."""
+        logger.info("[ExtClient] Queueing stockgro_scan job...")
+        try:
+            res = requests.post(f"{SERVER_URL}/queue_job", json={
+                "type": "stockgro_scan",
+                "ticker": "N/A"
+            })
+            job_id = res.json().get("job_id")
+            result = self._wait_for_result(job_id, timeout=30)
+            
+            if "error" in result:
+                return {"error": result["error"]}
+                
+            # Basic parsing of the extracted text blocks
+            parsed_data = {
+                "high_upside_stocks": [],
+                "trade_ideas": [],
+                "tickers": set(),
+                "raw_sample": result.get("visibleTextSample", [])
+            }
+            
+            text_blocks = result.get("visibleTextSample", [])
+            for text in text_blocks:
+                # Basic chunk matching
+                if "Potential\nUpside" in text:
+                    parsed_data["high_upside_stocks"].append(text.split("\n\n")[0])
+                if "profit in" in text or "Profit Achieved" in text:
+                    parsed_data["trade_ideas"].append(text.split("\n\n")[0])
+                
+                # Smart Ticker Extraction (All uppercase, 3-10 chars, no spaces)
+                lines = text.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if re.match(r'^[A-Z]{3,10}$', line):
+                        if line not in ["NIFTY", "OPTIONS", "STOCKS"]: # Filter generic terms
+                            parsed_data["tickers"].add(line)
+                            
+            # Convert set to list for JSON serialization
+            parsed_data["tickers"] = list(parsed_data["tickers"])
+                    
+            return parsed_data
+        except Exception as e:
+            logger.error(f"[ExtClient] Failed to execute stockgro scan via extension: {e}")
             return {"error": str(e)}

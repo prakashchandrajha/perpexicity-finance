@@ -10,8 +10,10 @@
   ],
   "host_permissions": [
     "*://*.perplexity.ai/*",
-    "http://127.0.0.1:8765/*",
-    "http://localhost:8765/*"
+    "*://*.trendlyne.com/*",
+    "*://*.stockgro.club/*",
+    "http://127.0.0.1:8778/*",
+    "http://localhost:8778/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -19,7 +21,7 @@
   "action": {},
   "content_scripts": [
     {
-      "matches": ["*://*.perplexity.ai/*"],
+      "matches": ["*://*.perplexity.ai/*", "*://*.trendlyne.com/*", "*://*.stockgro.club/*"],
       "js": ["content.js"],
       "run_at": "document_start"
     }

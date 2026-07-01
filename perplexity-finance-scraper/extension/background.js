@@ -1,150 +1,136 @@
+// The Universal Browser Automation Track
+
 const SERVER_URL = "http://127.0.0.1:8765";
-const POLL_INTERVAL_MS = 2000;
-let isPolling = false;
+let isProcessing = false;
 let currentTabId = null;
 
-// Visual Badge Indicator
+// Clean badge state
+chrome.action.setBadgeBackgroundColor({ color: '#808080' });
+chrome.action.setBadgeText({ text: 'IDLE' });
+
 function setBadge(state) {
-    try {
-        if (state === 'white') {
-            chrome.action.setBadgeText({ text: "IDLE" });
-            chrome.action.setBadgeBackgroundColor({ color: "#808080" }); // Gray/White means idle
-        } else if (state === 'green') {
-            chrome.action.setBadgeText({ text: "RUN" });
-            chrome.action.setBadgeBackgroundColor({ color: "#00CC00" }); // Green means working
-        } else if (state === 'red') {
-            chrome.action.setBadgeText({ text: "ERR" });
-            chrome.action.setBadgeBackgroundColor({ color: "#FF0000" }); // Red means broken
-        }
-    } catch(e) {}
+    if (state === 'active') {
+        chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' }); // Green
+        chrome.action.setBadgeText({ text: 'RUN' });
+    } else if (state === 'red') {
+        chrome.action.setBadgeBackgroundColor({ color: '#F44336' }); // Red
+        chrome.action.setBadgeText({ text: 'ERR' });
+    } else {
+        chrome.action.setBadgeBackgroundColor({ color: '#808080' }); // Gray
+        chrome.action.setBadgeText({ text: 'IDLE' });
+    }
 }
-setBadge('white');
-
-// Keep-Alive listener to prevent MV3 Service Worker suspension
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "KEEP_ALIVE") {
-        sendResponse({ ok: true });
-    }
-});
-
-// Service Worker initialized
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "KEEP_ALIVE") {
-        // Keep service worker awake
-        sendResponse({status: "ok"});
-    }
-    return true;
-});
 
 async function pollForJobs() {
-    if (isPolling) return;
-    isPolling = true;
+    if (isProcessing) return;
 
     try {
         const response = await fetch(`${SERVER_URL}/get_job`);
         if (response.ok) {
             const job = await response.json();
             if (job && job.job_id) {
-                console.log("Received job:", job);
-                setBadge('green');
+                isProcessing = true;
+                setBadge('active');
                 await handleJob(job);
-                // Return to idle after job is fully handled (unless it erred, which is handled below)
-            } else {
-                setBadge('white');
+                isProcessing = false;
             }
-        } else {
-            setBadge('white');
         }
     } catch (e) {
-        // Server down
-        setBadge('white');
-    } finally {
-        isPolling = false;
-        setTimeout(pollForJobs, POLL_INTERVAL_MS);
+        // Server might be down, ignore quietly
     }
+
+    // Poll every 2 seconds
+    setTimeout(pollForJobs, 2000);
 }
 
 async function handleJob(job) {
-    const { job_id, type, ticker, query } = job;
-    let url = "";
+    const { job_id, type, url, script, wait_ms } = job;
     
-    if (type === "pre_market") {
-        url = `https://www.perplexity.ai/finance/${ticker}`;
-    } else if (type === "live_market" || type === "macro_scan") {
-        url = "https://www.perplexity.ai/";
-    } else {
-        await submitResult(job_id, { error: "Unknown job type" });
-        return;
-    }
-
-    // Open or update tab
-    if (currentTabId) {
-        try {
-            await chrome.tabs.update(currentTabId, { url, active: false });
-        } catch (e) {
-            const tab = await chrome.tabs.create({ url, active: true });
-            currentTabId = tab.id;
-        }
-    } else {
-        const tab = await chrome.tabs.create({ url, active: true });
-        currentTabId = tab.id;
-    }
-
-    // Wait for page to load, then execute script
-    // Wait for page to load with a timeout
-    await new Promise((resolve) => {
-        let isResolved = false;
-        
-        const timeoutId = setTimeout(() => {
-            if (!isResolved) {
-                isResolved = true;
-                chrome.tabs.onUpdated.removeListener(listener);
-                resolve();
-            }
-        }, 8000);
-
-        function listener(tabId, info) {
-            if (tabId === currentTabId && info.status === 'complete') {
-                if (!isResolved) {
-                    isResolved = true;
-                    clearTimeout(timeoutId);
-                    chrome.tabs.onUpdated.removeListener(listener);
-                    resolve();
-                }
-            }
-        }
-        
-        chrome.tabs.get(currentTabId, (tab) => {
-            if (tab && tab.status === 'complete') {
-                if (!isResolved) {
-                    isResolved = true;
-                    clearTimeout(timeoutId);
-                    resolve();
-                }
-            } else {
-                chrome.tabs.onUpdated.addListener(listener);
-            }
-        });
-    });
-
-    // Delay to let React hydrate fully before extracting DOM or searching
-    await new Promise(r => setTimeout(r, 5000));
+    console.log(`[Ext] Received Job ${job_id}: ${type} for ${url}`);
 
     try {
-        if (type === "pre_market") {
-            const results = await chrome.scripting.executeScript({
-                target: { tabId: currentTabId },
-                func: extractStaticHtml
-            });
-            await submitResult(job_id, { html: results[0].result });
+        // 1. Navigate to target URL
+        if (currentTabId) {
+            try {
+                await chrome.tabs.update(currentTabId, { url: url, active: true });
+            } catch (e) {
+                const tab = await chrome.tabs.create({ url: url, active: true });
+                currentTabId = tab.id;
+            }
         } else {
-            const results = await chrome.scripting.executeScript({
-                target: { tabId: currentTabId },
-                func: executeLiveSearch,
-                args: [query]
+            const tab = await chrome.tabs.create({ url: url, active: true });
+            currentTabId = tab.id;
+        }
+
+        // 2. Wait for Load
+        const waitForLoad = () => {
+            return new Promise((resolve) => {
+                let isResolved = false;
+                
+                // Fallback timeout in case page never finishes loading
+                const timeoutId = setTimeout(() => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        chrome.tabs.onUpdated.removeListener(listener);
+                        resolve();
+                    }
+                }, 10000); // Max 10s wait for nav
+
+                const listener = (tabId, info, tab) => {
+                    if (tabId === currentTabId && info.status === 'complete') {
+                        if (!isResolved) {
+                            isResolved = true;
+                            clearTimeout(timeoutId);
+                            chrome.tabs.onUpdated.removeListener(listener);
+                            resolve();
+                        }
+                    }
+                };
+
+                chrome.tabs.get(currentTabId, (tab) => {
+                    if (tab && tab.status === 'complete') {
+                        if (!isResolved) {
+                            isResolved = true;
+                            clearTimeout(timeoutId);
+                            resolve();
+                        }
+                    } else {
+                        chrome.tabs.onUpdated.addListener(listener);
+                    }
+                });
             });
-            await submitResult(job_id, { text: results[0].result });
+        };
+
+        await waitForLoad();
+        
+        if (wait_ms) {
+            await new Promise(r => setTimeout(r, wait_ms));
+        } else {
+            await new Promise(r => setTimeout(r, 4000));
+        }
+
+        // 3. Execute payload script dynamically using named functions (MV3 Compliant)
+        if (type === "execute_named_function" && script) {
+            const funcName = script; // e.g. "executeLiveSearch"
+            const funcMap = {
+                "executeLiveSearch": executeLiveSearch,
+                "extractTrendlyneData": extractTrendlyneData,
+                "executeTrendlyneSearch": executeTrendlyneSearch,
+                "extractStockGroData": extractStockGroData
+            };
+            
+            if (funcMap[funcName]) {
+                const results = await chrome.scripting.executeScript({
+                    target: { tabId: currentTabId },
+                    func: funcMap[funcName],
+                    args: job.args || []
+                });
+                await submitResult(job_id, results[0].result);
+            } else {
+                await submitResult(job_id, { error: `Function ${funcName} not found in extension.` });
+            }
+        } else {
+            await submitResult(job_id, { error: `Unsupported job type: ${type}` });
         }
     } catch (e) {
         console.error("Script execution failed", e);
@@ -154,10 +140,10 @@ async function handleJob(job) {
 
 async function submitResult(job_id, data) {
     try {
-        if (data && data.result && data.result.startsWith("Error")) {
-            setBadge('red'); // Ext is not working properly (UI change or timeout)
+        if (data && data.error) {
+            setBadge('red'); 
         } else {
-            setBadge('white'); // Success, back to idle
+            setBadge('white');
         }
         
         await fetch(`${SERVER_URL}/submit_job/${job_id}`, {
@@ -171,13 +157,12 @@ async function submitResult(job_id, data) {
     }
 }
 
-// ── Injected Functions ───────────────────────────────────────────
+// Start polling
+pollForJobs();
 
-function extractStaticHtml() {
-    return document.documentElement.outerHTML;
-}
+// ── Perplexity Injected Functions ───────────────────────────────────
 
-async function executeLiveSearch(query) {
+async function executeLiveSearch(query, usePro = false) {
     return new Promise((resolve) => {
         try {
             let attempts = 0;
@@ -202,6 +187,12 @@ async function executeLiveSearch(query) {
                     document.body.removeAttribute('data-aria-hidden');
                     document.getElementById('root')?.removeAttribute('aria-hidden');
 
+                    // Close the "Your free searches will reset in a few hours" modal if it exists
+                    const upgradeModals = Array.from(document.querySelectorAll('button')).filter(b => b.innerText.includes('Upgrade') || b.innerText.includes('Close') || b.getAttribute('aria-label') === 'Close');
+                    upgradeModals.forEach(b => {
+                        try { b.click(); } catch(e) {}
+                    });
+
                     // Future-proofed search using Shadow DOM piercing just in case Perplexity switches architecture
                     const inputElement = findDeep('textarea, [contenteditable="true"], input[type="text"], input[placeholder*="Ask"]');
                     if (inputElement) {
@@ -220,22 +211,42 @@ async function executeLiveSearch(query) {
 
             function typeAndSubmit(inputElement) {
                 try {
-                    // Attempt to auto-enable Pro Search
-                    try {
-                        const allButtons = Array.from(document.querySelectorAll('button'));
-                        const proToggle = allButtons.find(b => {
-                            const isProText = (b.innerText || "").toLowerCase().includes('pro');
-                            const parentText = (b.parentElement && b.parentElement.innerText || "").toLowerCase();
-                            const isUnchecked = b.getAttribute('aria-checked') === 'false';
-                            const isSwitch = b.getAttribute('role') === 'switch';
-                            return (isProText && isUnchecked) || (isSwitch && isUnchecked && parentText.includes('pro'));
-                        });
-                        if (proToggle) {
-                            proToggle.click();
-                            console.log("Enabled Pro Search");
+                    if (usePro) {
+                        // Attempt to auto-enable Pro Search
+                        try {
+                            const allButtons = Array.from(document.querySelectorAll('button'));
+                            const proToggle = allButtons.find(b => {
+                                const isProText = (b.innerText || "").toLowerCase().includes('pro');
+                                const parentText = (b.parentElement && b.parentElement.innerText || "").toLowerCase();
+                                const isUnchecked = b.getAttribute('aria-checked') === 'false';
+                                const isSwitch = b.getAttribute('role') === 'switch';
+                                return (isProText && isUnchecked) || (isSwitch && isUnchecked && parentText.includes('pro'));
+                            });
+                            if (proToggle) {
+                                proToggle.click();
+                                console.log("Enabled Pro Search");
+                            }
+                        } catch (e) {
+                            console.log("Could not toggle Pro Search", e);
                         }
-                    } catch (e) {
-                        console.log("Could not toggle Pro Search", e);
+                    } else {
+                        // Turn OFF Pro search if it is accidentally checked!
+                        try {
+                            const allButtons = Array.from(document.querySelectorAll('button'));
+                            const proToggle = allButtons.find(b => {
+                                const isProText = (b.innerText || "").toLowerCase().includes('pro');
+                                const parentText = (b.parentElement && b.parentElement.innerText || "").toLowerCase();
+                                const isChecked = b.getAttribute('aria-checked') === 'true';
+                                const isSwitch = b.getAttribute('role') === 'switch';
+                                return (isProText && isChecked) || (isSwitch && isChecked && parentText.includes('pro'));
+                            });
+                            if (proToggle) {
+                                proToggle.click();
+                                console.log("Disabled Pro Search for speed/limits");
+                            }
+                        } catch (e) {
+                            console.log("Could not disable Pro Search", e);
+                        }
                     }
 
                     // Holy Grail React Input Injection
@@ -299,9 +310,9 @@ async function executeLiveSearch(query) {
                                     let answerText = "";
                                     
                                     if (proseElements && proseElements.length > 0) {
-                                        answerText = Array.from(proseElements).map(el => el.textContent).join('\n\n');
+                                        answerText = Array.from(proseElements).map(el => el.textContent).join('\\n\\n');
                                     } else {
-                                        const paragraphs = Array.from(document.querySelectorAll('main p, div[dir="auto"] p, .break-words p')).map(p => p.textContent).join('\n');
+                                        const paragraphs = Array.from(document.querySelectorAll('main p, div[dir="auto"] p, .break-words p')).map(p => p.textContent).join('\\n');
                                         if (paragraphs.length > 50) {
                                             answerText = paragraphs;
                                         }
@@ -346,5 +357,100 @@ async function executeLiveSearch(query) {
     });
 }
 
-// Start polling
-pollForJobs();
+// ── Trendlyne Injected Functions ───────────────────────────────────
+
+async function executeTrendlyneSearch(ticker) {
+    return new Promise((resolve) => {
+        try {
+            // Trendlyne's main search bar:
+            const searchInput = document.querySelector('input[placeholder*="Search Stock"], input[name="q"], .tl-search-input');
+            if (!searchInput) {
+                resolve({ error: "Trendlyne search bar not found" });
+                return;
+            }
+            
+            // Type the ticker
+            searchInput.focus();
+            searchInput.value = "";
+            document.execCommand('insertText', false, ticker);
+            
+            // Wait for dropdown
+            setTimeout(() => {
+                const dropdownItems = document.querySelectorAll('.ui-menu-item a, .search-result-item');
+                let found = null;
+                for (let item of dropdownItems) {
+                    if (item.innerText.toLowerCase().includes(ticker.toLowerCase())) {
+                        found = item;
+                        break;
+                    }
+                }
+                if (!found && dropdownItems.length > 0) found = dropdownItems[0];
+                
+                if (found) {
+                    found.click();
+                    resolve({ success: true, clicked: found.innerText });
+                } else {
+                    const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true });
+                    searchInput.dispatchEvent(enterEvent);
+                    resolve({ success: true, method: "enter_key" });
+                }
+            }, 2000);
+        } catch(e) {
+            resolve({ error: "executeTrendlyneSearch error: " + e.message });
+        }
+    });
+}
+
+function extractTrendlyneData() {
+    try {
+        const dvmScore = document.querySelector('.dvm-score, .score-container')?.innerText || "DVM Score not found";
+        const metrics = Array.from(document.querySelectorAll('.metric-item, .alert-item')).map(m => m.innerText);
+        
+        // Sometimes the DVM is inside specific divs: 
+        const durability = document.querySelector('div[title*="Durability"]')?.innerText || "N/A";
+        const valuation = document.querySelector('div[title*="Valuation"]')?.innerText || "N/A";
+        const momentum = document.querySelector('div[title*="Momentum"]')?.innerText || "N/A";
+
+        // Try extracting any red/green alerts (e.g., volume shockers)
+        const alerts = Array.from(document.querySelectorAll('.tl-alert, .technical-alert')).map(el => el.innerText);
+
+        return {
+            dvm_score_raw: dvmScore,
+            durability: durability,
+            valuation: valuation,
+            momentum: momentum,
+            alerts: alerts,
+            metrics: metrics,
+            url: window.location.href
+        };
+    } catch(e) {
+        return { error: "extractTrendlyneData error: " + e.message };
+    }
+}
+
+// ── StockGro Injected Functions ───────────────────────────────────
+function extractStockGroData() {
+    try {
+        const data = {};
+        data.url = window.location.href;
+        data.pageTitle = document.title;
+        
+        // Extract links from nav to see what sections exist
+        const navLinks = Array.from(document.querySelectorAll('a')).map(a => a.href);
+        data.navLinks = [...new Set(navLinks)];
+        
+        // Extract all visible text blocks that might contain portfolio or expert names
+        const textBlocks = Array.from(document.querySelectorAll('div, span, p, h1, h2, h3'))
+            .filter(el => {
+                const rect = el.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0 && el.innerText && el.innerText.trim().length > 0;
+            })
+            .map(el => el.innerText.trim());
+            
+        data.visibleTextSample = [...new Set(textBlocks)].slice(0, 50); // first 50 unique text nodes
+        
+        return data;
+    } catch(e) {
+        return { error: "extractStockGroData error: " + e.message };
+    }
+}

@@ -66,6 +66,18 @@ class PerplexityTraderAPI:
             if not live_narrative or "Error:" in live_narrative:
                 errors.append(f"Macro query failed: {live_narrative}")
                 
+        elif phase == "trendlyne_scan":
+            trendlyne_data = self.client.fetch_trendlyne_data(ticker)
+            if "error" in trendlyne_data:
+                logger.error(f"Trendlyne query failed: {trendlyne_data['error']}")
+            return trendlyne_data
+            
+        elif phase == "stockgro_scan":
+            stockgro_data = self.client.fetch_stockgro_data()
+            if "error" in stockgro_data:
+                logger.error(f"StockGro query failed: {stockgro_data['error']}")
+            return stockgro_data
+                
         elif phase == "earnings":
             live_narrative = self.client.ask_earnings_intel(ticker)
             if not live_narrative or "Error:" in live_narrative:
