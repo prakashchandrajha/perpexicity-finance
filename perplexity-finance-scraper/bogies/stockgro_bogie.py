@@ -5,31 +5,6 @@ from loguru import logger
 class StockGroBogie:
     def __init__(self, client: PerplexityExtensionClient):
         self.client = client
-        self.js_script = """
-function() {
-    try {
-        const data = {};
-        data.url = window.location.href;
-        data.pageTitle = document.title;
-        
-        const navLinks = Array.from(document.querySelectorAll('a')).map(a => a.href);
-        data.navLinks = [...new Set(navLinks)];
-        
-        const textBlocks = Array.from(document.querySelectorAll('div, span, p, h1, h2, h3'))
-            .filter(el => {
-                const rect = el.getBoundingClientRect();
-                return rect.width > 0 && rect.height > 0 && el.innerText && el.innerText.trim().length > 0;
-            })
-            .map(el => el.innerText.trim());
-            
-        data.visibleTextSample = [...new Set(textBlocks)].slice(0, 50);
-        return data;
-    } catch(e) {
-        return { error: "extractStockGroData error: " + e.message };
-    }
-}()
-        """
-
     def extract_ideas(self) -> dict:
         """
         Runs the StockGro extraction playbook.

@@ -11,8 +11,25 @@ class TrendlyneClientError(Exception):
 class TrendlyneExtensionClient:
     def __init__(self, timeout_seconds=60):
         self.timeout_seconds = timeout_seconds
+        self._ensure_server()
+
+    def _ensure_server(self) -> None:
+        try:
+            requests.get(f"{SERVER_URL}/health", timeout=1)
+            return
+        except requests.exceptions.RequestException:
+            pass
+        logger.warning(f"[ExtClient] Trendlyne server at {SERVER_URL} offline. Auto-launching background server...")
+        import subprocess, sys
+        from pathlib import Path
+        root_dir = Path(__file__).resolve().parent.parent
+        server_script = root_dir / "server" / "extension_server.py"
+        if server_script.exists():
+            subprocess.Popen([sys.executable, str(server_script)], cwd=root_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(2)
         
     def ask_marketmind(self, ticker: str, query: str) -> str:
+        self._ensure_server()
         job_id = uuid.uuid4().hex
         logger.info(f"[Trendlyne Client] Queueing job {job_id} for {ticker}")
         

@@ -13,7 +13,22 @@ class PerplexityExtensionClient:
     The heavy lifting is done by your real Chrome Extension.
     """
     def __init__(self):
-        pass
+        self._ensure_server()
+
+    def _ensure_server(self) -> None:
+        try:
+            requests.get(f"{SERVER_URL}/get_job", timeout=1)
+            return
+        except requests.exceptions.RequestException:
+            pass
+        logger.warning(f"[ExtClient] Perplexity server at {SERVER_URL} offline. Auto-launching background server...")
+        import subprocess, sys
+        from pathlib import Path
+        root_dir = Path(__file__).resolve().parent.parent
+        server_script = root_dir / "scraper" / "extension_server.py"
+        if server_script.exists():
+            subprocess.Popen([sys.executable, str(server_script)], cwd=root_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(2)
 
     def _wait_for_result(self, job_id: str, timeout: int = 150) -> dict:
         start_time = time.time()
