@@ -1,0 +1,1463 @@
+{
+  "phase": "pre_market",
+  "source": "screener.in",
+  "timestamp": "2026-07-01T15:21:31.496699+00:00",
+  "context": null,
+  "strategy_note": "Screener output gates universe selection and position sizing only; entries/exits must come from broker/chart data.",
+  "screen_candidates": [
+    {
+      "name": "SPARC",
+      "symbol": "SPARC",
+      "metrics": {
+        "CMP Rs.": "237.50",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "7712.31",
+        "NP Qtr Rs.Cr.": "1760.70",
+        "Name": "SPARC",
+        "P/E": "4.93",
+        "QoQ Profits %": "2285.30",
+        "QoQ Sales %": "21831.60",
+        "Qtr Profit Var %": "2987.34",
+        "Qtr Sales Var %": "6715.81",
+        "ROCE %": "165.00",
+        "S.No.": "1.",
+        "Sales Qtr Rs.Cr.": "1853.22",
+        "_href": "/company/SPARC/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Timex Group",
+      "symbol": "TIMEX",
+      "metrics": {
+        "CMP Rs.": "519.25",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "5233.90",
+        "NP Qtr Rs.Cr.": "27.34",
+        "Name": "Timex Group",
+        "P/E": "66.03",
+        "QoQ Profits %": "754.38",
+        "QoQ Sales %": "55.99",
+        "Qtr Profit Var %": "212.12",
+        "Qtr Sales Var %": "73.69",
+        "ROCE %": "92.77",
+        "S.No.": "2.",
+        "Sales Qtr Rs.Cr.": "235.20",
+        "_href": "/company/TIMEX/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Waaree Renewab.",
+      "symbol": "WAAREERTL",
+      "metrics": {
+        "CMP Rs.": "1040.10",
+        "Div Yld %": "0.10",
+        "Mar Cap Rs.Cr.": "10857.27",
+        "NP Qtr Rs.Cr.": "157.31",
+        "Name": "Waaree Renewab.",
+        "P/E": "22.50",
+        "QoQ Profits %": "29.27",
+        "QoQ Sales %": "29.54",
+        "Qtr Profit Var %": "62.18",
+        "Qtr Sales Var %": "131.33",
+        "ROCE %": "85.38",
+        "S.No.": "3.",
+        "Sales Qtr Rs.Cr.": "1102.34",
+        "_href": "/company/WAAREERTL/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Multi Comm. Exc.",
+      "symbol": "MCX",
+      "metrics": {
+        "CMP Rs.": "2962.00",
+        "Div Yld %": "0.20",
+        "Mar Cap Rs.Cr.": "75535.24",
+        "NP Qtr Rs.Cr.": "529.77",
+        "Name": "Multi Comm. Exc.",
+        "P/E": "56.73",
+        "QoQ Profits %": "32.07",
+        "QoQ Sales %": "33.55",
+        "Qtr Profit Var %": "291.09",
+        "Qtr Sales Var %": "205.13",
+        "ROCE %": "71.37",
+        "S.No.": "4.",
+        "Sales Qtr Rs.Cr.": "888.94",
+        "_href": "/company/MCX/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Emkay Tools",
+      "symbol": "ETL",
+      "metrics": {
+        "CMP Rs.": "1011.00",
+        "Div Yld %": "0.25",
+        "Mar Cap Rs.Cr.": "1078.87",
+        "NP Qtr Rs.Cr.": "34.36",
+        "Name": "Emkay Tools",
+        "P/E": "18.37",
+        "QoQ Profits %": "41.05",
+        "QoQ Sales %": "33.27",
+        "Qtr Profit Var %": "39.96",
+        "Qtr Sales Var %": "31.74",
+        "ROCE %": "70.68",
+        "S.No.": "5.",
+        "Sales Qtr Rs.Cr.": "82.48",
+        "_href": "/company/ETL/"
+      },
+      "bot_score": 76,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality"
+      ]
+    },
+    {
+      "name": "Hindustan Zinc",
+      "symbol": "HINDZINC",
+      "metrics": {
+        "CMP Rs.": "524.40",
+        "Div Yld %": "2.10",
+        "Mar Cap Rs.Cr.": "221575.73",
+        "NP Qtr Rs.Cr.": "4997.00",
+        "Name": "Hindustan Zinc",
+        "P/E": "16.22",
+        "QoQ Profits %": "28.82",
+        "QoQ Sales %": "23.49",
+        "Qtr Profit Var %": "67.91",
+        "Qtr Sales Var %": "49.19",
+        "ROCE %": "69.25",
+        "S.No.": "6.",
+        "Sales Qtr Rs.Cr.": "13488.00",
+        "_href": "/company/HINDZINC/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Websol Energy",
+      "symbol": "WEBELSOLAR",
+      "metrics": {
+        "CMP Rs.": "100.88",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "4372.93",
+        "NP Qtr Rs.Cr.": "124.50",
+        "Name": "Websol Energy",
+        "P/E": "14.38",
+        "QoQ Profits %": "91.60",
+        "QoQ Sales %": "53.80",
+        "Qtr Profit Var %": "152.31",
+        "Qtr Sales Var %": "132.07",
+        "ROCE %": "63.18",
+        "S.No.": "7.",
+        "Sales Qtr Rs.Cr.": "401.45",
+        "_href": "/company/WEBELSOLAR/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Sigma Advanced System",
+      "symbol": "SIGMAADV",
+      "metrics": {
+        "CMP Rs.": "581.35",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "10256.79",
+        "NP Qtr Rs.Cr.": "128.45",
+        "Name": "Sigma Advanced System",
+        "P/E": "36.98",
+        "QoQ Profits %": "12570.87",
+        "QoQ Sales %": "121.56",
+        "Qtr Profit Var %": "1400.69",
+        "Qtr Sales Var %": "469.05",
+        "ROCE %": "60.82",
+        "S.No.": "8.",
+        "Sales Qtr Rs.Cr.": "322.82",
+        "_href": "/company/SIGMAADV/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Tenneco Clean",
+      "symbol": "TENNIND",
+      "metrics": {
+        "CMP Rs.": "603.95",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "24371.57",
+        "NP Qtr Rs.Cr.": "166.79",
+        "Name": "Tenneco Clean",
+        "P/E": "39.09",
+        "QoQ Profits %": "40.38",
+        "QoQ Sales %": "20.79",
+        "Qtr Profit Var %": "18.87",
+        "Qtr Sales Var %": "17.09",
+        "ROCE %": "60.76",
+        "S.No.": "9.",
+        "Sales Qtr Rs.Cr.": "1552.45",
+        "_href": "/company/TENNIND/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Vivid Electromech",
+      "symbol": "VIVIDEL",
+      "metrics": {
+        "CMP Rs.": "1224.75",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "1088.54",
+        "NP Qtr Rs.Cr.": "22.16",
+        "Name": "Vivid Electromech",
+        "P/E": "34.44",
+        "QoQ Profits %": "134.75",
+        "QoQ Sales %": "83.60",
+        "Qtr Profit Var %": "41.69",
+        "Qtr Sales Var %": "27.96",
+        "ROCE %": "58.63",
+        "S.No.": "10.",
+        "Sales Qtr Rs.Cr.": "129.57",
+        "_href": "/company/VIVIDEL/"
+      },
+      "bot_score": 76,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality"
+      ]
+    },
+    {
+      "name": "Swaraj Engines",
+      "symbol": "SWARAJENG",
+      "metrics": {
+        "CMP Rs.": "4038.70",
+        "Div Yld %": "2.72",
+        "Mar Cap Rs.Cr.": "4907.76",
+        "NP Qtr Rs.Cr.": "54.56",
+        "Name": "Swaraj Engines",
+        "P/E": "24.79",
+        "QoQ Profits %": "29.60",
+        "QoQ Sales %": "15.34",
+        "Qtr Profit Var %": "20.12",
+        "Qtr Sales Var %": "20.18",
+        "ROCE %": "58.38",
+        "S.No.": "11.",
+        "Sales Qtr Rs.Cr.": "545.79",
+        "_href": "/company/SWARAJENG/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "BSE",
+      "symbol": "BSE",
+      "metrics": {
+        "CMP Rs.": "3944.10",
+        "Div Yld %": "0.25",
+        "Mar Cap Rs.Cr.": "160642.83",
+        "NP Qtr Rs.Cr.": "795.47",
+        "Name": "BSE",
+        "P/E": "64.64",
+        "QoQ Profits %": "33.34",
+        "QoQ Sales %": "25.67",
+        "Qtr Profit Var %": "61.47",
+        "Qtr Sales Var %": "84.67",
+        "ROCE %": "58.03",
+        "S.No.": "12.",
+        "Sales Qtr Rs.Cr.": "1563.51",
+        "_href": "/company/BSE/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Sanofi India",
+      "symbol": "SANOFI",
+      "metrics": {
+        "CMP Rs.": "3460.40",
+        "Div Yld %": "2.17",
+        "Mar Cap Rs.Cr.": "7969.07",
+        "NP Qtr Rs.Cr.": "102.60",
+        "Name": "Sanofi India",
+        "P/E": "24.24",
+        "QoQ Profits %": "66.29",
+        "QoQ Sales %": "12.51",
+        "Qtr Profit Var %": "-14.14",
+        "Qtr Sales Var %": "-11.87",
+        "ROCE %": "57.51",
+        "S.No.": "13.",
+        "Sales Qtr Rs.Cr.": "472.30",
+        "_href": "/company/SANOFI/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Crizac",
+      "symbol": "CRIZAC",
+      "metrics": {
+        "CMP Rs.": "199.14",
+        "Div Yld %": "4.02",
+        "Mar Cap Rs.Cr.": "3484.43",
+        "NP Qtr Rs.Cr.": "74.50",
+        "Name": "Crizac",
+        "P/E": "15.90",
+        "QoQ Profits %": "47.44",
+        "QoQ Sales %": "40.59",
+        "Qtr Profit Var %": "50.26",
+        "Qtr Sales Var %": "15.02",
+        "ROCE %": "52.34",
+        "S.No.": "14.",
+        "Sales Qtr Rs.Cr.": "391.73",
+        "_href": "/company/CRIZAC/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "3M India",
+      "symbol": "3MINDIA",
+      "metrics": {
+        "CMP Rs.": "33435.00",
+        "Div Yld %": "0.48",
+        "Mar Cap Rs.Cr.": "37634.52",
+        "NP Qtr Rs.Cr.": "215.34",
+        "Name": "3M India",
+        "P/E": "69.40",
+        "QoQ Profits %": "447.04",
+        "QoQ Sales %": "13.94",
+        "Qtr Profit Var %": "159.73",
+        "Qtr Sales Var %": "16.78",
+        "ROCE %": "50.05",
+        "S.No.": "15.",
+        "Sales Qtr Rs.Cr.": "1399.24",
+        "_href": "/company/3MINDIA/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Rajesh Power",
+      "symbol": "544291",
+      "metrics": {
+        "CMP Rs.": "805.55",
+        "Div Yld %": "0.12",
+        "Mar Cap Rs.Cr.": "1450.59",
+        "NP Qtr Rs.Cr.": "79.48",
+        "Name": "Rajesh Power",
+        "P/E": "10.51",
+        "QoQ Profits %": "36.89",
+        "QoQ Sales %": "55.24",
+        "Qtr Profit Var %": "32.19",
+        "Qtr Sales Var %": "30.45",
+        "ROCE %": "48.56",
+        "S.No.": "16.",
+        "Sales Qtr Rs.Cr.": "990.12",
+        "_href": "/company/544291/"
+      },
+      "bot_score": 76,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality"
+      ]
+    },
+    {
+      "name": "Kernex Microsys.",
+      "symbol": "KERNEX",
+      "metrics": {
+        "CMP Rs.": "2293.60",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "3846.68",
+        "NP Qtr Rs.Cr.": "68.26",
+        "Name": "Kernex Microsys.",
+        "P/E": "43.54",
+        "QoQ Profits %": "1026.40",
+        "QoQ Sales %": "250.66",
+        "Qtr Profit Var %": "109.45",
+        "Qtr Sales Var %": "206.46",
+        "ROCE %": "47.83",
+        "S.No.": "17.",
+        "Sales Qtr Rs.Cr.": "254.58",
+        "_href": "/company/KERNEX/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Atlanta Electric",
+      "symbol": "ATLANTAELE",
+      "metrics": {
+        "CMP Rs.": "1797.00",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "13813.38",
+        "NP Qtr Rs.Cr.": "102.19",
+        "Name": "Atlanta Electric",
+        "P/E": "68.15",
+        "QoQ Profits %": "135.79",
+        "QoQ Sales %": "58.45",
+        "Qtr Profit Var %": "129.07",
+        "Qtr Sales Var %": "81.69",
+        "ROCE %": "45.26",
+        "S.No.": "18.",
+        "Sales Qtr Rs.Cr.": "747.62",
+        "_href": "/company/ATLANTAELE/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Emmvee Photovol.",
+      "symbol": "EMMVEE",
+      "metrics": {
+        "CMP Rs.": "351.95",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "24370.63",
+        "NP Qtr Rs.Cr.": "392.38",
+        "Name": "Emmvee Photovol.",
+        "P/E": "22.53",
+        "QoQ Profits %": "48.83",
+        "QoQ Sales %": "50.91",
+        "Qtr Profit Var %": "89.43",
+        "Qtr Sales Var %": "62.25",
+        "ROCE %": "44.83",
+        "S.No.": "19.",
+        "Sales Qtr Rs.Cr.": "1738.81",
+        "_href": "/company/EMMVEE/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Anondita Medi.",
+      "symbol": "ANONDITA",
+      "metrics": {
+        "CMP Rs.": "1169.65",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "2115.50",
+        "NP Qtr Rs.Cr.": "21.27",
+        "Name": "Anondita Medi.",
+        "P/E": "63.24",
+        "QoQ Profits %": "63.36",
+        "QoQ Sales %": "54.01",
+        "Qtr Profit Var %": "85.87",
+        "Qtr Sales Var %": "82.76",
+        "ROCE %": "43.60",
+        "S.No.": "20.",
+        "Sales Qtr Rs.Cr.": "83.32",
+        "_href": "/company/ANONDITA/consolidated/"
+      },
+      "bot_score": 76,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality"
+      ]
+    },
+    {
+      "name": "Garden Reach Sh.",
+      "symbol": "GRSE",
+      "metrics": {
+        "CMP Rs.": "2738.60",
+        "Div Yld %": "0.51",
+        "Mar Cap Rs.Cr.": "31370.06",
+        "NP Qtr Rs.Cr.": "303.20",
+        "Name": "Garden Reach Sh.",
+        "P/E": "41.94",
+        "QoQ Profits %": "77.55",
+        "QoQ Sales %": "11.79",
+        "Qtr Profit Var %": "24.14",
+        "Qtr Sales Var %": "29.06",
+        "ROCE %": "42.96",
+        "S.No.": "21.",
+        "Sales Qtr Rs.Cr.": "2119.21",
+        "_href": "/company/GRSE/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "Hindustan Copper",
+      "symbol": "HINDCOPPER",
+      "metrics": {
+        "CMP Rs.": "490.60",
+        "Div Yld %": "0.30",
+        "Mar Cap Rs.Cr.": "47456.40",
+        "NP Qtr Rs.Cr.": "444.06",
+        "Name": "Hindustan Copper",
+        "P/E": "47.94",
+        "QoQ Profits %": "184.09",
+        "QoQ Sales %": "68.20",
+        "Qtr Profit Var %": "133.05",
+        "Qtr Sales Var %": "58.06",
+        "ROCE %": "42.40",
+        "S.No.": "22.",
+        "Sales Qtr Rs.Cr.": "1156.08",
+        "_href": "/company/HINDCOPPER/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "V-Marc India",
+      "symbol": "VMARCIND",
+      "metrics": {
+        "CMP Rs.": "1596.05",
+        "Div Yld %": "0.00",
+        "Mar Cap Rs.Cr.": "3897.67",
+        "NP Qtr Rs.Cr.": "63.63",
+        "Name": "V-Marc India",
+        "P/E": "38.95",
+        "QoQ Profits %": "74.62",
+        "QoQ Sales %": "59.85",
+        "Qtr Profit Var %": "157.30",
+        "Qtr Sales Var %": "97.52",
+        "ROCE %": "41.38",
+        "S.No.": "23.",
+        "Sales Qtr Rs.Cr.": "1105.46",
+        "_href": "/company/VMARCIND/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "MPS",
+      "symbol": "MPSLTD",
+      "metrics": {
+        "CMP Rs.": "1896.50",
+        "Div Yld %": "4.38",
+        "Mar Cap Rs.Cr.": "3237.34",
+        "NP Qtr Rs.Cr.": "47.04",
+        "Name": "MPS",
+        "P/E": "19.33",
+        "QoQ Profits %": "32.51",
+        "QoQ Sales %": "12.42",
+        "Qtr Profit Var %": "9.86",
+        "Qtr Sales Var %": "12.66",
+        "ROCE %": "39.27",
+        "S.No.": "24.",
+        "Sales Qtr Rs.Cr.": "205.16",
+        "_href": "/company/MPSLTD/consolidated/"
+      },
+      "bot_score": 84,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "tradable size proxy",
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality",
+        "size_ok"
+      ]
+    },
+    {
+      "name": "K.P. Energy",
+      "symbol": "KPEL",
+      "metrics": {
+        "CMP Rs.": "334.35",
+        "Div Yld %": "0.19",
+        "Mar Cap Rs.Cr.": "2269.16",
+        "NP Qtr Rs.Cr.": "78.69",
+        "Name": "K.P. Energy",
+        "P/E": "12.51",
+        "QoQ Profits %": "90.30",
+        "QoQ Sales %": "83.15",
+        "Qtr Profit Var %": "71.85",
+        "Qtr Sales Var %": "57.48",
+        "ROCE %": "39.22",
+        "S.No.": "25.",
+        "Sales Qtr Rs.Cr.": "631.81",
+        "_href": "/company/KPEL/consolidated/"
+      },
+      "bot_score": 76,
+      "risk_bucket": "low",
+      "intraday_use": "watch",
+      "position_size_multiplier": 1.0,
+      "allowed_bot_actions": [
+        "normal_trade"
+      ],
+      "reasons": [
+        "strong ROCE",
+        "quarterly sales acceleration",
+        "quarterly profit acceleration"
+      ],
+      "warnings": [],
+      "blocked_reasons": [],
+      "watchlist_tags": [
+        "earnings_acceleration",
+        "quality"
+      ]
+    }
+  ],
+  "company_snapshot": null,
+  "raw_result": {
+    "job_id": "25635c4b28c740ae8cc200c682bf1405",
+    "job_type": "screen",
+    "url": "https://www.screener.in/screen/raw/?query=Market%20Capitalization%20%3E%201000%20AND%0AQoQ%20Profits%20%3E%2020%20AND%0AQoQ%20Sales%20%3E%2010%20AND%0AReturn%20on%20capital%20employed%20%3E%2012%20AND%0ADebt%20to%20equity%20%3C%201.2",
+    "title": "Query Results",
+    "captured_at": "2026-07-01T15:21:30.657Z",
+    "tables": [
+      {
+        "headers": [
+          "S.No.",
+          "Name",
+          "CMP Rs.",
+          "P/E",
+          "Mar Cap Rs.Cr.",
+          "Div Yld %",
+          "NP Qtr Rs.Cr.",
+          "Qtr Profit Var %",
+          "Sales Qtr Rs.Cr.",
+          "Qtr Sales Var %",
+          "ROCE %",
+          "QoQ Profits %",
+          "QoQ Sales %"
+        ],
+        "heading": "",
+        "index": 0,
+        "rows": [
+          {
+            "CMP Rs.": "CMP Rs.",
+            "Div Yld %": "Div Yld %",
+            "Mar Cap Rs.Cr.": "Mar Cap Rs.Cr.",
+            "NP Qtr Rs.Cr.": "NP Qtr Rs.Cr.",
+            "Name": "Name",
+            "P/E": "P/E",
+            "QoQ Profits %": "QoQ Profits %",
+            "QoQ Sales %": "QoQ Sales %",
+            "Qtr Profit Var %": "Qtr Profit Var %",
+            "Qtr Sales Var %": "Qtr Sales Var %",
+            "ROCE %": "ROCE %",
+            "S.No.": "S.No.",
+            "Sales Qtr Rs.Cr.": "Sales Qtr Rs.Cr."
+          },
+          {
+            "CMP Rs.": "237.50",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "7712.31",
+            "NP Qtr Rs.Cr.": "1760.70",
+            "Name": "SPARC",
+            "P/E": "4.93",
+            "QoQ Profits %": "2285.30",
+            "QoQ Sales %": "21831.60",
+            "Qtr Profit Var %": "2987.34",
+            "Qtr Sales Var %": "6715.81",
+            "ROCE %": "165.00",
+            "S.No.": "1.",
+            "Sales Qtr Rs.Cr.": "1853.22",
+            "_href": "/company/SPARC/"
+          },
+          {
+            "CMP Rs.": "519.25",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "5233.90",
+            "NP Qtr Rs.Cr.": "27.34",
+            "Name": "Timex Group",
+            "P/E": "66.03",
+            "QoQ Profits %": "754.38",
+            "QoQ Sales %": "55.99",
+            "Qtr Profit Var %": "212.12",
+            "Qtr Sales Var %": "73.69",
+            "ROCE %": "92.77",
+            "S.No.": "2.",
+            "Sales Qtr Rs.Cr.": "235.20",
+            "_href": "/company/TIMEX/"
+          },
+          {
+            "CMP Rs.": "1040.10",
+            "Div Yld %": "0.10",
+            "Mar Cap Rs.Cr.": "10857.27",
+            "NP Qtr Rs.Cr.": "157.31",
+            "Name": "Waaree Renewab.",
+            "P/E": "22.50",
+            "QoQ Profits %": "29.27",
+            "QoQ Sales %": "29.54",
+            "Qtr Profit Var %": "62.18",
+            "Qtr Sales Var %": "131.33",
+            "ROCE %": "85.38",
+            "S.No.": "3.",
+            "Sales Qtr Rs.Cr.": "1102.34",
+            "_href": "/company/WAAREERTL/"
+          },
+          {
+            "CMP Rs.": "2962.00",
+            "Div Yld %": "0.20",
+            "Mar Cap Rs.Cr.": "75535.24",
+            "NP Qtr Rs.Cr.": "529.77",
+            "Name": "Multi Comm. Exc.",
+            "P/E": "56.73",
+            "QoQ Profits %": "32.07",
+            "QoQ Sales %": "33.55",
+            "Qtr Profit Var %": "291.09",
+            "Qtr Sales Var %": "205.13",
+            "ROCE %": "71.37",
+            "S.No.": "4.",
+            "Sales Qtr Rs.Cr.": "888.94",
+            "_href": "/company/MCX/consolidated/"
+          },
+          {
+            "CMP Rs.": "1011.00",
+            "Div Yld %": "0.25",
+            "Mar Cap Rs.Cr.": "1078.87",
+            "NP Qtr Rs.Cr.": "34.36",
+            "Name": "Emkay Tools",
+            "P/E": "18.37",
+            "QoQ Profits %": "41.05",
+            "QoQ Sales %": "33.27",
+            "Qtr Profit Var %": "39.96",
+            "Qtr Sales Var %": "31.74",
+            "ROCE %": "70.68",
+            "S.No.": "5.",
+            "Sales Qtr Rs.Cr.": "82.48",
+            "_href": "/company/ETL/"
+          },
+          {
+            "CMP Rs.": "524.40",
+            "Div Yld %": "2.10",
+            "Mar Cap Rs.Cr.": "221575.73",
+            "NP Qtr Rs.Cr.": "4997.00",
+            "Name": "Hindustan Zinc",
+            "P/E": "16.22",
+            "QoQ Profits %": "28.82",
+            "QoQ Sales %": "23.49",
+            "Qtr Profit Var %": "67.91",
+            "Qtr Sales Var %": "49.19",
+            "ROCE %": "69.25",
+            "S.No.": "6.",
+            "Sales Qtr Rs.Cr.": "13488.00",
+            "_href": "/company/HINDZINC/"
+          },
+          {
+            "CMP Rs.": "100.88",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "4372.93",
+            "NP Qtr Rs.Cr.": "124.50",
+            "Name": "Websol Energy",
+            "P/E": "14.38",
+            "QoQ Profits %": "91.60",
+            "QoQ Sales %": "53.80",
+            "Qtr Profit Var %": "152.31",
+            "Qtr Sales Var %": "132.07",
+            "ROCE %": "63.18",
+            "S.No.": "7.",
+            "Sales Qtr Rs.Cr.": "401.45",
+            "_href": "/company/WEBELSOLAR/"
+          },
+          {
+            "CMP Rs.": "581.35",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "10256.79",
+            "NP Qtr Rs.Cr.": "128.45",
+            "Name": "Sigma Advanced System",
+            "P/E": "36.98",
+            "QoQ Profits %": "12570.87",
+            "QoQ Sales %": "121.56",
+            "Qtr Profit Var %": "1400.69",
+            "Qtr Sales Var %": "469.05",
+            "ROCE %": "60.82",
+            "S.No.": "8.",
+            "Sales Qtr Rs.Cr.": "322.82",
+            "_href": "/company/SIGMAADV/consolidated/"
+          },
+          {
+            "CMP Rs.": "603.95",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "24371.57",
+            "NP Qtr Rs.Cr.": "166.79",
+            "Name": "Tenneco Clean",
+            "P/E": "39.09",
+            "QoQ Profits %": "40.38",
+            "QoQ Sales %": "20.79",
+            "Qtr Profit Var %": "18.87",
+            "Qtr Sales Var %": "17.09",
+            "ROCE %": "60.76",
+            "S.No.": "9.",
+            "Sales Qtr Rs.Cr.": "1552.45",
+            "_href": "/company/TENNIND/consolidated/"
+          },
+          {
+            "CMP Rs.": "1224.75",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "1088.54",
+            "NP Qtr Rs.Cr.": "22.16",
+            "Name": "Vivid Electromech",
+            "P/E": "34.44",
+            "QoQ Profits %": "134.75",
+            "QoQ Sales %": "83.60",
+            "Qtr Profit Var %": "41.69",
+            "Qtr Sales Var %": "27.96",
+            "ROCE %": "58.63",
+            "S.No.": "10.",
+            "Sales Qtr Rs.Cr.": "129.57",
+            "_href": "/company/VIVIDEL/"
+          },
+          {
+            "CMP Rs.": "4038.70",
+            "Div Yld %": "2.72",
+            "Mar Cap Rs.Cr.": "4907.76",
+            "NP Qtr Rs.Cr.": "54.56",
+            "Name": "Swaraj Engines",
+            "P/E": "24.79",
+            "QoQ Profits %": "29.60",
+            "QoQ Sales %": "15.34",
+            "Qtr Profit Var %": "20.12",
+            "Qtr Sales Var %": "20.18",
+            "ROCE %": "58.38",
+            "S.No.": "11.",
+            "Sales Qtr Rs.Cr.": "545.79",
+            "_href": "/company/SWARAJENG/"
+          },
+          {
+            "CMP Rs.": "3944.10",
+            "Div Yld %": "0.25",
+            "Mar Cap Rs.Cr.": "160642.83",
+            "NP Qtr Rs.Cr.": "795.47",
+            "Name": "BSE",
+            "P/E": "64.64",
+            "QoQ Profits %": "33.34",
+            "QoQ Sales %": "25.67",
+            "Qtr Profit Var %": "61.47",
+            "Qtr Sales Var %": "84.67",
+            "ROCE %": "58.03",
+            "S.No.": "12.",
+            "Sales Qtr Rs.Cr.": "1563.51",
+            "_href": "/company/BSE/consolidated/"
+          },
+          {
+            "CMP Rs.": "3460.40",
+            "Div Yld %": "2.17",
+            "Mar Cap Rs.Cr.": "7969.07",
+            "NP Qtr Rs.Cr.": "102.60",
+            "Name": "Sanofi India",
+            "P/E": "24.24",
+            "QoQ Profits %": "66.29",
+            "QoQ Sales %": "12.51",
+            "Qtr Profit Var %": "-14.14",
+            "Qtr Sales Var %": "-11.87",
+            "ROCE %": "57.51",
+            "S.No.": "13.",
+            "Sales Qtr Rs.Cr.": "472.30",
+            "_href": "/company/SANOFI/"
+          },
+          {
+            "CMP Rs.": "199.14",
+            "Div Yld %": "4.02",
+            "Mar Cap Rs.Cr.": "3484.43",
+            "NP Qtr Rs.Cr.": "74.50",
+            "Name": "Crizac",
+            "P/E": "15.90",
+            "QoQ Profits %": "47.44",
+            "QoQ Sales %": "40.59",
+            "Qtr Profit Var %": "50.26",
+            "Qtr Sales Var %": "15.02",
+            "ROCE %": "52.34",
+            "S.No.": "14.",
+            "Sales Qtr Rs.Cr.": "391.73",
+            "_href": "/company/CRIZAC/consolidated/"
+          },
+          {
+            "CMP Rs.": "33435.00",
+            "Div Yld %": "0.48",
+            "Mar Cap Rs.Cr.": "37634.52",
+            "NP Qtr Rs.Cr.": "215.34",
+            "Name": "3M India",
+            "P/E": "69.40",
+            "QoQ Profits %": "447.04",
+            "QoQ Sales %": "13.94",
+            "Qtr Profit Var %": "159.73",
+            "Qtr Sales Var %": "16.78",
+            "ROCE %": "50.05",
+            "S.No.": "15.",
+            "Sales Qtr Rs.Cr.": "1399.24",
+            "_href": "/company/3MINDIA/"
+          },
+          {
+            "CMP Rs.": "CMP Rs.",
+            "Div Yld %": "Div Yld %",
+            "Mar Cap Rs.Cr.": "Mar Cap Rs.Cr.",
+            "NP Qtr Rs.Cr.": "NP Qtr Rs.Cr.",
+            "Name": "Name",
+            "P/E": "P/E",
+            "QoQ Profits %": "QoQ Profits %",
+            "QoQ Sales %": "QoQ Sales %",
+            "Qtr Profit Var %": "Qtr Profit Var %",
+            "Qtr Sales Var %": "Qtr Sales Var %",
+            "ROCE %": "ROCE %",
+            "S.No.": "S.No.",
+            "Sales Qtr Rs.Cr.": "Sales Qtr Rs.Cr."
+          },
+          {
+            "CMP Rs.": "805.55",
+            "Div Yld %": "0.12",
+            "Mar Cap Rs.Cr.": "1450.59",
+            "NP Qtr Rs.Cr.": "79.48",
+            "Name": "Rajesh Power",
+            "P/E": "10.51",
+            "QoQ Profits %": "36.89",
+            "QoQ Sales %": "55.24",
+            "Qtr Profit Var %": "32.19",
+            "Qtr Sales Var %": "30.45",
+            "ROCE %": "48.56",
+            "S.No.": "16.",
+            "Sales Qtr Rs.Cr.": "990.12",
+            "_href": "/company/544291/"
+          },
+          {
+            "CMP Rs.": "2293.60",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "3846.68",
+            "NP Qtr Rs.Cr.": "68.26",
+            "Name": "Kernex Microsys.",
+            "P/E": "43.54",
+            "QoQ Profits %": "1026.40",
+            "QoQ Sales %": "250.66",
+            "Qtr Profit Var %": "109.45",
+            "Qtr Sales Var %": "206.46",
+            "ROCE %": "47.83",
+            "S.No.": "17.",
+            "Sales Qtr Rs.Cr.": "254.58",
+            "_href": "/company/KERNEX/consolidated/"
+          },
+          {
+            "CMP Rs.": "1797.00",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "13813.38",
+            "NP Qtr Rs.Cr.": "102.19",
+            "Name": "Atlanta Electric",
+            "P/E": "68.15",
+            "QoQ Profits %": "135.79",
+            "QoQ Sales %": "58.45",
+            "Qtr Profit Var %": "129.07",
+            "Qtr Sales Var %": "81.69",
+            "ROCE %": "45.26",
+            "S.No.": "18.",
+            "Sales Qtr Rs.Cr.": "747.62",
+            "_href": "/company/ATLANTAELE/consolidated/"
+          },
+          {
+            "CMP Rs.": "351.95",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "24370.63",
+            "NP Qtr Rs.Cr.": "392.38",
+            "Name": "Emmvee Photovol.",
+            "P/E": "22.53",
+            "QoQ Profits %": "48.83",
+            "QoQ Sales %": "50.91",
+            "Qtr Profit Var %": "89.43",
+            "Qtr Sales Var %": "62.25",
+            "ROCE %": "44.83",
+            "S.No.": "19.",
+            "Sales Qtr Rs.Cr.": "1738.81",
+            "_href": "/company/EMMVEE/consolidated/"
+          },
+          {
+            "CMP Rs.": "1169.65",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "2115.50",
+            "NP Qtr Rs.Cr.": "21.27",
+            "Name": "Anondita Medi.",
+            "P/E": "63.24",
+            "QoQ Profits %": "63.36",
+            "QoQ Sales %": "54.01",
+            "Qtr Profit Var %": "85.87",
+            "Qtr Sales Var %": "82.76",
+            "ROCE %": "43.60",
+            "S.No.": "20.",
+            "Sales Qtr Rs.Cr.": "83.32",
+            "_href": "/company/ANONDITA/consolidated/"
+          },
+          {
+            "CMP Rs.": "2738.60",
+            "Div Yld %": "0.51",
+            "Mar Cap Rs.Cr.": "31370.06",
+            "NP Qtr Rs.Cr.": "303.20",
+            "Name": "Garden Reach Sh.",
+            "P/E": "41.94",
+            "QoQ Profits %": "77.55",
+            "QoQ Sales %": "11.79",
+            "Qtr Profit Var %": "24.14",
+            "Qtr Sales Var %": "29.06",
+            "ROCE %": "42.96",
+            "S.No.": "21.",
+            "Sales Qtr Rs.Cr.": "2119.21",
+            "_href": "/company/GRSE/"
+          },
+          {
+            "CMP Rs.": "490.60",
+            "Div Yld %": "0.30",
+            "Mar Cap Rs.Cr.": "47456.40",
+            "NP Qtr Rs.Cr.": "444.06",
+            "Name": "Hindustan Copper",
+            "P/E": "47.94",
+            "QoQ Profits %": "184.09",
+            "QoQ Sales %": "68.20",
+            "Qtr Profit Var %": "133.05",
+            "Qtr Sales Var %": "58.06",
+            "ROCE %": "42.40",
+            "S.No.": "22.",
+            "Sales Qtr Rs.Cr.": "1156.08",
+            "_href": "/company/HINDCOPPER/"
+          },
+          {
+            "CMP Rs.": "1596.05",
+            "Div Yld %": "0.00",
+            "Mar Cap Rs.Cr.": "3897.67",
+            "NP Qtr Rs.Cr.": "63.63",
+            "Name": "V-Marc India",
+            "P/E": "38.95",
+            "QoQ Profits %": "74.62",
+            "QoQ Sales %": "59.85",
+            "Qtr Profit Var %": "157.30",
+            "Qtr Sales Var %": "97.52",
+            "ROCE %": "41.38",
+            "S.No.": "23.",
+            "Sales Qtr Rs.Cr.": "1105.46",
+            "_href": "/company/VMARCIND/"
+          },
+          {
+            "CMP Rs.": "1896.50",
+            "Div Yld %": "4.38",
+            "Mar Cap Rs.Cr.": "3237.34",
+            "NP Qtr Rs.Cr.": "47.04",
+            "Name": "MPS",
+            "P/E": "19.33",
+            "QoQ Profits %": "32.51",
+            "QoQ Sales %": "12.42",
+            "Qtr Profit Var %": "9.86",
+            "Qtr Sales Var %": "12.66",
+            "ROCE %": "39.27",
+            "S.No.": "24.",
+            "Sales Qtr Rs.Cr.": "205.16",
+            "_href": "/company/MPSLTD/consolidated/"
+          },
+          {
+            "CMP Rs.": "334.35",
+            "Div Yld %": "0.19",
+            "Mar Cap Rs.Cr.": "2269.16",
+            "NP Qtr Rs.Cr.": "78.69",
+            "Name": "K.P. Energy",
+            "P/E": "12.51",
+            "QoQ Profits %": "90.30",
+            "QoQ Sales %": "83.15",
+            "Qtr Profit Var %": "71.85",
+            "Qtr Sales Var %": "57.48",
+            "ROCE %": "39.22",
+            "S.No.": "25.",
+            "Sales Qtr Rs.Cr.": "631.81",
+            "_href": "/company/KPEL/consolidated/"
+          }
+        ]
+      }
+    ],
+    "ratios": {},
+    "raw_text": "FEED SCREENS TOOLS PRAKASH Query Results SAVE THIS QUERY 266 results found: Showing page 1 of 11 INDUSTRY EXPORT EDIT COLUMNS S.No. Name CMP Rs. P/E Mar Cap Rs.Cr. Div Yld % NP Qtr Rs.Cr. Qtr Profit Var % Sales Qtr Rs.Cr. Qtr Sales Var % ROCE % QoQ Profits % QoQ Sales % 1. SPARC 237.50 4.93 7712.31 0.00 1760.70 2987.34 1853.22 6715.81 165.00 2285.30 21831.60 2. Timex Group 519.25 66.03 5233.90 0.00 27.34 212.12 235.20 73.69 92.77 754.38 55.99 3. Waaree Renewab. 1040.10 22.50 10857.27 0.10 157.31 62.18 1102.34 131.33 85.38 29.27 29.54 4. Multi Comm. Exc. 2962.00 56.73 75535.24 0.20 529.77 291.09 888.94 205.13 71.37 32.07 33.55 5. Emkay Tools 1011.00 18.37 1078.87 0.25 34.36 39.96 82.48 31.74 70.68 41.05 33.27 6. Hindustan Zinc 524.40 16.22 221575.73 2.10 4997.00 67.91 13488.00 49.19 69.25 28.82 23.49 7. Websol Energy 100.88 14.38 4372.93 0.00 124.50 152.31 401.45 132.07 63.18 91.60 53.80 8. Sigma Advanced System 581.35 36.98 10256.79 0.00 128.45 1400.69 322.82 469.05 60.82 12570.87 121.56 9. Tenneco Clean 603.95 39.09 24371.57 0.00 166.79 18.87 1552.45 17.09 60.76 40.38 20.79 10. Vivid Electromech 1224.75 34.44 1088.54 0.00 22.16 41.69 129.57 27.96 58.63 134.75 83.60 11. Swaraj Engines 4038.70 24.79 4907.76 2.72 54.56 20.12 545.79 20.18 58.38 29.60 15.34 12. BSE 3944.10 64.64 160642.83 0.25 795.47 61.47 1563.51 84.67 58.03 33.34 25.67 13. Sanofi India 3460.40 24.24 7969.07 2.17 102.60 -14.14 472.30 -11.87 57.51 66.29 12.51 14. Crizac 199.14 15.90 3484.43 4.02 74.50 50.26 391.73 15.02 52.34 47.44 40.59 15. 3M India 33435.00 69.40 37634.52 0.48 215.34 159.73 1399.24 16.78 50.05 447.04 13.94 S.No. Name CMP Rs. P/E Mar Cap Rs.Cr. Div Yld % NP Qtr Rs.Cr. Qtr Profit Var % Sales Qtr Rs.Cr. Qtr Sales Var % ROCE % QoQ Profits % QoQ Sales % 16. Rajesh Power 805.55 10.51 1450.59 0.12 79.48 32.19 990.12 30.45 48.56 36.89 55.24 17. Kernex Microsys. 2293.60 43.54 3846.68 0.00 68.26 109.45 254.58 206.46 47.83 1026.40 250.66 18. Atlanta Electric 1797.00 68.15 13813.38 0.00 102.19 129.07 747.62 81.69 45.26 135.79 58.45 19. Emmvee Photovol. 351.95 22.53 24370.63 0.00 392.38 89.43 1738.81 62.25 44.83 48.83 50.91 20. Anondita Medi. 1169.65 63.24 2115.50 0.00 21.27 85.87 83.32 82.76 43.60 63.36 54.01 21. Garden Reach Sh. 2738.60 41.94 31370.06 0.51 303.20 24.14 2119.21 29.06 42.96 77.55 11.79 22. Hindustan Copper 490.60 47.94 47456.40 0.30 444.06 133.05 1156.08 58.06 42.40 184.09 68.20 23. V-Marc India 1596.05 38.95 3897.67 0.00 63.63 157.30 1105.46 97.52 41.38 74.62 59.85 24. MPS 1896.50 19.33 3237.34 4.38 47.04 9.86 205.16 12.66 39.27 32.51 12.42 25. K.P. Energy 334.35 12.51 2269.16 0.19 78.69 71.85 631.81 57.48 39.22 90.30 83.15 1 2 3 4 … 10 11 Next Results per page 10 25 50 Search Query You can customize the query below: Query Custom query example Market capitalization > 500 AND Price to earning < 15 AND Return on capital employed > 22% Detailed guide on creating screens Only companies with Mar 2026 results RUN THIS QUERY SHOW ALL RATIOS Stock analysis and screening tool Mittal Analytics Private Ltd © 2009-2025 Made with in India. Data provided by C-MOTS Internet Technologies Pvt Ltd Terms & Privacy. Product Premium What's new? Learn INSTALL Team About us Support Theme Light Dark Auto",
+    "error": null
+  }
+}

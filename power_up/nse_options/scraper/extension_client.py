@@ -36,7 +36,7 @@ class NseExtensionClient:
             raise
 
     def get_result(self, job_id: str) -> NseOptionResult | None:
-        res = requests.post(f"{self.base_url}/result/{job_id}", json={})
+        res = requests.get(f"{self.base_url}/result/{job_id}")
         if res.status_code == 200:
             return NseOptionResult.model_validate_json(res.text)
         return None

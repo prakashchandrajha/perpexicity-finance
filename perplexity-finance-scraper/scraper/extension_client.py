@@ -211,9 +211,26 @@ class PerplexityExtensionClient:
             logger.error(f"[ExtClient] Failed to execute macro scan via extension: {e}")
             return f"Error: {e}"
 
+    def _ensure_nse_server(self) -> None:
+        NSE_SERVER = "http://127.0.0.1:8778"
+        try:
+            requests.get(f"{NSE_SERVER}/health", timeout=1)
+            return
+        except requests.exceptions.RequestException:
+            pass
+        logger.warning(f"[ExtClient] NSE server at {NSE_SERVER} offline. Auto-launching background server...")
+        import subprocess, sys
+        from pathlib import Path
+        root_dir = Path(__file__).resolve().parent.parent.parent / "power_up" / "nse_options"
+        server_script = root_dir / "server" / "extension_server.py"
+        if server_script.exists():
+            subprocess.Popen([sys.executable, str(server_script)], cwd=root_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(2)
+
     def fetch_options_chain(self, symbol: str, is_index: bool) -> dict:
         """Fetch NSE option chain data via the NSE Options Server at 8778."""
         NSE_SERVER = "http://127.0.0.1:8778"
+        self._ensure_nse_server()
         logger.info(f"[ExtClient] Queueing NSE option chain job for {symbol}...")
         try:
             res = requests.post(f"{NSE_SERVER}/queue", json={"symbol": symbol, "is_index": is_index})
