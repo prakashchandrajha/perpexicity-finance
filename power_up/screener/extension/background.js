@@ -128,6 +128,12 @@ async function poll() {
     if (response.status !== 200) return;
     const payload = await response.json();
     if (!payload.job) return;
+    if (payload.job.job_type === "reload_extension" || payload.job.type === "reload_extension") {
+      console.log("[Screener Bridge] Reloading extension via command from UI!");
+      try { await postJson(`${SERVER}/jobs/${payload.job.id}/result`, { result: { status: "reloaded" } }); } catch(e){}
+      setTimeout(() => chrome.runtime.reload(), 500);
+      return;
+    }
     busy = true;
     await runJob(payload.job);
   } catch (_error) {

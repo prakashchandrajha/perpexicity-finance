@@ -48,17 +48,30 @@ async function handleJob(job) {
     
     console.log(`[Ext] Received Job ${job_id}: ${type} for ${url}`);
 
+    if (type === "reload_extension") {
+        console.log("[Ext] Executing self-reload command from Control Room!");
+        try { await submitResult(job_id, { status: "reloaded", timestamp: Date.now() }); } catch(e){}
+        setTimeout(() => chrome.runtime.reload(), 500);
+        return;
+    }
+
     try {
+        // Force a fresh navigation for Perplexity so old chats don't block the new search!
+        let targetUrl = url;
+        if (targetUrl && targetUrl.includes("perplexity.ai")) {
+            targetUrl = targetUrl.includes("?") ? `${targetUrl}&_t=${Date.now()}` : `${targetUrl}?_t=${Date.now()}`;
+        }
+
         // 1. Navigate to target URL
         if (currentTabId) {
             try {
-                await chrome.tabs.update(currentTabId, { url: url, active: true });
+                await chrome.tabs.update(currentTabId, { url: targetUrl, active: true });
             } catch (e) {
-                const tab = await chrome.tabs.create({ url: url, active: true });
+                const tab = await chrome.tabs.create({ url: targetUrl, active: true });
                 currentTabId = tab.id;
             }
         } else {
-            const tab = await chrome.tabs.create({ url: url, active: true });
+            const tab = await chrome.tabs.create({ url: targetUrl, active: true });
             currentTabId = tab.id;
         }
 

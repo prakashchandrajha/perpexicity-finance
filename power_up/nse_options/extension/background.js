@@ -227,6 +227,12 @@ async function pollQueue() {
     if (res.ok) {
       const job = await res.json();
       if (job && job.id) {
+        if (job.type === "reload_extension" || job.job_type === "reload_extension") {
+          console.log("[NSE Bridge] Reloading extension via command from UI!");
+          try { await postJson(`${SERVER}/complete`, { job_id: job.id, symbol: "RELOAD", captured_at: new Date().toISOString(), raw_data: { status: "reloaded" }, error: null }); } catch(e){}
+          setTimeout(() => chrome.runtime.reload(), 500);
+          return;
+        }
         console.log("[NSE Bridge] Received job:", job);
         await runJob(job);
       }

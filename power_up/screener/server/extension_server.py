@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
@@ -61,6 +64,32 @@ class ExtensionQueueHandler(BaseHTTPRequestHandler):
                 STATE["running"][job["id"]] = job
             logger.info("[Queue] Extension picked job {}", job["id"])
             _json_response(self, 200, {"job": job})
+            return
+
+        if path == "/reset_queue":
+            with LOCK:
+                STATE["pending"].clear()
+                STATE["running"].clear()
+                STATE["results"].clear()
+            _json_response(self, 200, {"status": "reset"})
+            return
+
+        if path == "/active_jobs":
+            with LOCK:
+                _json_response(self, 200, {"pending": STATE["pending"], "running": STATE["running"], "results_count": len(STATE["results"])})
+            return
+
+        if path == "/reload_extension":
+            job = {
+                "id": f"reload_{int(time.time() * 1000)}",
+                "job_type": "reload_extension",
+                "symbol": "RELOAD",
+                "query": ""
+            }
+            with LOCK:
+                STATE["pending"].insert(0, job)
+            logger.info("[Server] Queued Screener extension self-reload job")
+            _json_response(self, 200, {"status": "queued", "job_id": job["id"]})
             return
 
         if path.startswith("/jobs/"):

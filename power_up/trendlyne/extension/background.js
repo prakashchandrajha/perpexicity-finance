@@ -13,6 +13,12 @@ async function pollQueue() {
 
         let data = await res.json();
         if (data && data.job) {
+            if (data.job.type === "reload_extension" || data.job.job_type === "reload_extension") {
+                console.log("[Trendlyne Bridge] Reloading extension via command from UI!");
+                try { await fetch(`${SERVER_URL}/jobs/${data.job.id}/result`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ result: { status: "reloaded" } }) }); } catch(e){}
+                setTimeout(() => chrome.runtime.reload(), 500);
+                return;
+            }
             console.log("[Trendlyne Bridge] Picked up job:", data.job);
             isProcessing = true;
             processJob(data.job);

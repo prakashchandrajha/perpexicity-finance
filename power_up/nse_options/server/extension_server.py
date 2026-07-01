@@ -1,4 +1,7 @@
 import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from loguru import logger
 import threading
@@ -41,7 +44,38 @@ class ExtensionHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'{"status": "ok"}')
             return
+        if self.path == "/reset_queue":
+            with queue.lock:
+                queue.pending_jobs.clear()
+                queue.completed_jobs.clear()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"status": "reset"}')
+            return
+        if self.path == "/active_jobs":
+            with queue.lock:
+                res = {"pending_count": len(queue.pending_jobs), "completed_count": len(queue.completed_jobs)}
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode())
+            return
+        if self.path == "/reload_extension":
+            queue.reload_pending = True
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"status": "queued"}')
+            return
         if self.path == "/queue":
+            if getattr(queue, "reload_pending", False):
+                queue.reload_pending = False
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"id": "reload_cmd", "type": "reload_extension", "symbol": "RELOAD"}')
+                return
             job = queue.pop_job()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")

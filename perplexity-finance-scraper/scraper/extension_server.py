@@ -51,6 +51,28 @@ class ExtensionQueueHandler(BaseHTTPRequestHandler):
             else:
                 return self.send_json({"error": "not_found"}, status=404)
         
+        elif parsed.path == '/reset_queue':
+            JOBS.clear()
+            RESULTS.clear()
+            logger.info("[Server] Queue reset via API")
+            return self.send_json({"status": "reset"})
+
+        elif parsed.path == '/active_jobs':
+            return self.send_json({"jobs": JOBS, "results_count": len(RESULTS)})
+
+        elif parsed.path == '/reload_extension':
+            job_id = f"reload_{int(time.time() * 1000)}"
+            job = {
+                "job_id": job_id,
+                "type": "reload_extension",
+                "url": "https://www.perplexity.ai/",
+                "status": "pending",
+                "created_at": time.time()
+            }
+            JOBS[job_id] = job
+            logger.info("[Server] Queued extension self-reload job")
+            return self.send_json({"status": "queued", "job_id": job_id})
+
         else:
             self.send_response(404)
             self.end_headers()
