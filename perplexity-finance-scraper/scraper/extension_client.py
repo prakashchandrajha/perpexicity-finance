@@ -119,9 +119,10 @@ class PerplexityExtensionClient:
         
         try:
             res = requests.post(f"{SERVER_URL}/queue_job", json={
-                "type": "live_market",
-                "ticker": ticker,
-                "query": query
+                "type": "execute_named_function",
+                "url": "https://www.perplexity.ai/",
+                "script": "executeLiveSearch",
+                "args": [query, False]
             })
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=300)
@@ -157,9 +158,10 @@ class PerplexityExtensionClient:
         
         try:
             res = requests.post(f"{SERVER_URL}/queue_job", json={
-                "type": "live_market",
-                "ticker": ticker,
-                "query": query
+                "type": "execute_named_function",
+                "url": "https://www.perplexity.ai/",
+                "script": "executeLiveSearch",
+                "args": [query, False]
             })
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=150)
@@ -179,9 +181,10 @@ class PerplexityExtensionClient:
         
         try:
             res = requests.post(f"{SERVER_URL}/queue_job", json={
-                "type": "macro_scan",
-                "ticker": "MACRO",
-                "query": query
+                "type": "execute_named_function",
+                "url": "https://www.perplexity.ai/",
+                "script": "executeLiveSearch",
+                "args": [query, False]
             })
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=150)

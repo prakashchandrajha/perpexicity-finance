@@ -54,12 +54,13 @@ class PerplexityTraderAPI:
             return compute_sentiment_drift(ticker)
             
         elif phase == "pre_market":
-            try:
-                html = self.client.fetch_finance_page_html(ticker)
-                finance_data = await scrape_finance_page(html, ticker)
-            except Exception as e:
-                logger.error(f"[TraderAPI] Page scrape error: {e}")
-                errors.append(f"Page scrape error: {e}")
+            live_narrative = self.client.ask_finance_live(
+                ticker, 
+                "Pre-market routine: check overnight US/Asian ADR movement, breaking news, corporate filings, and analyst ratings.", 
+                options_data
+            )
+            if not live_narrative or "Error:" in live_narrative:
+                errors.append(f"Pre-market query failed: {live_narrative}")
                 
         elif phase == "macro_scan":
             live_narrative = self.client.ask_macro_live()
