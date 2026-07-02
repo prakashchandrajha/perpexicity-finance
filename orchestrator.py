@@ -8,6 +8,7 @@ import sqlite3
 import subprocess
 import sys
 import uuid
+import requests
 from pathlib import Path
 from typing import Any
 
@@ -234,6 +235,53 @@ def fetch_trendlyne_context(ticker: str) -> str:
         print(f"⚠️ Trendlyne query failed. Ensure the extension is running and logged in. Error: {exc.stderr}")
     except Exception as exc:
         print(f"⚠️ Failed to get Trendlyne context: {exc}")
+    return ""
+
+
+def fetch_fii_dii_context() -> str:
+    """Collect live FII / DII net institutional cash & derivatives activity from official NSE API."""
+    print("\n[2.7] Inspecting Macro Weather & Pitch (FII / DII Institutional Flows)...")
+    try:
+        url = "https://www.nseindia.com/api/fiidiiTradeReact"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "*/*",
+            "Referer": "https://www.nseindia.com/reports-fii-dii"
+        }
+        r = requests.get(url, headers=headers, timeout=5)
+        if r.status_code == 200:
+            data = r.json()
+            if isinstance(data, list) and len(data) >= 2:
+                fii_net = 0.0
+                dii_net = 0.0
+                date_str = ""
+                for row in data:
+                    cat = row.get("category", "")
+                    date_str = row.get("date", date_str)
+                    net_val = float(row.get("netValue", "0"))
+                    if "FII" in cat or "FPI" in cat:
+                        fii_net = net_val
+                    elif "DII" in cat:
+                        dii_net = net_val
+                
+                total_net = fii_net + dii_net
+                verdict = "SUNNY / GREEN PITCH (Strong Institutional Tailwind)"
+                if fii_net < -2000:
+                    verdict = "CATEGORY 5 STORM (Severe FII Dumping — Downgrade Position Size by 50% & Enforce Strict Trailing SL)"
+                elif fii_net < 0:
+                    verdict = "CAUTION (Moderate FII Outflow offset by Domestic DII activity. Be selective on breakouts)"
+                
+                print(f"✅ FII/DII Extracted -> FII: ₹{fii_net} Cr, DII: ₹{dii_net} Cr | Weather: {verdict}")
+                return (
+                    "\n--- MACRO PITCH & WEATHER INSPECTOR (FII / DII NET FLOWS) ---\n"
+                    f"Data Date: {date_str}\n"
+                    f"FII / FPI Net Activity: ₹{fii_net} Cr ({'INFLOW' if fii_net >= 0 else 'OUTFLOW / SELLING'})\n"
+                    f"DII Net Activity: ₹{dii_net} Cr ({'INFLOW' if dii_net >= 0 else 'OUTFLOW / SELLING'})\n"
+                    f"Net Institutional Balance: ₹{total_net} Cr\n"
+                    f"Pitch Verdict: {verdict}\n"
+                )
+    except Exception as exc:
+        print(f"⚠️ Failed to get FII/DII context: {exc}")
     return ""
 
 
@@ -473,18 +521,20 @@ def cmd_anomaly(ticker: str, context: str) -> None:
     trendlyne_context = fetch_trendlyne_context(ticker)
     nse_context = fetch_nse_context(base_symbol)
     options_context = fetch_nse_options_context(base_symbol)
+    fii_dii_context = fetch_fii_dii_context()
     tv_context = fetch_tradingview_technicals(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
     ai_directive = (
         f"\n--- AI DIRECTIVE FOR {ticker} ---\n"
-        "I've shared the fundamental, institutional (Trendlyne DVM), and real-time NSE option chain (OI traps) data above.\n"
+        "I've shared the fundamental, institutional (Trendlyne DVM), real-time NSE option chain (OI traps), and macro FII/DII net flow data above.\n"
         f"Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
-        "CRITICAL RULE: Check the NSE Options Chain intelligence. If Change in OI ratio > 1.5 or PCR < 0.6, be extremely cautious of Call Writing / Bull Traps.\n"
+        "CRITICAL RULE 1: Check the Macro Pitch Weather (FII/DII Net Flows). If FIIs are net selling over ₹2,000 Cr (Category 5 Storm), automatically enforce a 50% position size downgrade or short-only/hedged rules.\n"
+        "CRITICAL RULE 2: Check the NSE Options Chain intelligence. If Change in OI ratio > 1.5 or PCR < 0.6, be extremely cautious of Call Writing / Bull Traps.\n"
         "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals and DVM scores.\n"
         "When you wrap up your analysis, drop your final sentiment score in `<SCORE>X</SCORE>` (-5 Strong Sell to +5 Strong Buy) and timeframe in `<TIMEFRAME>Y</TIMEFRAME>`. Thanks!"
     )
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + tv_context + ai_directive
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + fii_dii_context + tv_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(

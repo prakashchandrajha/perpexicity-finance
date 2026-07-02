@@ -1,5 +1,6 @@
 import argparse
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -14,9 +15,48 @@ def has_any(text: str, terms: list[str]) -> bool:
 
 
 def extract_trendlyne_signals(response: str) -> dict:
-    """Convert MarketMind prose into coarse bot-readable institutional context."""
+    """Convert MarketMind prose into coarse bot-readable institutional context including DVM scores and broker targets."""
     text = response.lower()
     flags: list[str] = []
+
+    durability = "unknown"
+    valuation = "unknown"
+    momentum = "unknown"
+    broker_target_upside = "unknown"
+    insider_signal = "unknown"
+
+    # DVM Regex or keyword extract
+    d_match = re.search(r"durability(?: score)?\s*(?:is|of|:|—|-)?\s*(\d{1,3})", text)
+    if d_match:
+        durability = f"{d_match.group(1)}/100"
+        if int(d_match.group(1)) >= 55:
+            flags.append("high_durability")
+        elif int(d_match.group(1)) < 35:
+            flags.append("low_durability")
+
+    v_match = re.search(r"valuation(?: score)?\s*(?:is|of|:|—|-)?\s*(\d{1,3})", text)
+    if v_match:
+        valuation = f"{v_match.group(1)}/100"
+
+    m_match = re.search(r"momentum(?: score)?\s*(?:is|of|:|—|-)?\s*(\d{1,3})", text)
+    if m_match:
+        momentum = f"{m_match.group(1)}/100"
+        if int(m_match.group(1)) >= 60:
+            flags.append("strong_momentum")
+
+    if has_any(text, ["broker upgrade", "target price upgrade", "upside", "buy rating", "outperform"]):
+        broker_target_upside = "positive"
+        flags.append("broker_upgrade")
+    elif has_any(text, ["broker downgrade", "target price downgrade", "downside", "sell rating", "underperform"]):
+        broker_target_upside = "negative"
+        flags.append("broker_downgrade")
+
+    if has_any(text, ["insider buying", "insider bought", "promoter buying", "promoter increased"]):
+        insider_signal = "buying"
+        flags.append("insider_accumulation")
+    elif has_any(text, ["insider selling", "insider sold", "promoter selling", "promoter reduced"]):
+        insider_signal = "selling"
+        flags.append("insider_selling")
 
     delivery_trend = "unknown"
     if has_any(text, [
@@ -68,18 +108,23 @@ def extract_trendlyne_signals(response: str) -> dict:
         flags.append("fii_weak")
 
     institutional_bias = "mixed"
-    supportive_count = sum(1 for item in [delivery_trend, fii_signal] if item == "supportive")
-    weak_count = sum(1 for item in [delivery_trend, fii_signal] if item == "weak")
+    supportive_count = sum(1 for item in [delivery_trend, fii_signal, broker_target_upside, insider_signal] if item in ["supportive", "positive", "buying"])
+    weak_count = sum(1 for item in [delivery_trend, fii_signal, broker_target_upside, insider_signal] if item in ["weak", "negative", "selling"])
     if block_deal_signal == "present":
         institutional_bias = "manual_review"
     elif supportive_count > weak_count:
         institutional_bias = "supportive"
     elif weak_count > supportive_count:
         institutional_bias = "weak"
-    elif delivery_trend == "unknown" and fii_signal == "unknown" and block_deal_signal == "unknown":
+    elif delivery_trend == "unknown" and fii_signal == "unknown" and block_deal_signal == "unknown" and durability == "unknown":
         institutional_bias = "unknown"
 
     return {
+        "durability_score": durability,
+        "valuation_score": valuation,
+        "momentum_score": momentum,
+        "broker_target_upside": broker_target_upside,
+        "insider_signal": insider_signal,
         "delivery_trend": delivery_trend,
         "block_deal_signal": block_deal_signal,
         "fii_signal": fii_signal,
