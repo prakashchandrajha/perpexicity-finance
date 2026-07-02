@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   Activity, Play, Square, Terminal, RefreshCw, 
-  Zap, Cpu, BarChart2, X, Search 
+  Zap, Cpu, BarChart2, X, Search, AlertTriangle
 } from 'lucide-react';
 
 const API_URL = "http://127.0.0.1:8888";
@@ -44,6 +44,13 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [scalpTicker, setScalpTicker] = useState<string>("SPARC.NS");
+  
+  // Sandbox & Diagnostics State
+  const [testBridge, setTestBridge] = useState<string>("perplexity");
+  const [testTarget, setTestTarget] = useState<string>("TCS");
+  const [testLoading, setTestLoading] = useState<boolean>(false);
+  const [testResult, setTestResult] = useState<any>(null);
+  const [diagLogs, setDiagLogs] = useState<any[]>([]);
   
   const terminalRef = useRef<HTMLDivElement>(null);
 
@@ -97,15 +104,50 @@ export default function App() {
     } catch (e) {}
   };
 
+  const fetchDiagnostics = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/diagnostics`);
+      if (res.ok) {
+        const data = await res.json();
+        setDiagLogs(data.logs || []);
+      }
+    } catch (e) {}
+  };
+
+  const handleRunTest = async () => {
+    setTestLoading(true);
+    setTestResult({ status: "running", bridge: testBridge, target: testTarget });
+    try {
+      const res = await fetch(`${API_URL}/api/bridge/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bridge: testBridge, target: testTarget })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTestResult(data);
+      } else {
+        setTestResult({ status: "error", error: "HTTP 500 from backend" });
+      }
+    } catch (e) {
+      setTestResult({ status: "error", error: "Failed to connect to backend" });
+    } finally {
+      setTestLoading(false);
+      fetchDiagnostics();
+    }
+  };
+
   useEffect(() => {
     fetchHealth();
     fetchCandidates();
     fetchLogs();
+    fetchDiagnostics();
 
     const interval = setInterval(() => {
       fetchHealth();
       fetchLogs();
-    }, 2000);
+      fetchDiagnostics();
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
@@ -241,6 +283,97 @@ export default function App() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bot Sandbox & Diagnostics Inspector Deck */}
+      <div className="command-deck" style={{ marginBottom: "32px" }}>
+        {/* Sandbox Column */}
+        <div className="card" style={{ border: "1px solid rgba(6, 182, 212, 0.4)" }}>
+          <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px", color: "#22d3ee" }}>
+            <Zap size={20} color="#22d3ee" /> 1. Single-Bridge Sandbox (Bot Test Bench)
+          </h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: "13px", marginBottom: "16px" }}>
+            Test a single ticker or query on any of our 6 extensions to verify selector & session health without running full playbooks.
+          </p>
+
+          <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
+            <select 
+              className="btn" 
+              style={{ background: "#1e293b", color: "#f8fafc", border: "1px solid var(--border-color)", flex: 1, minWidth: "160px" }}
+              value={testBridge}
+              onChange={(e) => setTestBridge(e.target.value)}
+            >
+              <option value="perplexity">Perplexity AI Bridge</option>
+              <option value="stockgro">StockGro Club Bridge</option>
+              <option value="screener">Screener.in Bridge</option>
+              <option value="chartink">Chartink Breakouts Bridge</option>
+              <option value="nse_options">NSE Option Chain Bridge</option>
+              <option value="trendlyne">Trendlyne MarketMind AI</option>
+            </select>
+            <input 
+              type="text" 
+              style={{ background: "#0f172a", color: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "8px 12px", width: "120px" }}
+              placeholder="Ticker (TCS)"
+              value={testTarget}
+              onChange={(e) => setTestTarget(e.target.value)}
+            />
+            <button 
+              className="btn" 
+              style={{ background: "linear-gradient(135deg, #06b6d4 0%, #0284c7 100%)", color: "white" }}
+              disabled={testLoading}
+              onClick={handleRunTest}
+            >
+              {testLoading ? "⏳ Running..." : "⚡ Test Bridge"}
+            </button>
+          </div>
+
+          {/* Test Output Box */}
+          <div style={{ background: "#050810", borderRadius: "10px", padding: "12px", border: "1px solid rgba(255,255,255,0.08)", minHeight: "140px", maxHeight: "220px", overflowY: "auto", fontFamily: "'Fira Code', monospace", fontSize: "12px" }}>
+            {!testResult && <span style={{ color: "var(--text-secondary)" }}>Select a bridge and click Test to see raw extension JSON output...</span>}
+            {testResult && testResult.status === "running" && (
+              <span style={{ color: "#fbbf24" }}>⏳ Sending job to {testResult.bridge} worker & waiting up to 12s for DOM extraction...</span>
+            )}
+            {testResult && testResult.status === "error" && (
+              <div style={{ color: "#f87171" }}>
+                <strong>❌ [ERROR - {testResult.bridge.toUpperCase()}]</strong><br />
+                {testResult.error}
+              </div>
+            )}
+            {testResult && testResult.status === "success" && (
+              <div style={{ color: "#34d399" }}>
+                <strong>✅ [SUCCESS - {testResult.bridge.toUpperCase()}]</strong><br />
+                <pre style={{ marginTop: "6px", color: "#e2e8f0", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {JSON.stringify(testResult.data, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Exception Dump Column */}
+        <div className="card" style={{ border: "1px solid rgba(239, 68, 68, 0.4)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <h2 style={{ fontSize: "18px", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px", color: "#f87171" }}>
+              <AlertTriangle size={20} color="#f87171" /> 2. Live DOM Exception Dump
+            </h2>
+            <button className="btn" style={{ padding: "4px 8px", fontSize: "11px", background: "rgba(239,68,68,0.15)", color: "#f87171" }} onClick={() => setDiagLogs([])}>
+              🗑️ Clear
+            </button>
+          </div>
+          <p style={{ color: "var(--text-secondary)", fontSize: "13px", marginBottom: "16px" }}>
+            Real-time error capture from scraper service workers. When an extension fails, examine the exact DOM exception here.
+          </p>
+
+          <div style={{ background: "#050810", borderRadius: "10px", padding: "12px", border: "1px solid rgba(255,255,255,0.08)", minHeight: "200px", maxHeight: "220px", overflowY: "auto", fontFamily: "'Fira Code', monospace", fontSize: "12px" }}>
+            {diagLogs.length === 0 && <span style={{ color: "#34d399" }}>🟢 No DOM exceptions or extension timeouts captured in this session.</span>}
+            {diagLogs.map((log, idx) => (
+              <div key={idx} style={{ marginBottom: "12px", paddingBottom: "10px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <span style={{ color: "#64748b" }}>[{log.time}]</span> <strong style={{ color: "#fbbf24" }}>{log.bridge?.toUpperCase()}</strong> <span style={{ color: "#94a3b8" }}>({log.target})</span><br />
+                <span style={{ color: "#f87171", wordBreak: "break-all" }}>{log.error}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Playbook Command Center */}

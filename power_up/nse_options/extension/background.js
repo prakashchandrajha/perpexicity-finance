@@ -84,7 +84,7 @@ async function runJob(job) {
           // Get underlying price
           let underlying = 0;
           const bodyText = document.body.innerText;
-          const m = bodyText.match(/Underlying\s+(?:Index\s*:\s*)?(?:[A-Z\s]+)\s+([\d,]+\.?\d*)/i);
+          const m = bodyText.match(/Underlying[^\d]*([\d,]+\.?\d*)/i);
           if (m) underlying = parseFloat(m[1].replace(/,/g, ''));
           
           // Get selected expiry
@@ -115,9 +115,16 @@ async function runJob(job) {
           const allRows = document.querySelectorAll("table tr");
           
           let total_ce_oi = 0, total_pe_oi = 0;
+          let total_ce_chg_oi = 0, total_pe_chg_oi = 0;
           let max_ce_oi = 0, max_ce_strike = 0;
           let max_pe_oi = 0, max_pe_strike = 0;
           let rowCount = 0;
+          
+          let atm_diff = 999999999;
+          let atm_ltp_diff = 999999999;
+          let atm_strike = 0;
+          let atm_ce_iv = 0;
+          let atm_pe_iv = 0;
           
           for (const row of allRows) {
             const cells = Array.from(row.querySelectorAll("td"));
@@ -135,14 +142,55 @@ async function runJob(job) {
             const ceOiText = cells[1].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
             const peOiText = cells[21].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
             
+            // CE Chg OI = cell 2, PE Chg OI = cell 20
+            const ceChgText = cells[2].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            const peChgText = cells[20].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            
+            // CE IV = cell 4, PE IV = cell 18
+            const ceIvText = cells[4].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            const peIvText = cells[18].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+
+            // CE LTP = cell 5, PE LTP = cell 17
+            const ceLtpText = cells[5].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            const peLtpText = cells[17].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            
             const ce_oi = parseFloat(ceOiText) || 0;
             const pe_oi = parseFloat(peOiText) || 0;
+            const ce_chg = parseFloat(ceChgText) || 0;
+            const pe_chg = parseFloat(peChgText) || 0;
+            const ce_iv = parseFloat(ceIvText) || 0;
+            const pe_iv = parseFloat(peIvText) || 0;
+            const ce_ltp = parseFloat(ceLtpText) || 0;
+            const pe_ltp = parseFloat(peLtpText) || 0;
             
             total_ce_oi += ce_oi;
             total_pe_oi += pe_oi;
+            total_ce_chg_oi += ce_chg;
+            total_pe_chg_oi += pe_chg;
             
             if (ce_oi > max_ce_oi) { max_ce_oi = ce_oi; max_ce_strike = strike; }
             if (pe_oi > max_pe_oi) { max_pe_oi = pe_oi; max_pe_strike = strike; }
+            
+            // Track ATM using underlying price if available
+            if (underlying > 0) {
+              const diff = Math.abs(strike - underlying);
+              if (diff < atm_diff) {
+                atm_diff = diff;
+                atm_strike = strike;
+                atm_ce_iv = ce_iv;
+                atm_pe_iv = pe_iv;
+              }
+            } else if (ce_ltp > 0 && pe_ltp > 0) {
+              // Fallback: ATM option has CE LTP ≈ PE LTP
+              const ltp_diff = Math.abs(ce_ltp - pe_ltp);
+              if (ltp_diff < atm_ltp_diff) {
+                atm_ltp_diff = ltp_diff;
+                atm_strike = strike;
+                atm_ce_iv = ce_iv;
+                atm_pe_iv = pe_iv;
+              }
+            }
+            
             rowCount++;
           }
           
@@ -152,6 +200,7 @@ async function runJob(job) {
           }
           
           const pcr = total_ce_oi > 0 ? Number((total_pe_oi / total_ce_oi).toFixed(3)) : 0;
+          const chg_oi_ratio = total_ce_chg_oi !== 0 ? Number((total_pe_chg_oi / total_ce_chg_oi).toFixed(3)) : 0;
           
           sendResult({
             source: "dom",
@@ -160,7 +209,13 @@ async function runJob(job) {
             current_expiry: currentExpiry,
             total_call_oi: total_ce_oi,
             total_put_oi: total_pe_oi,
+            total_call_chg_oi: total_ce_chg_oi,
+            total_put_chg_oi: total_pe_chg_oi,
             pcr: pcr,
+            chg_oi_ratio: chg_oi_ratio,
+            atm_strike: atm_strike,
+            atm_call_iv: atm_ce_iv,
+            atm_put_iv: atm_pe_iv,
             max_call_oi_strike: max_ce_strike,
             max_put_oi_strike: max_pe_strike,
             resistance_level: max_ce_strike,

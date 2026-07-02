@@ -113,7 +113,18 @@ async function processJob(job) {
                         });
                         
                         let blocks = Array.from(document.querySelectorAll('div.card, div.panel, section')).map(s => clean(s.innerText));
-                        let relevantBlocks = blocks.filter(b => b.toLowerCase().includes('delivery') || b.toLowerCase().includes('fii') || b.toLowerCase().includes('deal'));
+                        let relevantBlocks = blocks.filter(b => {
+                            let lower = b.toLowerCase();
+                            return lower.includes('delivery') || 
+                                   lower.includes('fii') || 
+                                   lower.includes('deal') ||
+                                   lower.includes('durability') ||
+                                   lower.includes('valuation') ||
+                                   lower.includes('momentum') ||
+                                   lower.includes('target price') ||
+                                   lower.includes('broker') ||
+                                   lower.includes('forecaster');
+                        });
                         
                         return {
                             text: `Trendlyne DOM Extract for ${sym}:\n\n` + relevantBlocks.join("\n\n---\n\n"),

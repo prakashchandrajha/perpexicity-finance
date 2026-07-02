@@ -8,8 +8,10 @@ def scrape_stockgro():
     print("Queueing stockgro_scan job...")
     try:
         res = requests.post(f"{SERVER_URL}/queue_job", json={
-            "type": "stockgro_scan",
-            "ticker": "N/A"
+            "type": "execute_named_function",
+            "url": "https://app.stockgro.club/",
+            "script": "extractStockGroData",
+            "args": []
         })
         if not res.ok:
             print("Bridge server error:", res.text)

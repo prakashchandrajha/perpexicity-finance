@@ -52,19 +52,21 @@ function extractScreenerPage(job) {
   });
 
   const ratios = {};
-  const allowedRatioNames = [
-    "Market Cap", "Current Price", "Stock P/E", "Book Value", "Dividend Yield",
-    "ROCE", "ROE", "Face Value", "High / Low", "Debt to equity",
-    "Promoter holding", "Pledged percentage", "Interest Coverage Ratio"
-  ];
   const ratioItems = Array.from(document.querySelectorAll("#top-ratios li, .company-ratios li"));
   ratioItems.forEach((li) => {
     const text = clean(li.innerText);
-    const matchedName = allowedRatioNames.find((name) => text.toLowerCase().startsWith(name.toLowerCase()));
-    if (!matchedName) return;
-    const value = clean(text.slice(matchedName.length));
-    if (value && value.length < 60) {
-      ratios[matchedName] = value;
+    // Format is usually "Name ₹ Value" or "Name Value %"
+    // Split by first newline or just find the name
+    const nameElem = li.querySelector(".name");
+    const valElem = li.querySelector(".value");
+    if (nameElem && valElem) {
+        ratios[clean(nameElem.innerText)] = clean(valElem.innerText);
+    } else {
+        // Fallback
+        const parts = text.split(" ");
+        if (parts.length > 1) {
+            ratios[parts[0]] = parts.slice(1).join(" ");
+        }
     }
   });
   return {
@@ -82,6 +84,7 @@ function extractScreenerPage(job) {
 
 async function runJob(job) {
   const url = buildUrl(job);
+  console.log(`[Screener Bridge] Running job ${job.id} on url: ${url}`);
   let allTabs = await chrome.tabs.query({});
   let screenerTabs = allTabs.filter(t => t.url && t.url.includes('screener.in'));
   let targetTab;
@@ -96,27 +99,43 @@ async function runJob(job) {
   
   let tabId = targetTab.id;
   try {
+    console.log(`[Screener Bridge] Updating tab ${tabId} to ${url}`);
     await chrome.tabs.update(tabId, { url });
     await sleep(7000);
-    const [result] = await chrome.scripting.executeScript({
+    console.log(`[Screener Bridge] Executing script on tab ${tabId}`);
+    
+    // Add timeout to executeScript
+    const executePromise = chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: extractScreenerPage,
       args: [job],
     });
+    
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout during executeScript")), 15000));
+    
+    const [result] = await Promise.race([executePromise, timeoutPromise]);
+    console.log(`[Screener Bridge] Script execution complete, posting result`);
+    
     await postJson(`${SERVER}/jobs/${job.id}/result`, { result: result.result });
+    console.log(`[Screener Bridge] Result posted successfully`);
   } catch (error) {
-    await postJson(`${SERVER}/jobs/${job.id}/result`, {
-      result: {
-        job_id: job.id,
-        job_type: job.job_type,
-        url,
-        captured_at: new Date().toISOString(),
-        tables: [],
-        ratios: {},
-        raw_text: "",
-        error: String(error),
-      },
-    });
+    console.error(`[Screener Bridge] Job error: ${error.message}`);
+    try {
+      await postJson(`${SERVER}/jobs/${job.id}/result`, {
+        result: {
+          job_id: job.id,
+          job_type: job.job_type,
+          url,
+          captured_at: new Date().toISOString(),
+          tables: [],
+          ratios: {},
+          raw_text: "",
+          error: String(error),
+        },
+      });
+    } catch (e) {
+      console.error(`[Screener Bridge] Failed to post error result: ${e.message}`);
+    }
   } finally {
     // Keep the user's Screener tab alive for session continuity and future jobs.
   }

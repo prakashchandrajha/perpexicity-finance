@@ -1,4 +1,7 @@
 import json
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from loguru import logger
 import threading
@@ -36,7 +39,38 @@ queue = JobQueue()
 
 class ExtensionHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path == "/reset_queue":
+            with queue.lock:
+                queue.pending_jobs.clear()
+                queue.completed_jobs.clear()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"status": "reset"}')
+            return
+        if self.path == "/active_jobs":
+            with queue.lock:
+                res = {"pending_count": len(queue.pending_jobs), "completed_count": len(queue.completed_jobs)}
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode())
+            return
+        if self.path == "/reload_extension":
+            queue.reload_pending = True
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"status": "queued"}')
+            return
         if self.path == "/queue":
+            if getattr(queue, "reload_pending", False):
+                queue.reload_pending = False
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"id": "reload_cmd", "type": "reload_extension", "scanner_name": "RELOAD", "url": "https://chartink.com"}')
+                return
             job = queue.pop_job()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -46,6 +80,17 @@ class ExtensionHandler(BaseHTTPRequestHandler):
                 self.wfile.write(job.model_dump_json().encode())
             else:
                 self.wfile.write(b"{}")
+        elif self.path.startswith("/result/"):
+            job_id = self.path.split("/")[-1]
+            res = queue.get_result(job_id)
+            if res:
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(res.model_dump_json().encode())
+            else:
+                self.send_response(404)
+                self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()
@@ -76,20 +121,7 @@ class ExtensionHandler(BaseHTTPRequestHandler):
                 self.send_response(400)
             self.end_headers()
 
-        elif self.path.startswith("/result/"):
-            job_id = self.path.split("/")[-1]
-            res = queue.get_result(job_id)
-            if res:
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                self.wfile.write(res.model_dump_json().encode())
-            else:
-                self.send_response(404)
-                self.end_headers()
-        else:
-            self.send_response(404)
-            self.end_headers()
+
 
     def log_message(self, format, *args):
         # Suppress default logging

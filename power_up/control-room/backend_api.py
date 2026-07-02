@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 import requests
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from loguru import logger
 import uvicorn
 
@@ -32,7 +33,9 @@ ORCHESTRATOR_PY = ROOT_DIR / "orchestrator.py"
 # Extension Bridge Ports
 BRIDGES = {
     "perplexity": {"port": 8765, "name": "Perplexity AI Bridge", "url": "https://www.perplexity.ai/", "path": ROOT_DIR / "perplexity-finance-scraper" / "scraper" / "extension_server.py"},
+    "stockgro": {"port": 8765, "name": "StockGro Club Bridge", "url": "https://app.stockgro.club/", "path": ROOT_DIR / "perplexity-finance-scraper" / "scraper" / "extension_server.py"},
     "screener": {"port": 8776, "name": "Screener.in Bridge", "url": "https://www.screener.in/", "path": ROOT_DIR / "power_up" / "screener" / "server" / "extension_server.py"},
+    "chartink": {"port": 8777, "name": "Chartink Intraday Bridge", "url": "https://chartink.com/screener/15-minute-stock-breakouts", "path": ROOT_DIR / "power_up" / "chartink" / "server" / "extension_server.py"},
     "nse_options": {"port": 8778, "name": "NSE Options Bridge", "url": "https://www.nseindia.com/option-chain", "path": ROOT_DIR / "power_up" / "nse_options" / "server" / "extension_server.py"},
     "trendlyne": {"port": 8787, "name": "Trendlyne Bridge", "url": "https://trendlyne.com/", "path": ROOT_DIR / "power_up" / "trendlyne" / "server" / "extension_server.py"}
 }
@@ -93,26 +96,17 @@ def check_bridge_health():
         status = {"name": info["name"], "port": port, "online": False, "pending_jobs": 0, "error": None}
         
         try:
-            # For nse_options we added /health, for others we can try GET /get_job or /health
-            if key == "nse_options":
-                res = requests.get(f"{url}/health", timeout=1)
-            else:
-                res = requests.get(f"{url}/get_job", timeout=1)
-                
+            res = requests.get(f"{url}/active_jobs", timeout=0.5)
             if res.ok or res.status_code == 404:
                 status["online"] = True
-                
-            # Check active job count
-            try:
-                aj = requests.get(f"{url}/active_jobs", timeout=1)
-                if aj.ok:
-                    data = aj.json()
+                try:
+                    data = res.json()
                     if isinstance(data.get("jobs"), dict):
                         status["pending_jobs"] = len(data["jobs"])
                     else:
                         status["pending_jobs"] = len(data.get("pending", [])) + len(data.get("running", {})) + data.get("pending_count", 0)
-            except:
-                pass
+                except:
+                    pass
         except Exception as e:
             status["error"] = str(e)
             
@@ -220,6 +214,160 @@ def reload_all_extensions():
     return {"status": "completed", "results": results}
 
 
+DIAGNOSTIC_LOGS = []
+LATEST_TEST_RESULT = {"status": "idle", "bridge": None, "target": None, "data": None, "error": None, "timestamp": None}
+
+class TestBridgeRequest(BaseModel):
+    bridge: str
+    target: str = "TCS"
+
+@app.post("/api/bridge/test")
+def test_single_bridge(req: TestBridgeRequest):
+    """Sandbox: Fire a test extraction job to a single bridge and wait up to 12s for DOM output."""
+    global LATEST_TEST_RESULT
+    b_key = req.bridge
+    target = req.target.strip() or "TCS"
+    if b_key not in BRIDGES:
+        raise HTTPException(status_code=404, detail="Bridge not found")
+    
+    port = BRIDGES[b_key]["port"]
+    url = BRIDGES[b_key].get("url", "https://www.google.com")
+    job_id = f"test_{int(time.time()*1000)}"
+    
+    LATEST_TEST_RESULT = {"status": "running", "bridge": b_key, "target": target, "data": None, "error": None, "timestamp": time.strftime("%H:%M:%S")}
+    
+    try:
+        subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+    try:
+        if b_key == "perplexity":
+            res = requests.post(f"http://127.0.0.1:{port}/queue_job", json={
+                "job_id": job_id, "type": "execute_named_function", "url": "https://www.perplexity.ai/",
+                "script": "executeLiveSearch", "args": [f"Analyze trading catalyst and price target for {target}", False]
+            }, timeout=2).json()
+            job_id = res.get("job_id", job_id)
+            for _ in range(30):
+                time.sleep(1)
+                try:
+                    r = requests.get(f"http://127.0.0.1:{port}/get_result/{job_id}", timeout=2).json()
+                    if r.get("status") == "completed":
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": r.get("result"), "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                    if r.get("status") == "failed":
+                        err = r.get("error", "DOM execution failed")
+                        DIAGNOSTIC_LOGS.insert(0, {"time": time.strftime("%H:%M:%S"), "bridge": b_key, "error": err, "target": target})
+                        LATEST_TEST_RESULT = {"status": "error", "bridge": b_key, "target": target, "data": None, "error": err, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        elif b_key == "stockgro":
+            res = requests.post(f"http://127.0.0.1:{port}/queue_job", json={
+                "job_id": job_id, "type": "execute_named_function", "url": "https://app.stockgro.club/",
+                "script": "extractStockGroData", "args": []
+            }, timeout=2).json()
+            job_id = res.get("job_id", job_id)
+            for _ in range(30):
+                time.sleep(1)
+                try:
+                    r = requests.get(f"http://127.0.0.1:{port}/get_result/{job_id}", timeout=2).json()
+                    if r.get("status") == "completed":
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": r.get("result"), "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                    if r.get("status") == "failed":
+                        err = r.get("error", "StockGro session error or selector failed")
+                        DIAGNOSTIC_LOGS.insert(0, {"time": time.strftime("%H:%M:%S"), "bridge": b_key, "error": err, "target": target})
+                        LATEST_TEST_RESULT = {"status": "error", "bridge": b_key, "target": target, "data": None, "error": err, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        elif b_key == "screener":
+            requests.post(f"http://127.0.0.1:{port}/jobs", json={
+                "job": {"id": job_id, "job_type": "company", "symbol": target, "query": ""}
+            }, timeout=2)
+            for _ in range(30):
+                time.sleep(1)
+                try:
+                    r = requests.get(f"http://127.0.0.1:{port}/jobs/{job_id}", timeout=2).json()
+                    if r.get("status") == "done":
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": r.get("result"), "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                    if r.get("status") == "error":
+                        err = r.get("error", "Screener extraction failed")
+                        DIAGNOSTIC_LOGS.insert(0, {"time": time.strftime("%H:%M:%S"), "bridge": b_key, "error": err, "target": target})
+                        LATEST_TEST_RESULT = {"status": "error", "bridge": b_key, "target": target, "data": None, "error": err, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        elif b_key == "chartink":
+            requests.post(f"http://127.0.0.1:{port}/queue", json={
+                "id": job_id, "scanner_name": f"Test Sandbox ({target})", "url": "https://chartink.com/screener/15-minute-stock-breakouts"
+            }, timeout=2)
+            for _ in range(30):
+                time.sleep(1)
+                try:
+                    res_check = requests.get(f"http://127.0.0.1:{port}/result/{job_id}", timeout=2)
+                    if res_check.status_code == 200:
+                        data = res_check.json()
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": data, "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        elif b_key == "nse_options":
+            res = requests.post(f"http://127.0.0.1:{port}/queue", json={
+                "id": job_id, "symbol": target, "is_index": target.upper() in ["NIFTY", "BANKNIFTY", "FINNIFTY"]
+            }, timeout=2).json()
+            real_job_id = res.get("job_id", job_id)
+            for _ in range(30):
+                time.sleep(1)
+                try:
+                    r = requests.get(f"http://127.0.0.1:{port}/result/{real_job_id}", timeout=2)
+                    if r.status_code == 200:
+                        data = r.json()
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": data, "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        elif b_key == "trendlyne":
+            requests.post(f"http://127.0.0.1:{port}/jobs", json={
+                "job": {"id": job_id, "job_type": "trendlyne_dom", "ticker": target, "query": f"Fetch DOM analysis for {target}"}
+            }, timeout=2)
+            for _ in range(35):
+                time.sleep(1)
+                try:
+                    r = requests.get(f"http://127.0.0.1:{port}/jobs/{job_id}", timeout=2).json()
+                    if r.get("status") == "done":
+                        LATEST_TEST_RESULT = {"status": "success", "bridge": b_key, "target": target, "data": r.get("result"), "error": None, "timestamp": time.strftime("%H:%M:%S")}
+                        return LATEST_TEST_RESULT
+                except Exception:
+                    pass
+
+        err = f"Timeout (35s) waiting for {b_key} extension worker. Ensure Chrome tab is open and worker is active."
+        DIAGNOSTIC_LOGS.insert(0, {"time": time.strftime("%H:%M:%S"), "bridge": b_key, "error": err, "target": target})
+        LATEST_TEST_RESULT = {"status": "error", "bridge": b_key, "target": target, "data": None, "error": err, "timestamp": time.strftime("%H:%M:%S")}
+        return LATEST_TEST_RESULT
+
+    except Exception as e:
+        err = str(e)
+        DIAGNOSTIC_LOGS.insert(0, {"time": time.strftime("%H:%M:%S"), "bridge": b_key, "error": err, "target": target})
+        LATEST_TEST_RESULT = {"status": "error", "bridge": b_key, "target": target, "data": None, "error": err, "timestamp": time.strftime("%H:%M:%S")}
+        return LATEST_TEST_RESULT
+
+@app.get("/api/diagnostics")
+def get_diagnostics():
+    """Return latest sandbox test result and exception logs for bot debugging."""
+    return {
+        "latest_test": LATEST_TEST_RESULT,
+        "logs": DIAGNOSTIC_LOGS[:20]
+    }
+
+
 @app.get("/api/candidates")
 def get_candidates(limit: int = 50):
     """Fetch combined intraday candidates from SQLite data warehouses."""
@@ -298,9 +446,20 @@ def run_playbook(payload: Dict[str, Any]):
     playbook = payload.get("playbook", "pre-market")
     ticker = payload.get("ticker", "")
     
-    cmd = [sys.executable, str(ORCHESTRATOR_PY), playbook]
-    if ticker and playbook == "scalp":
-        cmd.extend(["--ticker", ticker])
+    if playbook == "pre-market":
+        cmd = [sys.executable, str(ORCHESTRATOR_PY), "pre-market"]
+    elif playbook == "live-cycle":
+        scanner = payload.get("scanner", "15_min_volume_breakout")
+        interval = str(payload.get("interval", "5"))
+        cmd = [sys.executable, str(ORCHESTRATOR_PY), "live-loop", scanner, "--interval", interval]
+    elif playbook == "macro-scan":
+        query = payload.get("query", "Market Capitalization > 10000 AND ROCE > 20")
+        cmd = [sys.executable, str(ORCHESTRATOR_PY), "custom-screen", query]
+    elif playbook == "scalp":
+        target_ticker = ticker or "RELIANCE"
+        cmd = [sys.executable, str(ORCHESTRATOR_PY), "anomaly", target_ticker, "--context", f"Rapid intraday volume and momentum check on {target_ticker}"]
+    else:
+        cmd = [sys.executable, str(ORCHESTRATOR_PY), playbook]
         
     logger.info(f"Executing playbook command: {' '.join(cmd)}")
     

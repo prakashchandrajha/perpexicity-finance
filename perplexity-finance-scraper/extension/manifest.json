@@ -6,7 +6,8 @@
   "permissions": [
     "tabs",
     "storage",
-    "scripting"
+    "scripting",
+    "alarms"
   ],
   "host_permissions": [
     "*://*.perplexity.ai/*",

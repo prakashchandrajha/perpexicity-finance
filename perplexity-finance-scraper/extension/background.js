@@ -173,6 +173,15 @@ async function submitResult(job_id, data) {
 // Start polling
 pollForJobs();
 
+// Keep service worker alive with alarms (MV3 kills workers after 30s idle)
+chrome.alarms.create("keepAlive", { periodInMinutes: 0.4 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === "keepAlive") {
+        console.log("[Perplexity Bridge] Alarm woke up Service Worker.");
+        if (!isProcessing) pollForJobs();
+    }
+});
+
 // ── Perplexity Injected Functions ───────────────────────────────────
 
 async function executeLiveSearch(query, usePro = false) {

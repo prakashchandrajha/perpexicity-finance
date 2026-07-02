@@ -163,6 +163,12 @@ async function pollQueue() {
     if (res.ok) {
       const job = await res.json();
       if (job && job.id) {
+        if (job.type === "reload_extension" || job.scanner_name === "RELOAD") {
+          console.log("[Chartink Bridge] Reloading extension via command from UI!");
+          try { await postJson(`${SERVER}/complete`, { job_id: job.id, scanner_name: "RELOAD", captured_at: new Date().toISOString(), stocks: [], raw_tables: [], error: null }); } catch(e){}
+          setTimeout(() => chrome.runtime.reload(), 500);
+          return;
+        }
         console.log("[Chartink Bridge] Received job:", job);
         await runJob(job);
       }
@@ -175,4 +181,14 @@ async function pollQueue() {
 }
 
 setInterval(pollQueue, POLL_MS);
+pollQueue();
 console.log("[Chartink Bridge] Service worker started.");
+
+// Keep service worker alive with alarms (MV3 kills workers after 30s idle)
+chrome.alarms.create("keepAlive", { periodInMinutes: 0.4 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "keepAlive") {
+    console.log("[Chartink Bridge] Alarm woke up Service Worker.");
+    pollQueue();
+  }
+});

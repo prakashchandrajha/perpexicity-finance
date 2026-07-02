@@ -15,11 +15,15 @@ def save_result(result, scanner_name: str) -> Path:
     return out_path
 
 def run_scanner(scanner_name: str) -> None:
-    if scanner_name not in DEFAULT_SCANNERS:
-        logger.error(f"Scanner {scanner_name} not found in config.")
+    if scanner_name in DEFAULT_SCANNERS:
+        url = DEFAULT_SCANNERS[scanner_name]["url"]
+    elif scanner_name.startswith("http://") or scanner_name.startswith("https://"):
+        url = scanner_name
+        scanner_name = "custom_" + url.split("/")[-1]
+    else:
+        logger.error(f"Scanner {scanner_name} not found in config and is not a valid HTTP URL.")
         return
         
-    url = DEFAULT_SCANNERS[scanner_name]["url"]
     logger.info(f"Running Chartink Scanner: {scanner_name} -> {url}")
     
     job = ChartinkJob(scanner_name=scanner_name, url=url)
@@ -48,7 +52,7 @@ if __name__ == "__main__":
     subparsers.add_parser("list")
     
     scan_parser = subparsers.add_parser("scan")
-    scan_parser.add_argument("name", choices=list(DEFAULT_SCANNERS.keys()))
+    scan_parser.add_argument("name", help="Scanner name from config or a full custom Chartink screener URL")
     
     args = parser.parse_args()
     
