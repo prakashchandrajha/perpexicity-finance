@@ -285,6 +285,21 @@ def fetch_fii_dii_context() -> str:
     return ""
 
 
+def fetch_sector_context() -> str:
+    """Collect live NSE Sectoral Heatmap & Money Rotation pulse via Hardik Pandya engine."""
+    print("\n[2.8] Consulting Hardik Pandya (Sectoral Heatmap & Institutional Money Rotation)...")
+    try:
+        sector_dir = ROOT_DIR / "power_up" / "nse_sector"
+        sector_python = resolve_python(sector_dir, PERPLEXITY_PYTHON)
+        res = run_python(sector_python, ["main.py"], sector_dir, capture=True)
+        if res.returncode == 0 and res.stdout:
+            print("✅ Sectoral Heatmap Extracted!")
+            return "\n" + res.stdout.strip() + "\n"
+    except Exception as exc:
+        print(f"⚠️ Failed to get Sectoral context: {exc}")
+    return ""
+
+
 def fetch_nse_options_context(base_symbol: str) -> str:
     """Collect live NSE option chain intelligence — ATM IV, Change in OI ratio, PCR, support/resistance."""
     print("\n[2.6] Collecting NSE Options Chain intelligence (OI Traps, ATM Volatility, PCR)...")
@@ -522,19 +537,21 @@ def cmd_anomaly(ticker: str, context: str) -> None:
     nse_context = fetch_nse_context(base_symbol)
     options_context = fetch_nse_options_context(base_symbol)
     fii_dii_context = fetch_fii_dii_context()
+    sector_context = fetch_sector_context()
     tv_context = fetch_tradingview_technicals(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
     ai_directive = (
         f"\n--- AI DIRECTIVE FOR {ticker} ---\n"
-        "I've shared the fundamental, institutional (Trendlyne DVM), real-time NSE option chain (OI traps), and macro FII/DII net flow data above.\n"
+        "I've shared the fundamental, institutional (Trendlyne DVM), real-time NSE option chain (OI traps), macro FII/DII net flow, and live Sectoral Heatmap rotation data above.\n"
         f"Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
         "CRITICAL RULE 1: Check the Macro Pitch Weather (FII/DII Net Flows). If FIIs are net selling over ₹2,000 Cr (Category 5 Storm), automatically enforce a 50% position size downgrade or short-only/hedged rules.\n"
         "CRITICAL RULE 2: Check the NSE Options Chain intelligence. If Change in OI ratio > 1.5 or PCR < 0.6, be extremely cautious of Call Writing / Bull Traps.\n"
+        "CRITICAL RULE 3: Check the Hardik Pandya Sectoral Heatmap. Align your trade direction with sector momentum (e.g. do not buy breakouts in leading lagging sectors with negative advance/decline ratios).\n"
         "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals and DVM scores.\n"
         "When you wrap up your analysis, drop your final sentiment score in `<SCORE>X</SCORE>` (-5 Strong Sell to +5 Strong Buy) and timeframe in `<TIMEFRAME>Y</TIMEFRAME>`. Thanks!"
     )
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + fii_dii_context + tv_context + ai_directive
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + fii_dii_context + sector_context + tv_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(
@@ -676,6 +693,10 @@ def cmd_pre_open() -> None:
             run_python(options_python, ["main.py", index_sym, "--index"], NSE_OPTIONS_DIR, capture=False)
         except Exception as e:
             print(f"Failed to fetch {index_sym} index options: {e}")
+            
+    print("\n[Step 3] Fetching Hardik Pandya Sectoral Rotation & Heatmap Pulse...")
+    sector_text = fetch_sector_context()
+    print(sector_text)
             
     print("\n=== PRE-MATCH PITCH INSPECTION COMPLETE ===")
 

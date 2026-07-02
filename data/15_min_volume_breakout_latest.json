@@ -1,0 +1,198 @@
+{
+  "job_id": "job_a2b7a973",
+  "scanner_name": "15_min_volume_breakout",
+  "captured_at": "2026-07-02T07:29:43.128Z",
+  "stocks": [
+    {
+      "symbol": "TATATECH",
+      "name": "Tata Technologies Ltd",
+      "price": 726.25,
+      "volume": 2911378.0,
+      "change_pct": 8.36,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "8.36%",
+        "Close Sort table by close in ascending order": "726.25",
+        "Sr.": "1",
+        "Stock Name Sort table by Stock Name in ascending order": "Tata Technologies Ltd",
+        "Symbol Sort table by Symbol in ascending order": "TATATECH",
+        "Volume Sort table by volume in ascending order": "29,11,378"
+      }
+    },
+    {
+      "symbol": "JUBLFOOD",
+      "name": "Jubilant Foodworks Limited",
+      "price": 431.25,
+      "volume": 1286164.0,
+      "change_pct": 2.33,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "2.33%",
+        "Close Sort table by close in ascending order": "431.25",
+        "Sr.": "2",
+        "Stock Name Sort table by Stock Name in ascending order": "Jubilant Foodworks Limited",
+        "Symbol Sort table by Symbol in ascending order": "JUBLFOOD",
+        "Volume Sort table by volume in ascending order": "12,86,164"
+      }
+    },
+    {
+      "symbol": "NTPCGREEN",
+      "name": "NTPC Green Energy Ltd",
+      "price": 96.36,
+      "volume": 1327596.0,
+      "change_pct": 1.35,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "1.35%",
+        "Close Sort table by close in ascending order": "96.36",
+        "Sr.": "3",
+        "Stock Name Sort table by Stock Name in ascending order": "NTPC Green Energy Ltd",
+        "Symbol Sort table by Symbol in ascending order": "NTPCGREEN",
+        "Volume Sort table by volume in ascending order": "13,27,596"
+      }
+    },
+    {
+      "symbol": "HYUNDAI",
+      "name": "Hyundai Motor India Ltd",
+      "price": 1940.6,
+      "volume": 169737.0,
+      "change_pct": 1.16,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "1.16%",
+        "Close Sort table by close in ascending order": "1,940.6",
+        "Sr.": "4",
+        "Stock Name Sort table by Stock Name in ascending order": "Hyundai Motor India Ltd",
+        "Symbol Sort table by Symbol in ascending order": "HYUNDAI",
+        "Volume Sort table by volume in ascending order": "1,69,737"
+      }
+    },
+    {
+      "symbol": "HINDUNILVR",
+      "name": "Hindustan Unilever Limited",
+      "price": 2206.8,
+      "volume": 1197663.0,
+      "change_pct": 1.14,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "1.14%",
+        "Close Sort table by close in ascending order": "2,206.8",
+        "Sr.": "5",
+        "Stock Name Sort table by Stock Name in ascending order": "Hindustan Unilever Limited",
+        "Symbol Sort table by Symbol in ascending order": "HINDUNILVR",
+        "Volume Sort table by volume in ascending order": "11,97,663"
+      }
+    },
+    {
+      "symbol": "RADICO",
+      "name": "Radico Khaitan Limited",
+      "price": 3976.4,
+      "volume": 100317.0,
+      "change_pct": 0.6,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "0.6%",
+        "Close Sort table by close in ascending order": "3,976.4",
+        "Sr.": "6",
+        "Stock Name Sort table by Stock Name in ascending order": "Radico Khaitan Limited",
+        "Symbol Sort table by Symbol in ascending order": "RADICO",
+        "Volume Sort table by volume in ascending order": "1,00,317"
+      }
+    },
+    {
+      "symbol": "ATHERENERG",
+      "name": "Ather Energy Ltd",
+      "price": 1136.3,
+      "volume": 1173920.0,
+      "change_pct": 0.52,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "0.52%",
+        "Close Sort table by close in ascending order": "1,136.3",
+        "Sr.": "7",
+        "Stock Name Sort table by Stock Name in ascending order": "Ather Energy Ltd",
+        "Symbol Sort table by Symbol in ascending order": "ATHERENERG",
+        "Volume Sort table by volume in ascending order": "11,73,920"
+      }
+    }
+  ],
+  "raw_tables": [
+    {
+      "headers": [
+        "Sr.",
+        "Stock Name Sort table by Stock Name in ascending order",
+        "Symbol Sort table by Symbol in ascending order",
+        "Close Sort table by close in ascending order",
+        "%_change Sort table by %_change in descending order",
+        "Volume Sort table by volume in ascending order",
+        ""
+      ],
+      "rows": [
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "8.36%",
+          "Close Sort table by close in ascending order": "726.25",
+          "Sr.": "1",
+          "Stock Name Sort table by Stock Name in ascending order": "Tata Technologies Ltd",
+          "Symbol Sort table by Symbol in ascending order": "TATATECH",
+          "Volume Sort table by volume in ascending order": "29,11,378"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "2.33%",
+          "Close Sort table by close in ascending order": "431.25",
+          "Sr.": "2",
+          "Stock Name Sort table by Stock Name in ascending order": "Jubilant Foodworks Limited",
+          "Symbol Sort table by Symbol in ascending order": "JUBLFOOD",
+          "Volume Sort table by volume in ascending order": "12,86,164"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "1.35%",
+          "Close Sort table by close in ascending order": "96.36",
+          "Sr.": "3",
+          "Stock Name Sort table by Stock Name in ascending order": "NTPC Green Energy Ltd",
+          "Symbol Sort table by Symbol in ascending order": "NTPCGREEN",
+          "Volume Sort table by volume in ascending order": "13,27,596"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "1.16%",
+          "Close Sort table by close in ascending order": "1,940.6",
+          "Sr.": "4",
+          "Stock Name Sort table by Stock Name in ascending order": "Hyundai Motor India Ltd",
+          "Symbol Sort table by Symbol in ascending order": "HYUNDAI",
+          "Volume Sort table by volume in ascending order": "1,69,737"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "1.14%",
+          "Close Sort table by close in ascending order": "2,206.8",
+          "Sr.": "5",
+          "Stock Name Sort table by Stock Name in ascending order": "Hindustan Unilever Limited",
+          "Symbol Sort table by Symbol in ascending order": "HINDUNILVR",
+          "Volume Sort table by volume in ascending order": "11,97,663"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "0.6%",
+          "Close Sort table by close in ascending order": "3,976.4",
+          "Sr.": "6",
+          "Stock Name Sort table by Stock Name in ascending order": "Radico Khaitan Limited",
+          "Symbol Sort table by Symbol in ascending order": "RADICO",
+          "Volume Sort table by volume in ascending order": "1,00,317"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "0.52%",
+          "Close Sort table by close in ascending order": "1,136.3",
+          "Sr.": "7",
+          "Stock Name Sort table by Stock Name in ascending order": "Ather Energy Ltd",
+          "Symbol Sort table by Symbol in ascending order": "ATHERENERG",
+          "Volume Sort table by volume in ascending order": "11,73,920"
+        }
+      ]
+    }
+  ],
+  "error": null
+}

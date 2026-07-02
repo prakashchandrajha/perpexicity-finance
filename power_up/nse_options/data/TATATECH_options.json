@@ -1,0 +1,21 @@
+{
+  "atm_call_iv": 9.74,
+  "atm_put_iv": 11.07,
+  "atm_strike": 24100,
+  "chg_oi_ratio": 1.098,
+  "current_expiry": "07-Jul-2026",
+  "max_call_oi_strike": 24100,
+  "max_put_oi_strike": 24000,
+  "pcr": 1.153,
+  "resistance_level": 24100,
+  "rows_parsed": 100,
+  "sentiment": "BULLISH",
+  "source": "dom",
+  "support_level": 24000,
+  "symbol": "TATATECH",
+  "total_call_chg_oi": 547795,
+  "total_call_oi": 2095449,
+  "total_put_chg_oi": 601731,
+  "total_put_oi": 2416731,
+  "underlying_price": 24116.75
+}

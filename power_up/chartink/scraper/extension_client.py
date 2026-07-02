@@ -9,7 +9,23 @@ class ChartinkExtensionClient:
     def __init__(self, base_url: str = SERVER_URL):
         self.base_url = base_url
 
+    def _ensure_server(self):
+        try:
+            requests.get(f"{self.base_url}/active_jobs", timeout=1)
+            return
+        except requests.exceptions.RequestException:
+            pass
+        logger.warning(f"[ExtClient] Chartink server at {self.base_url} offline. Auto-launching background server...")
+        import subprocess, sys
+        from pathlib import Path
+        root_dir = Path(__file__).resolve().parent.parent
+        server_script = root_dir / "server" / "extension_server.py"
+        if server_script.exists():
+            subprocess.Popen([sys.executable, str(server_script)], cwd=root_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(2)
+
     def submit_job(self, job: ChartinkJob) -> str:
+        self._ensure_server()
         try:
             res = requests.post(f"{self.base_url}/queue", json=job.model_dump())
             res.raise_for_status()
@@ -19,7 +35,7 @@ class ChartinkExtensionClient:
             raise
 
     def get_result(self, job_id: str) -> ChartinkResult | None:
-        res = requests.post(f"{self.base_url}/result/{job_id}", json={})
+        res = requests.get(f"{self.base_url}/result/{job_id}")
         if res.status_code == 200:
             return ChartinkResult.model_validate_json(res.text)
         return None
