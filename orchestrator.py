@@ -300,6 +300,21 @@ def fetch_sector_context() -> str:
     return ""
 
 
+def fetch_investing_context() -> str:
+    """Collect live Global Macro Weather & Technical Consensus from Investing.com (MS Dhoni engine)."""
+    print("\n[2.9] Consulting MS Dhoni (Investing.com Global Macro Pulse & Technical Summary)...")
+    try:
+        inv_dir = ROOT_DIR / "power_up" / "investing"
+        inv_python = resolve_python(inv_dir, PERPLEXITY_PYTHON)
+        res = run_python(inv_python, ["main.py", "macro"], inv_dir, capture=True)
+        if res.returncode == 0 and res.stdout:
+            print("✅ Investing.com Technical Pulse Extracted!")
+            return "\n" + res.stdout.strip() + "\n"
+    except Exception as exc:
+        print(f"⚠️ Failed to get Investing.com context: {exc}")
+    return ""
+
+
 def fetch_nse_options_context(base_symbol: str) -> str:
     """Collect live NSE option chain intelligence — ATM IV, Change in OI ratio, PCR, support/resistance."""
     print("\n[2.6] Collecting NSE Options Chain intelligence (OI Traps, ATM Volatility, PCR)...")
@@ -538,20 +553,22 @@ def cmd_anomaly(ticker: str, context: str) -> None:
     options_context = fetch_nse_options_context(base_symbol)
     fii_dii_context = fetch_fii_dii_context()
     sector_context = fetch_sector_context()
+    inv_context = fetch_investing_context()
     tv_context = fetch_tradingview_technicals(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
     ai_directive = (
         f"\n--- AI DIRECTIVE FOR {ticker} ---\n"
-        "I've shared the fundamental, institutional (Trendlyne DVM), real-time NSE option chain (OI traps), macro FII/DII net flow, and live Sectoral Heatmap rotation data above.\n"
+        "I've shared the fundamental, institutional (Trendlyne DVM), real-time NSE option chain (OI traps), macro FII/DII net flow, live Sectoral Heatmap rotation, and Investing.com Technical Consensus data above.\n"
         f"Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
         "CRITICAL RULE 1: Check the Macro Pitch Weather (FII/DII Net Flows). If FIIs are net selling over ₹2,000 Cr (Category 5 Storm), automatically enforce a 50% position size downgrade or short-only/hedged rules.\n"
         "CRITICAL RULE 2: Check the NSE Options Chain intelligence. If Change in OI ratio > 1.5 or PCR < 0.6, be extremely cautious of Call Writing / Bull Traps.\n"
         "CRITICAL RULE 3: Check the Hardik Pandya Sectoral Heatmap. Align your trade direction with sector momentum (e.g. do not buy breakouts in leading lagging sectors with negative advance/decline ratios).\n"
+        "CRITICAL RULE 4: Check MS Dhoni (Investing.com Technical Consensus). If multi-timeframe consensus is STRONG SELL or opposes the trade direction, veto the setup or reduce size.\n"
         "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals and DVM scores.\n"
         "When you wrap up your analysis, drop your final sentiment score in `<SCORE>X</SCORE>` (-5 Strong Sell to +5 Strong Buy) and timeframe in `<TIMEFRAME>Y</TIMEFRAME>`. Thanks!"
     )
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + fii_dii_context + sector_context + tv_context + ai_directive
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + fii_dii_context + sector_context + inv_context + tv_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(
@@ -697,6 +714,10 @@ def cmd_pre_open() -> None:
     print("\n[Step 3] Fetching Hardik Pandya Sectoral Rotation & Heatmap Pulse...")
     sector_text = fetch_sector_context()
     print(sector_text)
+            
+    print("\n[Step 4] Fetching MS Dhoni Global Macro Weather & Nifty Technical Summary...")
+    inv_text = fetch_investing_context()
+    print(inv_text)
             
     print("\n=== PRE-MATCH PITCH INSPECTION COMPLETE ===")
 

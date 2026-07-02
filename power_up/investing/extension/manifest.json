@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Perplexity Finance - Investing.com Bridge (MS Dhoni)",
+  "version": "1.0",
+  "description": "Extracts Global Macro Weather, Multi-Timeframe Technical Consensus, and Fibonacci Pivots from Investing.com",
+  "permissions": [
+    "tabs",
+    "scripting",
+    "alarms",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "*://in.investing.com/*",
+    "*://www.investing.com/*",
+    "http://127.0.0.1:8788/*",
+    "http://localhost:8788/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
