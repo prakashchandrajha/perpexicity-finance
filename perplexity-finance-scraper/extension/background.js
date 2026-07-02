@@ -203,17 +203,29 @@ async function executeLiveSearch(query, usePro = false) {
 
             const findInterval = setInterval(() => {
                 try {
-                    // Kill any blocking Radix modals/dialogs continuously
-                    document.querySelectorAll('[data-radix-focus-guard], [role="dialog"], [id^="radix-"]').forEach(el => el.remove());
-                    document.body.style.pointerEvents = 'auto';
-                    document.body.removeAttribute('data-aria-hidden');
-                    document.getElementById('root')?.removeAttribute('aria-hidden');
+                    // Aggressively kill any blocking modals, subscription popups, dialogs, and fixed backdrops
+                    try {
+                        const closeBtns = Array.from(document.querySelectorAll('button, [role="button"], a')).filter(el => {
+                            const text = el.innerText.trim().toLowerCase();
+                            const label = (el.getAttribute('aria-label') || '').toLowerCase();
+                            const title = (el.getAttribute('title') || '').toLowerCase();
+                            return text === 'close' || text === 'skip' || text === 'dismiss' || text === 'not now' || text === 'maybe later' || text === 'continue with free' || label.includes('close') || label.includes('dismiss') || title.includes('close');
+                        });
+                        closeBtns.forEach(b => { try { b.click(); } catch(e){} });
 
-                    // Close the "Your free searches will reset in a few hours" modal if it exists
-                    const upgradeModals = Array.from(document.querySelectorAll('button')).filter(b => b.innerText.includes('Upgrade') || b.innerText.includes('Close') || b.getAttribute('aria-label') === 'Close');
-                    upgradeModals.forEach(b => {
-                        try { b.click(); } catch(e) {}
-                    });
+                        const blockers = document.querySelectorAll('[role="dialog"], [role="alertdialog"], [id^="radix-"], [data-radix-focus-guard], div[class*="inset-0"][class*="fixed"][class*="bg-black"], div[class*="backdrop-blur"], [data-state="open"][class*="fixed"]');
+                        blockers.forEach(el => {
+                            if (el !== document.body && el !== document.documentElement && el.id !== '__next' && el.id !== 'root') {
+                                el.remove();
+                            }
+                        });
+
+                        document.body.style.pointerEvents = 'auto';
+                        document.body.style.overflow = 'auto';
+                        document.body.removeAttribute('data-aria-hidden');
+                        document.getElementById('root')?.removeAttribute('aria-hidden');
+                        document.getElementById('__next')?.removeAttribute('aria-hidden');
+                    } catch(e) {}
 
                     // Future-proofed search using Shadow DOM piercing just in case Perplexity switches architecture
                     const inputElement = findDeep('textarea, [contenteditable="true"], input[type="text"], input[placeholder*="Ask"]');
@@ -453,25 +465,45 @@ function extractTrendlyneData() {
 // ── StockGro Injected Functions ───────────────────────────────────
 function extractStockGroData() {
     try {
-        const data = {};
-        data.url = window.location.href;
-        data.pageTitle = document.title;
+        const clean = (text) => (text || "").replace(/\s+/g, " ").trim();
+        const bodyText = clean(document.body.innerText);
         
-        // Extract links from nav to see what sections exist
-        const navLinks = Array.from(document.querySelectorAll('a')).map(a => a.href);
-        data.navLinks = [...new Set(navLinks)];
+        // Find cards or containers with trade recommendations or expert ideas
+        const allElements = Array.from(document.querySelectorAll('div, article, section, li, p'));
+        const tradeIdeas = [];
+        const portfolios = [];
         
-        // Extract all visible text blocks that might contain portfolio or expert names
-        const textBlocks = Array.from(document.querySelectorAll('div, span, p, h1, h2, h3'))
-            .filter(el => {
-                const rect = el.getBoundingClientRect();
-                return rect.width > 0 && rect.height > 0 && el.innerText && el.innerText.trim().length > 0;
-            })
-            .map(el => el.innerText.trim());
+        for (const el of allElements) {
+            const text = clean(el.innerText);
+            if (!text || text.length < 15 || text.length > 500) continue;
             
-        data.visibleTextSample = [...new Set(textBlocks)].slice(0, 50); // first 50 unique text nodes
+            const lower = text.toLowerCase();
+            // Match SEBI RA / Trade recommendations
+            if ((lower.includes('target') || lower.includes('sl') || lower.includes('stop loss') || lower.includes('buy') || lower.includes('sell')) && /\d/.test(text)) {
+                if (!tradeIdeas.includes(text)) {
+                    tradeIdeas.push(text);
+                }
+            }
+            // Match Portfolios / Leagues / Returns
+            else if ((lower.includes('portfolio') || lower.includes('return') || lower.includes('rank') || lower.includes('league') || lower.includes('expert')) && /\d/.test(text)) {
+                if (!portfolios.includes(text)) {
+                    portfolios.push(text);
+                }
+            }
+        }
         
-        return data;
+        // Extract symbols/tickers mentioned on page
+        const tickerMatches = bodyText.match(/[A-Z]{3,10}(?:\.NS|\.BO)?/g) || [];
+        const uniqueTickers = [...new Set(tickerMatches)].filter(t => !['HOME', 'HELP', 'ABOUT', 'LOGIN', 'SIGNUP', 'PORTFOLIO', 'ORDERS', 'MARKET', 'LEAGUE', 'CLUB', 'VIEW', 'MORE', 'STOCK', 'PRICE', 'TODAY', 'INDIA', 'SHARE', 'EQUITY'].includes(t));
+        
+        return {
+            url: window.location.href,
+            pageTitle: document.title,
+            tickers_detected: uniqueTickers.slice(0, 30),
+            trade_ideas: tradeIdeas.slice(0, 25),
+            portfolios_and_leagues: portfolios.slice(0, 25),
+            raw_summary: bodyText.slice(0, 3000)
+        };
     } catch(e) {
         return { error: "extractStockGroData error: " + e.message };
     }

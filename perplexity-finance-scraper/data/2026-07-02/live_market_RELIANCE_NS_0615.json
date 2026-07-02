@@ -1,0 +1,48 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-07-02T06:15:14.400830+00:00",
+  "date": "2026-07-02",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": 2,
+    "trend_direction": "BULLISH",
+    "timeframe": "Intraday (15m-1H)",
+    "catalyst_tags": [
+      "EARNINGS",
+      "CRUDE"
+    ],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {
+      "resistance": "₹1,300",
+      "analyst_target": "₹1,350",
+      "options_support": "1300",
+      "options_resistance": "1400"
+    },
+    "options_data": {
+      "atm_call_iv": 23.34,
+      "atm_put_iv": 24.71,
+      "atm_strike": 1300,
+      "chg_oi_ratio": 0.235,
+      "current_expiry": "28-Jul-2026",
+      "max_call_oi_strike": 1400,
+      "max_put_oi_strike": 1300,
+      "pcr": 0.681,
+      "resistance_level": 1400,
+      "rows_parsed": 45,
+      "sentiment": "BEARISH",
+      "source": "dom",
+      "support_level": 1300,
+      "symbol": "RELIANCE",
+      "total_call_chg_oi": 8615,
+      "total_call_oi": 107609,
+      "total_put_chg_oi": 2027,
+      "total_put_oi": 73286,
+      "underlying_price": 1301.6
+    }
+  },
+  "live_catalyst_narrative": "The Core Narrative: Why This Setup Is a High-Probability Intraday LongThe 3x volume spike on the 15m chart with a bullish breakout is being driven by institutional accumulation into the ₹1,300 OI support wall, not retail FOMO.  The options chain shows a Put-Call Ratio of 0.681 (bearish sentiment) but critically, the Change in OI Ratio is 0.235 (< 1.0), which signals bullish short-covering and put writing, not call-writing bull traps.  This is the \"WHY\": smart money is using the ₹1,300 level as a springboard, writing puts to collect premium while accumulating shares, creating a self-reinforcing gamma squeeze higher.tradingview+2Synthesizing the Causal Chain1. Options Flow → Institutional CatalystPCR 0.681 looks bearish on the surface, but the OI Change Ratio of 0.235 is the real signal: it means call writers are covering (short-covering) and put writers are adding risk (bullish conviction).tradingviewATM Put IV (24.71%) > Call IV (23.34%): Puts are richer, indicating hedging demand from institutions who are long the stock and protecting downside—classic accumulation behavior.tradingview₹1,300 Max Put OI is the institutional floor. Every dip into this level triggers put writers to defend, creating a gamma-supported bounce.tradingview+12. Fundamentals → Long-Term AnchorROCE 10.3%, ROE 8.91%, P/E 22.6: Reliance is trading at a reasonable valuation for a conglomerate with diversified cash flows (O2C, Jio, Retail).finance.yahoo+2Sales momentum: Dec 2025 (₹264,905 Cr) → Mar 2026 (₹294,059 Cr) shows 11% QoQ growth, but Net Profit declined 7.6% (₹22,290 Cr → ₹20,589 Cr), indicating margin compression (likely O2C cycle pressure).finance.yahooBook Value ₹668 vs. Price ₹1,302: Trading at ~1.95x P/B, which is fair for a conglomerate but not a deep value play—this is a momentum trade, not a value trap.dhan+13. Macro Tailwinds → The Hidden DriverCrude oil stability: O2C margins are stabilizing after the 2024-25 volatility, reducing earnings uncertainty.finance.yahooJio 5G monetization: ARPU growth and enterprise 5G deals are starting to flow into Q4 FY26 numbers, supporting the retail narrative.moneyplant24Retail expansion: New store openings and e-commerce integration are driving the sales growth, offsetting O2C weakness.dhanIntraday Trade Plan: Exact Levels and ExecutionSupport/Resistance MatrixLevelTypeRationaleAction₹1,300Major SupportMax Put OI + Book Value confluenceBuy on dip with tight SL below ₹1,295₹1,320-1,329Immediate SupportVWAP + prior breakout retest zone tradingviewAdd to longs if held₹1,357-1,395Day Range84% of daily range already traded moneyplant24Expect consolidation here₹1,400Major ResistanceMax Call OI wallTake profits or hedge with call spreads₹1,450-1,455Swing ResistancePrior breakout zone from June 2025 tradingviewOnly for BTST if momentum extendsExecution StrategyEntry: Long on retest of ₹1,305-1,310 (above the ₹1,300 OI floor) with volume confirmation.tradingview+1Stop Loss: ₹1,295 (below the max put OI level—break here invalidates the gamma squeeze thesis).tradingviewTarget 1: ₹1,350 (intraday VWAP extension).tradingviewTarget 2: ₹1,380-1,395 (top of day's range, near the 1,400 call wall).moneyplant24Hedge: If price approaches ₹1,400 with declining volume, buy 1,400 CE or sell 1,300 PE to lock in gamma.tradingviewRisk ManagementPosition Size: 50% of normal size due to PCR < 0.7 (elevated bearish sentiment risk).tradingviewTime Decay: Exit by 2:45 PM if ₹1,400 is not breached—avoid overnight gamma risk.tradingviewInvalidation: A close below ₹1,295 on the 15m chart flips the setup to short with target ₹1,270 (next support).tradingviewThe Edge: What Most Traders MissThe OI Change Ratio of 0.235 is the predictive signal: it means call writers are covering (short-covering) and put writers are adding risk, which is the opposite of a bull trap.  Most traders see PCR 0.681 and go bearish, but the change in OI tells the real story: institutions are writing puts to accumulate shares at ₹1,300, creating a gamma-supported rally.  This is why the volume spike is not a fakeout—it's institutional accumulation masked as retail FOMO.tradingview+2<SCORE>+3</SCORE><TIMEFRAME>Intraday (15m-1H)</TIMEFRAME>",
+  "scrape_duration_sec": 36.4,
+  "errors": []
+}

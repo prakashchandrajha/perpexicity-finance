@@ -1,0 +1,45 @@
+{
+  "ticker": "RELIANCE.NS",
+  "phase": "live_market",
+  "timestamp": "2026-07-02T06:08:20.784527+00:00",
+  "date": "2026-07-02",
+  "finance_page": null,
+  "signals": {
+    "sentiment_score": -4,
+    "trend_direction": "BEARISH",
+    "timeframe": null,
+    "catalyst_tags": [],
+    "urgency": "BREAKING",
+    "confidence": 0.5,
+    "key_levels": {
+      "options_support": "1300",
+      "options_resistance": "1400"
+    },
+    "options_data": {
+      "atm_call_iv": 23.88,
+      "atm_put_iv": 24.49,
+      "atm_strike": 1300,
+      "chg_oi_ratio": 0.237,
+      "current_expiry": "28-Jul-2026",
+      "max_call_oi_strike": 1400,
+      "max_put_oi_strike": 1300,
+      "pcr": 0.682,
+      "resistance_level": 1400,
+      "rows_parsed": 45,
+      "sentiment": "BEARISH",
+      "source": "dom",
+      "support_level": 1300,
+      "symbol": "RELIANCE",
+      "total_call_chg_oi": 8439,
+      "total_call_oi": 107453,
+      "total_put_chg_oi": 1997,
+      "total_put_oi": 73258,
+      "underlying_price": 1300.7
+    }
+  },
+  "live_catalyst_narrative": "Error: 'str' object has no attribute 'get'",
+  "scrape_duration_sec": 44.3,
+  "errors": [
+    "Live query failed: Error: 'str' object has no attribute 'get'"
+  ]
+}

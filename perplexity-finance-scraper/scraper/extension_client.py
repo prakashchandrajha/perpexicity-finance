@@ -142,9 +142,13 @@ class PerplexityExtensionClient:
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=300)
             
-            if "error" in result:
-                return f"Error: {result['error']}"
-            return result.get("text", "")
+            if isinstance(result, dict):
+                if "error" in result:
+                    return f"Error: {result['error']}"
+                return result.get("text", str(result))
+            elif isinstance(result, str):
+                return result
+            return str(result)
         except Exception as e:
             logger.error(f"[ExtClient] Failed to execute live query via extension: {e}")
             return f"Error: {e}"
@@ -181,9 +185,13 @@ class PerplexityExtensionClient:
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=150)
             
-            if "error" in result:
-                return f"Error: {result['error']}"
-            return result.get("text", "")
+            if isinstance(result, dict):
+                if "error" in result:
+                    return f"Error: {result['error']}"
+                return result.get("text", str(result))
+            elif isinstance(result, str):
+                return result
+            return str(result)
         except Exception as e:
             logger.error(f"[ExtClient] Failed to execute earnings query via extension: {e}")
             return f"Error: {e}"
@@ -204,9 +212,13 @@ class PerplexityExtensionClient:
             job_id = res.json().get("job_id")
             result = self._wait_for_result(job_id, timeout=150)
             
-            if "error" in result:
-                return f"Error: {result['error']}"
-            return result.get("text", "")
+            if isinstance(result, dict):
+                if "error" in result:
+                    return f"Error: {result['error']}"
+                return result.get("text", str(result))
+            elif isinstance(result, str):
+                return result
+            return str(result)
         except Exception as e:
             logger.error(f"[ExtClient] Failed to execute macro scan via extension: {e}")
             return f"Error: {e}"

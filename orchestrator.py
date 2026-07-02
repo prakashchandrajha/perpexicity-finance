@@ -20,6 +20,7 @@ except ImportError:
 ROOT_DIR = Path(__file__).resolve().parent
 SCREENER_DIR = ROOT_DIR / "power_up" / "screener"
 TRENDLYNE_DIR = ROOT_DIR / "power_up" / "trendlyne"
+NSE_OPTIONS_DIR = ROOT_DIR / "power_up" / "nse_options"
 PERPLEXITY_DIR = ROOT_DIR / "perplexity-finance-scraper"
 
 SCREENER_DB = SCREENER_DIR / "data" / "screener_warehouse.db"
@@ -205,7 +206,7 @@ def fetch_trendlyne_context(ticker: str) -> str:
                 "main.py",
                 ticker,
                 "--query",
-                "What is the delivery volume trend and are there any recent block deals or changes in FII holding?",
+                "Extract DVM Scores (Durability, Valuation, Momentum), Broker Target Price upgrades, and recent Insider Trading deals or block buys.",
             ],
             TRENDLYNE_DIR,
             capture=True,
@@ -233,6 +234,42 @@ def fetch_trendlyne_context(ticker: str) -> str:
         print(f"⚠️ Trendlyne query failed. Ensure the extension is running and logged in. Error: {exc.stderr}")
     except Exception as exc:
         print(f"⚠️ Failed to get Trendlyne context: {exc}")
+    return ""
+
+
+def fetch_nse_options_context(base_symbol: str) -> str:
+    """Collect live NSE option chain intelligence — ATM IV, Change in OI ratio, PCR, support/resistance."""
+    print("\n[2.6] Collecting NSE Options Chain intelligence (OI Traps, ATM Volatility, PCR)...")
+    out_file = NSE_OPTIONS_DIR / "data" / f"{base_symbol}_options.json"
+    
+    try:
+        options_python = resolve_python(NSE_OPTIONS_DIR, PERPLEXITY_PYTHON)
+        run_python(options_python, ["main.py", base_symbol], NSE_OPTIONS_DIR, capture=True)
+        
+        if out_file.exists():
+            with open(out_file, "r", encoding="utf-8") as f:
+                opt_data = json.load(f)
+            
+            pcr = opt_data.get("pcr", "N/A")
+            sentiment = opt_data.get("sentiment", "N/A")
+            chg_oi_ratio = opt_data.get("chg_oi_ratio", "N/A")
+            atm_call_iv = opt_data.get("atm_call_iv", "N/A")
+            atm_put_iv = opt_data.get("atm_put_iv", "N/A")
+            support = opt_data.get("support_level", "N/A")
+            resistance = opt_data.get("resistance_level", "N/A")
+            underlying = opt_data.get("underlying_price", "N/A")
+            
+            print(f"✅ NSE Options Extracted -> PCR: {pcr} ({sentiment}), Chg OI Ratio: {chg_oi_ratio}, ATM IV: {atm_call_iv}%/{atm_put_iv}%")
+            return (
+                "\n--- NSE OPTIONS CHAIN INTELLIGENCE (BUMRAH TRAP DETECTOR) ---\n"
+                f"Underlying Price: ₹{underlying}\n"
+                f"Put-Call Ratio (PCR): {pcr} (Market Sentiment: {sentiment})\n"
+                f"Change in OI Ratio (Call Chg OI / Put Chg OI): {chg_oi_ratio} (< 1.0 means Bullish Short Covering/Put Writing, > 1.0 means Bearish Call Writing/Bull Trap)\n"
+                f"At-The-Money (ATM) Implied Volatility: Call IV = {atm_call_iv}%, Put IV = {atm_put_iv}%\n"
+                f"Immediate OI Support Level: ₹{support} | Immediate OI Resistance Level: ₹{resistance}\n"
+            )
+    except Exception as exc:
+        print(f"⚠️ Failed to get NSE options context: {exc}")
     return ""
 
 
@@ -435,18 +472,19 @@ def cmd_anomaly(ticker: str, context: str) -> None:
 
     trendlyne_context = fetch_trendlyne_context(ticker)
     nse_context = fetch_nse_context(base_symbol)
+    options_context = fetch_nse_options_context(base_symbol)
     tv_context = fetch_tradingview_technicals(base_symbol)
 
     print("\n[3] Stock passed risk gate. Asking Perplexity for final narrative...")
     ai_directive = (
-        "\n--- AI DIRECTIVE ---\n"
-        "I've shared the fundamental and real-time exchange data above. "
-        "Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
-        "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals.\n"
-        "When you wrap up your analysis, I'd really appreciate it if you could just drop your final sentiment score in a simple `<SCORE>X</SCORE>` tag (where X is -5 for Strong Sell to +5 for Strong Buy). "
-        "Also, just let me know the expected duration in a `<TIMEFRAME>Y</TIMEFRAME>` tag (like 'Intraday' or '1-3 Days'). Thanks!"
+        f"\n--- AI DIRECTIVE FOR {ticker} ---\n"
+        "I've shared the fundamental, institutional (Trendlyne DVM), and real-time NSE option chain (OI traps) data above.\n"
+        f"Could you please search the web for the latest breaking news, brokerage upgrades/downgrades, block deals, and macro tailwinds for {ticker} today?\n"
+        "CRITICAL RULE: Check the NSE Options Chain intelligence. If Change in OI ratio > 1.5 or PCR < 0.6, be extremely cautious of Call Writing / Bull Traps.\n"
+        "Take a close look at the short-term technicals I provided, and weigh them heavily against the long-term fundamentals and DVM scores.\n"
+        "When you wrap up your analysis, drop your final sentiment score in `<SCORE>X</SCORE>` (-5 Strong Sell to +5 Strong Buy) and timeframe in `<TIMEFRAME>Y</TIMEFRAME>`. Thanks!"
     )
-    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + tv_context + ai_directive
+    ultra_context = context + "\n" + fundamental_context + trendlyne_context + nse_context + options_context + tv_context + ai_directive
     print(f"\n[Injecting Context]:\n{ultra_context}\n")
 
     run_python(
