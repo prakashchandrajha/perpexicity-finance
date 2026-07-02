@@ -574,6 +574,112 @@ def cmd_custom_screen(query: str) -> None:
     print("\n=== CUSTOM SCREEN ROUTINE COMPLETE ===")
 
 
+def cmd_monitor() -> None:
+    print("=== ORCHESTRATOR: THE WICKET-KEEPER (ACTIVE STOP LOSS / TARGET MONITOR) ===")
+    data_dir = PERPLEXITY_DIR / "data"
+    if not data_dir.exists():
+        print("No historical trade plans found in data/.")
+        return
+        
+    latest_files = sorted(data_dir.glob("*/live_market_*.json"), reverse=True)[:10]
+    if not latest_files:
+        print("No live_market analysis files found.")
+        return
+
+    print(f"Checking {len(latest_files)} recent live market trade plans...")
+    for file_path in latest_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            ticker = data.get("ticker", "UNKNOWN")
+            signals = data.get("signals", {})
+            score = signals.get("sentiment_score", 0)
+            key_levels = signals.get("key_levels", {})
+            options_data = signals.get("options_data", {})
+            
+            support = key_levels.get("options_support") or options_data.get("support_level")
+            resistance = key_levels.get("options_resistance") or options_data.get("resistance_level")
+            underlying = options_data.get("underlying_price")
+            
+            print(f"\n[Trade Plan]: {ticker} | Score: {score} | Underlying: ₹{underlying} | Support (SL Floor): ₹{support} | Resistance: ₹{resistance}")
+            if support and underlying:
+                try:
+                    s_val = float(str(support).replace("₹", "").replace(",", "").strip())
+                    u_val = float(str(underlying).replace("₹", "").replace(",", "").strip())
+                    if u_val < s_val:
+                        print(f"🚨 ALERT (KILL SWITCH): {ticker} is trading below OI Support floor (₹{u_val} < ₹{s_val})! Execute immediate exit!")
+                    elif u_val >= s_val * 1.05:
+                        print(f"🎯 ALERT (TAKE PROFIT): {ticker} is up >5% from support! Tighten trailing stop loss!")
+                    else:
+                        print(f"🛡️ SAFE: {ticker} is trading cleanly above support floor.")
+                except ValueError:
+                    pass
+        except Exception as e:
+            print(f"Error checking {file_path.name}: {e}")
+    print("\n=== WICKET-KEEPER MONITORING COMPLETE ===")
+
+
+def cmd_journal() -> None:
+    print("=== ORCHESTRATOR: THE VIDEO ANALYST (WIN-RATE & PERFORMANCE JOURNAL) ===")
+    db_path = PERPLEXITY_DIR / "data" / "perplexity_warehouse.db"
+    if not db_path.exists():
+        print("No SQLite warehouse found at perplexity_warehouse.db.")
+        return
+        
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT ticker, phase, timestamp, sentiment_score, trend, urgency FROM scrapes WHERE phase='live_market' ORDER BY timestamp DESC LIMIT 20")
+        rows = cursor.fetchall()
+        conn.close()
+        
+        if not rows:
+            print("No live_market records found in warehouse.")
+            return
+            
+        print(f"\nAnalyzed {len(rows)} recent Live Market Signals:")
+        print(f"{'TICKER':<15} {'TIMESTAMP':<20} {'SCORE':<8} {'TREND':<10} {'URGENCY':<10}")
+        print("-" * 65)
+        bullish_count = 0
+        bearish_count = 0
+        total_score = 0
+        for row in rows:
+            ticker, phase, ts_val, score, trend, urg = row
+            print(f"{ticker:<15} {str(ts_val):<20} {str(score):<8} {str(trend):<10} {str(urg):<10}")
+            if score and int(score) > 0:
+                bullish_count += 1
+            elif score and int(score) < 0:
+                bearish_count += 1
+            if score:
+                total_score += int(score)
+                
+        avg_score = total_score / len(rows) if rows else 0
+        print("-" * 65)
+        print(f"📊 SUMMARY: Total Signals: {len(rows)} | Bullish Setups: {bullish_count} | Bearish Setups: {bearish_count} | Avg Sentiment Score: {avg_score:.2f}")
+        print("💡 TIP: Cross-reference high confidence signals (>+2) with 24h price charts to calibrate scanner win-rates.")
+    except Exception as e:
+        print(f"Error reading warehouse: {e}")
+    print("\n=== JOURNAL REVIEW COMPLETE ===")
+
+
+def cmd_pre_open() -> None:
+    print("=== ORCHESTRATOR: PRE-MATCH PITCH INSPECTION (9:00 AM FII / INDEX DERIVATIVES PULSE) ===")
+    print("\n[Step 1] Fetching Macro Cash FII/DII Weather...")
+    fii_dii_text = fetch_fii_dii_context()
+    print(fii_dii_text)
+    
+    print("\n[Step 2] Fetching Index Option Chain Pulse (NIFTY & BANKNIFTY)...")
+    for index_sym in ["NIFTY", "BANKNIFTY"]:
+        try:
+            print(f"\n--- Checking Index: {index_sym} ---")
+            options_python = resolve_python(NSE_OPTIONS_DIR, PERPLEXITY_PYTHON)
+            run_python(options_python, ["main.py", index_sym, "--index"], NSE_OPTIONS_DIR, capture=False)
+        except Exception as e:
+            print(f"Failed to fetch {index_sym} index options: {e}")
+            
+    print("\n=== PRE-MATCH PITCH INSPECTION COMPLETE ===")
+
+
 def cmd_live_loop(scanner_name: str, interval_min: int) -> None:
     print(f"=== ORCHESTRATOR: LIVE HUNTING LOOP ({scanner_name}) ===")
     import time
@@ -642,6 +748,10 @@ def main() -> None:
     live_loop_parser.add_argument("scanner", help="Chartink scanner name (e.g. 15_min_volume_breakout)")
     live_loop_parser.add_argument("--interval", type=int, default=5, help="Minutes to sleep between scans")
 
+    subparsers.add_parser("monitor", help="Run Wicket-Keeper to check active trade plans and support/stop loss levels")
+    subparsers.add_parser("journal", help="Run Video Analyst to inspect historical win-rates and warehouse signals")
+    subparsers.add_parser("pre-open", help="Run Pre-Match Pitch Inspection on FII/DII net flows and NIFTY/BANKNIFTY option chains")
+
     args = parser.parse_args()
 
     if args.command == "pre-market":
@@ -652,6 +762,12 @@ def main() -> None:
         cmd_custom_screen(args.query)
     elif args.command == "live-loop":
         cmd_live_loop(args.scanner, args.interval)
+    elif args.command == "monitor":
+        cmd_monitor()
+    elif args.command == "journal":
+        cmd_journal()
+    elif args.command == "pre-open":
+        cmd_pre_open()
 
 
 if __name__ == "__main__":

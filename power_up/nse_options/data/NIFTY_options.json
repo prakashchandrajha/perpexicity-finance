@@ -1,0 +1,21 @@
+{
+  "atm_call_iv": 9.71,
+  "atm_put_iv": 11.63,
+  "atm_strike": 24100,
+  "chg_oi_ratio": 0.826,
+  "current_expiry": "07-Jul-2026",
+  "max_call_oi_strike": 24100,
+  "max_put_oi_strike": 24000,
+  "pcr": 1.044,
+  "resistance_level": 24100,
+  "rows_parsed": 100,
+  "sentiment": "BULLISH",
+  "source": "dom",
+  "support_level": 24000,
+  "symbol": "NIFTY",
+  "total_call_chg_oi": 602483,
+  "total_call_oi": 2212629,
+  "total_put_chg_oi": 497652,
+  "total_put_oi": 2310908,
+  "underlying_price": 24100.15
+}

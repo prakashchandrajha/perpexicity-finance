@@ -1,0 +1,21 @@
+{
+  "atm_call_iv": 13.56,
+  "atm_put_iv": 15.75,
+  "atm_strike": 58000,
+  "chg_oi_ratio": 0.825,
+  "current_expiry": "28-Jul-2026",
+  "max_call_oi_strike": 60000,
+  "max_put_oi_strike": 58000,
+  "pcr": 0.883,
+  "resistance_level": 60000,
+  "rows_parsed": 170,
+  "sentiment": "BEARISH",
+  "source": "dom",
+  "support_level": 58000,
+  "symbol": "BANKNIFTY",
+  "total_call_chg_oi": 29667,
+  "total_call_oi": 370117,
+  "total_put_chg_oi": 24467,
+  "total_put_oi": 326905,
+  "underlying_price": 58018.2
+}
