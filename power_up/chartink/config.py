@@ -13,15 +13,19 @@ EXTENSION_POLL_SECONDS = 2
 # Standard high-probability live intraday technical breakout scanners
 DEFAULT_SCANNERS = {
     "15_min_volume_breakout": {
-        "description": "Stocks breaking out on 15-minute charts with massive volume.",
+        "description": "Stocks breaking out on 15-minute charts with massive volume explosion.",
         "url": "https://chartink.com/screener/15-minute-stock-breakouts",
     },
-    "rsi_bullish_divergence": {
-        "description": "Bullish RSI divergence indicating potential reversal.",
-        "url": "https://chartink.com/screener/rsi-bullish-divergence-intraday", # example URL
+    "bullish_momentum": {
+        "description": "Stocks showing strong intraday bullish momentum and MACD/RSI confirmation.",
+        "url": "https://chartink.com/screener/bullish-intraday-momentum-breakout",
     },
-    "vwap_cross": {
-        "description": "Stocks crossing VWAP with volume, indicating strong institutional intraday buying.",
-        "url": "https://chartink.com/screener/vwap-cross-intraday", # example URL
+    "supertrend_breakout": {
+        "description": "Intraday Supertrend buy signal triggered with above average volume.",
+        "url": "https://chartink.com/screener/supertrend-buy-breakout-intraday",
+    },
+    "52w_high_volume": {
+        "description": "Stocks breaking out to 52-week highs supported by institutional volume.",
+        "url": "https://chartink.com/screener/52-week-high-breakout-with-high-volume",
     }
 }

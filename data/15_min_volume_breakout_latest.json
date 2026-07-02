@@ -1,118 +1,326 @@
 {
-  "job_id": "job_a2b7a973",
+  "job_id": "job_6bf16dbe",
   "scanner_name": "15_min_volume_breakout",
-  "captured_at": "2026-07-02T07:29:43.128Z",
+  "captured_at": "2026-07-02T11:57:47.153Z",
   "stocks": [
     {
-      "symbol": "TATATECH",
-      "name": "Tata Technologies Ltd",
-      "price": 726.25,
-      "volume": 2911378.0,
-      "change_pct": 8.36,
+      "symbol": "MAPMYINDIA",
+      "name": "C.E. Info Systems Ltd",
+      "price": 914.35,
+      "volume": 2934346.0,
+      "change_pct": 8.1,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "8.36%",
-        "Close Sort table by close in ascending order": "726.25",
+        "%_change Sort table by %_change in descending order": "8.1%",
+        "Close Sort table by close in ascending order": "914.35",
         "Sr.": "1",
-        "Stock Name Sort table by Stock Name in ascending order": "Tata Technologies Ltd",
-        "Symbol Sort table by Symbol in ascending order": "TATATECH",
-        "Volume Sort table by volume in ascending order": "29,11,378"
+        "Stock Name Sort table by Stock Name in ascending order": "C.E. Info Systems Ltd",
+        "Symbol Sort table by Symbol in ascending order": "MAPMYINDIA",
+        "Volume Sort table by volume in ascending order": "29,34,346"
       }
     },
     {
-      "symbol": "JUBLFOOD",
-      "name": "Jubilant Foodworks Limited",
-      "price": 431.25,
-      "volume": 1286164.0,
-      "change_pct": 2.33,
+      "symbol": "PERSISTENT",
+      "name": "Persistent Systems Limited",
+      "price": 4580.6,
+      "volume": 1859078.0,
+      "change_pct": 5.78,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "2.33%",
-        "Close Sort table by close in ascending order": "431.25",
+        "%_change Sort table by %_change in descending order": "5.78%",
+        "Close Sort table by close in ascending order": "4,580.6",
         "Sr.": "2",
-        "Stock Name Sort table by Stock Name in ascending order": "Jubilant Foodworks Limited",
-        "Symbol Sort table by Symbol in ascending order": "JUBLFOOD",
-        "Volume Sort table by volume in ascending order": "12,86,164"
+        "Stock Name Sort table by Stock Name in ascending order": "Persistent Systems Limited",
+        "Symbol Sort table by Symbol in ascending order": "PERSISTENT",
+        "Volume Sort table by volume in ascending order": "18,59,078"
       }
     },
     {
-      "symbol": "NTPCGREEN",
-      "name": "NTPC Green Energy Ltd",
-      "price": 96.36,
-      "volume": 1327596.0,
-      "change_pct": 1.35,
+      "symbol": "APOLLOTYRE",
+      "name": "Apollo Tyres Limited",
+      "price": 456.6,
+      "volume": 4300516.0,
+      "change_pct": 5.78,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "1.35%",
-        "Close Sort table by close in ascending order": "96.36",
+        "%_change Sort table by %_change in descending order": "5.78%",
+        "Close Sort table by close in ascending order": "456.6",
         "Sr.": "3",
-        "Stock Name Sort table by Stock Name in ascending order": "NTPC Green Energy Ltd",
-        "Symbol Sort table by Symbol in ascending order": "NTPCGREEN",
-        "Volume Sort table by volume in ascending order": "13,27,596"
+        "Stock Name Sort table by Stock Name in ascending order": "Apollo Tyres Limited",
+        "Symbol Sort table by Symbol in ascending order": "APOLLOTYRE",
+        "Volume Sort table by volume in ascending order": "43,00,516"
       }
     },
     {
-      "symbol": "HYUNDAI",
-      "name": "Hyundai Motor India Ltd",
-      "price": 1940.6,
-      "volume": 169737.0,
-      "change_pct": 1.16,
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "price": 1040.9,
+      "volume": 18741111.0,
+      "change_pct": 5.64,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "1.16%",
-        "Close Sort table by close in ascending order": "1,940.6",
+        "%_change Sort table by %_change in descending order": "5.64%",
+        "Close Sort table by close in ascending order": "1,040.9",
         "Sr.": "4",
-        "Stock Name Sort table by Stock Name in ascending order": "Hyundai Motor India Ltd",
-        "Symbol Sort table by Symbol in ascending order": "HYUNDAI",
-        "Volume Sort table by volume in ascending order": "1,69,737"
+        "Stock Name Sort table by Stock Name in ascending order": "Infosys Limited",
+        "Symbol Sort table by Symbol in ascending order": "INFY",
+        "Volume Sort table by volume in ascending order": "1,87,41,111"
       }
     },
     {
-      "symbol": "HINDUNILVR",
-      "name": "Hindustan Unilever Limited",
-      "price": 2206.8,
-      "volume": 1197663.0,
-      "change_pct": 1.14,
+      "symbol": "MPHASIS",
+      "name": "Mphasis Limited",
+      "price": 2245.4,
+      "volume": 889024.0,
+      "change_pct": 5.58,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "1.14%",
-        "Close Sort table by close in ascending order": "2,206.8",
+        "%_change Sort table by %_change in descending order": "5.58%",
+        "Close Sort table by close in ascending order": "2,245.4",
         "Sr.": "5",
-        "Stock Name Sort table by Stock Name in ascending order": "Hindustan Unilever Limited",
-        "Symbol Sort table by Symbol in ascending order": "HINDUNILVR",
-        "Volume Sort table by volume in ascending order": "11,97,663"
+        "Stock Name Sort table by Stock Name in ascending order": "Mphasis Limited",
+        "Symbol Sort table by Symbol in ascending order": "MPHASIS",
+        "Volume Sort table by volume in ascending order": "8,89,024"
       }
     },
     {
-      "symbol": "RADICO",
-      "name": "Radico Khaitan Limited",
-      "price": 3976.4,
-      "volume": 100317.0,
-      "change_pct": 0.6,
+      "symbol": "J&KBANK",
+      "name": "The Jammu & Kashmir Bank Limited",
+      "price": 164.7,
+      "volume": 7874766.0,
+      "change_pct": 5.44,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "0.6%",
-        "Close Sort table by close in ascending order": "3,976.4",
+        "%_change Sort table by %_change in descending order": "5.44%",
+        "Close Sort table by close in ascending order": "164.7",
         "Sr.": "6",
-        "Stock Name Sort table by Stock Name in ascending order": "Radico Khaitan Limited",
-        "Symbol Sort table by Symbol in ascending order": "RADICO",
-        "Volume Sort table by volume in ascending order": "1,00,317"
+        "Stock Name Sort table by Stock Name in ascending order": "The Jammu & Kashmir Bank Limited",
+        "Symbol Sort table by Symbol in ascending order": "J&KBANK",
+        "Volume Sort table by volume in ascending order": "78,74,766"
       }
     },
     {
-      "symbol": "ATHERENERG",
-      "name": "Ather Energy Ltd",
-      "price": 1136.3,
-      "volume": 1173920.0,
-      "change_pct": 0.52,
+      "symbol": "IIFL",
+      "name": "IIFL Finance Ltd",
+      "price": 518.7,
+      "volume": 1965270.0,
+      "change_pct": 4.65,
       "metrics": {
         "": "",
-        "%_change Sort table by %_change in descending order": "0.52%",
-        "Close Sort table by close in ascending order": "1,136.3",
+        "%_change Sort table by %_change in descending order": "4.65%",
+        "Close Sort table by close in ascending order": "518.7",
         "Sr.": "7",
-        "Stock Name Sort table by Stock Name in ascending order": "Ather Energy Ltd",
-        "Symbol Sort table by Symbol in ascending order": "ATHERENERG",
-        "Volume Sort table by volume in ascending order": "11,73,920"
+        "Stock Name Sort table by Stock Name in ascending order": "IIFL Finance Ltd",
+        "Symbol Sort table by Symbol in ascending order": "IIFL",
+        "Volume Sort table by volume in ascending order": "19,65,270"
+      }
+    },
+    {
+      "symbol": "ZYDUSWELL",
+      "name": "Zydus Wellness Limited",
+      "price": 594.45,
+      "volume": 2140111.0,
+      "change_pct": 4.56,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "4.56%",
+        "Close Sort table by close in ascending order": "594.45",
+        "Sr.": "8",
+        "Stock Name Sort table by Stock Name in ascending order": "Zydus Wellness Limited",
+        "Symbol Sort table by Symbol in ascending order": "ZYDUSWELL",
+        "Volume Sort table by volume in ascending order": "21,40,111"
+      }
+    },
+    {
+      "symbol": "TECHM",
+      "name": "Tech Mahindra Limited",
+      "price": 1421.3,
+      "volume": 3035128.0,
+      "change_pct": 4.34,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "4.34%",
+        "Close Sort table by close in ascending order": "1,421.3",
+        "Sr.": "9",
+        "Stock Name Sort table by Stock Name in ascending order": "Tech Mahindra Limited",
+        "Symbol Sort table by Symbol in ascending order": "TECHM",
+        "Volume Sort table by volume in ascending order": "30,35,128"
+      }
+    },
+    {
+      "symbol": "VMM",
+      "name": "Vishal Mega Mart Ltd",
+      "price": 121.45,
+      "volume": 15415287.0,
+      "change_pct": 4.02,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "4.02%",
+        "Close Sort table by close in ascending order": "121.45",
+        "Sr.": "10",
+        "Stock Name Sort table by Stock Name in ascending order": "Vishal Mega Mart Ltd",
+        "Symbol Sort table by Symbol in ascending order": "VMM",
+        "Volume Sort table by volume in ascending order": "1,54,15,287"
+      }
+    },
+    {
+      "symbol": "ANANTRAJ",
+      "name": "Anant Raj Limited",
+      "price": 537.65,
+      "volume": 2166521.0,
+      "change_pct": 4.01,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "4.01%",
+        "Close Sort table by close in ascending order": "537.65",
+        "Sr.": "11",
+        "Stock Name Sort table by Stock Name in ascending order": "Anant Raj Limited",
+        "Symbol Sort table by Symbol in ascending order": "ANANTRAJ",
+        "Volume Sort table by volume in ascending order": "21,66,521"
+      }
+    },
+    {
+      "symbol": "FSL",
+      "name": "Firstsource Solutions Limited",
+      "price": 238.75,
+      "volume": 2930870.0,
+      "change_pct": 3.94,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.94%",
+        "Close Sort table by close in ascending order": "238.75",
+        "Sr.": "12",
+        "Stock Name Sort table by Stock Name in ascending order": "Firstsource Solutions Limited",
+        "Symbol Sort table by Symbol in ascending order": "FSL",
+        "Volume Sort table by volume in ascending order": "29,30,870"
+      }
+    },
+    {
+      "symbol": "BALRAMCHIN",
+      "name": "Balrampur Chini Mills Limited",
+      "price": 567.2,
+      "volume": 673438.0,
+      "change_pct": 3.93,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.93%",
+        "Close Sort table by close in ascending order": "567.2",
+        "Sr.": "13",
+        "Stock Name Sort table by Stock Name in ascending order": "Balrampur Chini Mills Limited",
+        "Symbol Sort table by Symbol in ascending order": "BALRAMCHIN",
+        "Volume Sort table by volume in ascending order": "6,73,438"
+      }
+    },
+    {
+      "symbol": "GRAVITA",
+      "name": "Gravita India Limited",
+      "price": 1687.4,
+      "volume": 212507.0,
+      "change_pct": 3.7,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.7%",
+        "Close Sort table by close in ascending order": "1,687.4",
+        "Sr.": "14",
+        "Stock Name Sort table by Stock Name in ascending order": "Gravita India Limited",
+        "Symbol Sort table by Symbol in ascending order": "GRAVITA",
+        "Volume Sort table by volume in ascending order": "2,12,507"
+      }
+    },
+    {
+      "symbol": "DIXON",
+      "name": "Dixon Technologies Ltd",
+      "price": 12373.0,
+      "volume": 549083.0,
+      "change_pct": 3.49,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.49%",
+        "Close Sort table by close in ascending order": "12,373",
+        "Sr.": "15",
+        "Stock Name Sort table by Stock Name in ascending order": "Dixon Technologies Ltd",
+        "Symbol Sort table by Symbol in ascending order": "DIXON",
+        "Volume Sort table by volume in ascending order": "5,49,083"
+      }
+    },
+    {
+      "symbol": "APARINDS",
+      "name": "Apar Industries Limited",
+      "price": 15101.0,
+      "volume": 262252.0,
+      "change_pct": 3.45,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.45%",
+        "Close Sort table by close in ascending order": "15,101",
+        "Sr.": "16",
+        "Stock Name Sort table by Stock Name in ascending order": "Apar Industries Limited",
+        "Symbol Sort table by Symbol in ascending order": "APARINDS",
+        "Volume Sort table by volume in ascending order": "2,62,252"
+      }
+    },
+    {
+      "symbol": "POONAWALLA",
+      "name": "Poonawalla Fincorp Ltd",
+      "price": 456.9,
+      "volume": 2003328.0,
+      "change_pct": 3.34,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.34%",
+        "Close Sort table by close in ascending order": "456.9",
+        "Sr.": "17",
+        "Stock Name Sort table by Stock Name in ascending order": "Poonawalla Fincorp Ltd",
+        "Symbol Sort table by Symbol in ascending order": "POONAWALLA",
+        "Volume Sort table by volume in ascending order": "20,03,328"
+      }
+    },
+    {
+      "symbol": "BAJAJFINSV",
+      "name": "Bajaj Finserv Limited",
+      "price": 1855.7,
+      "volume": 1790282.0,
+      "change_pct": 3.23,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.23%",
+        "Close Sort table by close in ascending order": "1,855.7",
+        "Sr.": "18",
+        "Stock Name Sort table by Stock Name in ascending order": "Bajaj Finserv Limited",
+        "Symbol Sort table by Symbol in ascending order": "BAJAJFINSV",
+        "Volume Sort table by volume in ascending order": "17,90,282"
+      }
+    },
+    {
+      "symbol": "UNOMINDA",
+      "name": "Uno Minda Ltd",
+      "price": 1121.0,
+      "volume": 575387.0,
+      "change_pct": 3.02,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "3.02%",
+        "Close Sort table by close in ascending order": "1,121",
+        "Sr.": "19",
+        "Stock Name Sort table by Stock Name in ascending order": "Uno Minda Ltd",
+        "Symbol Sort table by Symbol in ascending order": "UNOMINDA",
+        "Volume Sort table by volume in ascending order": "5,75,387"
+      }
+    },
+    {
+      "symbol": "ENDURANCE",
+      "name": "Endurance Technologies Limited",
+      "price": 2663.0,
+      "volume": 101896.0,
+      "change_pct": 2.69,
+      "metrics": {
+        "": "",
+        "%_change Sort table by %_change in descending order": "2.69%",
+        "Close Sort table by close in ascending order": "2,663",
+        "Sr.": "20",
+        "Stock Name Sort table by Stock Name in ascending order": "Endurance Technologies Limited",
+        "Symbol Sort table by Symbol in ascending order": "ENDURANCE",
+        "Volume Sort table by volume in ascending order": "1,01,896"
       }
     }
   ],
@@ -130,66 +338,183 @@
       "rows": [
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "8.36%",
-          "Close Sort table by close in ascending order": "726.25",
+          "%_change Sort table by %_change in descending order": "8.1%",
+          "Close Sort table by close in ascending order": "914.35",
           "Sr.": "1",
-          "Stock Name Sort table by Stock Name in ascending order": "Tata Technologies Ltd",
-          "Symbol Sort table by Symbol in ascending order": "TATATECH",
-          "Volume Sort table by volume in ascending order": "29,11,378"
+          "Stock Name Sort table by Stock Name in ascending order": "C.E. Info Systems Ltd",
+          "Symbol Sort table by Symbol in ascending order": "MAPMYINDIA",
+          "Volume Sort table by volume in ascending order": "29,34,346"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "2.33%",
-          "Close Sort table by close in ascending order": "431.25",
+          "%_change Sort table by %_change in descending order": "5.78%",
+          "Close Sort table by close in ascending order": "4,580.6",
           "Sr.": "2",
-          "Stock Name Sort table by Stock Name in ascending order": "Jubilant Foodworks Limited",
-          "Symbol Sort table by Symbol in ascending order": "JUBLFOOD",
-          "Volume Sort table by volume in ascending order": "12,86,164"
+          "Stock Name Sort table by Stock Name in ascending order": "Persistent Systems Limited",
+          "Symbol Sort table by Symbol in ascending order": "PERSISTENT",
+          "Volume Sort table by volume in ascending order": "18,59,078"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "1.35%",
-          "Close Sort table by close in ascending order": "96.36",
+          "%_change Sort table by %_change in descending order": "5.78%",
+          "Close Sort table by close in ascending order": "456.6",
           "Sr.": "3",
-          "Stock Name Sort table by Stock Name in ascending order": "NTPC Green Energy Ltd",
-          "Symbol Sort table by Symbol in ascending order": "NTPCGREEN",
-          "Volume Sort table by volume in ascending order": "13,27,596"
+          "Stock Name Sort table by Stock Name in ascending order": "Apollo Tyres Limited",
+          "Symbol Sort table by Symbol in ascending order": "APOLLOTYRE",
+          "Volume Sort table by volume in ascending order": "43,00,516"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "1.16%",
-          "Close Sort table by close in ascending order": "1,940.6",
+          "%_change Sort table by %_change in descending order": "5.64%",
+          "Close Sort table by close in ascending order": "1,040.9",
           "Sr.": "4",
-          "Stock Name Sort table by Stock Name in ascending order": "Hyundai Motor India Ltd",
-          "Symbol Sort table by Symbol in ascending order": "HYUNDAI",
-          "Volume Sort table by volume in ascending order": "1,69,737"
+          "Stock Name Sort table by Stock Name in ascending order": "Infosys Limited",
+          "Symbol Sort table by Symbol in ascending order": "INFY",
+          "Volume Sort table by volume in ascending order": "1,87,41,111"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "1.14%",
-          "Close Sort table by close in ascending order": "2,206.8",
+          "%_change Sort table by %_change in descending order": "5.58%",
+          "Close Sort table by close in ascending order": "2,245.4",
           "Sr.": "5",
-          "Stock Name Sort table by Stock Name in ascending order": "Hindustan Unilever Limited",
-          "Symbol Sort table by Symbol in ascending order": "HINDUNILVR",
-          "Volume Sort table by volume in ascending order": "11,97,663"
+          "Stock Name Sort table by Stock Name in ascending order": "Mphasis Limited",
+          "Symbol Sort table by Symbol in ascending order": "MPHASIS",
+          "Volume Sort table by volume in ascending order": "8,89,024"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "0.6%",
-          "Close Sort table by close in ascending order": "3,976.4",
+          "%_change Sort table by %_change in descending order": "5.44%",
+          "Close Sort table by close in ascending order": "164.7",
           "Sr.": "6",
-          "Stock Name Sort table by Stock Name in ascending order": "Radico Khaitan Limited",
-          "Symbol Sort table by Symbol in ascending order": "RADICO",
-          "Volume Sort table by volume in ascending order": "1,00,317"
+          "Stock Name Sort table by Stock Name in ascending order": "The Jammu & Kashmir Bank Limited",
+          "Symbol Sort table by Symbol in ascending order": "J&KBANK",
+          "Volume Sort table by volume in ascending order": "78,74,766"
         },
         {
           "": "",
-          "%_change Sort table by %_change in descending order": "0.52%",
-          "Close Sort table by close in ascending order": "1,136.3",
+          "%_change Sort table by %_change in descending order": "4.65%",
+          "Close Sort table by close in ascending order": "518.7",
           "Sr.": "7",
-          "Stock Name Sort table by Stock Name in ascending order": "Ather Energy Ltd",
-          "Symbol Sort table by Symbol in ascending order": "ATHERENERG",
-          "Volume Sort table by volume in ascending order": "11,73,920"
+          "Stock Name Sort table by Stock Name in ascending order": "IIFL Finance Ltd",
+          "Symbol Sort table by Symbol in ascending order": "IIFL",
+          "Volume Sort table by volume in ascending order": "19,65,270"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "4.56%",
+          "Close Sort table by close in ascending order": "594.45",
+          "Sr.": "8",
+          "Stock Name Sort table by Stock Name in ascending order": "Zydus Wellness Limited",
+          "Symbol Sort table by Symbol in ascending order": "ZYDUSWELL",
+          "Volume Sort table by volume in ascending order": "21,40,111"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "4.34%",
+          "Close Sort table by close in ascending order": "1,421.3",
+          "Sr.": "9",
+          "Stock Name Sort table by Stock Name in ascending order": "Tech Mahindra Limited",
+          "Symbol Sort table by Symbol in ascending order": "TECHM",
+          "Volume Sort table by volume in ascending order": "30,35,128"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "4.02%",
+          "Close Sort table by close in ascending order": "121.45",
+          "Sr.": "10",
+          "Stock Name Sort table by Stock Name in ascending order": "Vishal Mega Mart Ltd",
+          "Symbol Sort table by Symbol in ascending order": "VMM",
+          "Volume Sort table by volume in ascending order": "1,54,15,287"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "4.01%",
+          "Close Sort table by close in ascending order": "537.65",
+          "Sr.": "11",
+          "Stock Name Sort table by Stock Name in ascending order": "Anant Raj Limited",
+          "Symbol Sort table by Symbol in ascending order": "ANANTRAJ",
+          "Volume Sort table by volume in ascending order": "21,66,521"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.94%",
+          "Close Sort table by close in ascending order": "238.75",
+          "Sr.": "12",
+          "Stock Name Sort table by Stock Name in ascending order": "Firstsource Solutions Limited",
+          "Symbol Sort table by Symbol in ascending order": "FSL",
+          "Volume Sort table by volume in ascending order": "29,30,870"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.93%",
+          "Close Sort table by close in ascending order": "567.2",
+          "Sr.": "13",
+          "Stock Name Sort table by Stock Name in ascending order": "Balrampur Chini Mills Limited",
+          "Symbol Sort table by Symbol in ascending order": "BALRAMCHIN",
+          "Volume Sort table by volume in ascending order": "6,73,438"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.7%",
+          "Close Sort table by close in ascending order": "1,687.4",
+          "Sr.": "14",
+          "Stock Name Sort table by Stock Name in ascending order": "Gravita India Limited",
+          "Symbol Sort table by Symbol in ascending order": "GRAVITA",
+          "Volume Sort table by volume in ascending order": "2,12,507"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.49%",
+          "Close Sort table by close in ascending order": "12,373",
+          "Sr.": "15",
+          "Stock Name Sort table by Stock Name in ascending order": "Dixon Technologies Ltd",
+          "Symbol Sort table by Symbol in ascending order": "DIXON",
+          "Volume Sort table by volume in ascending order": "5,49,083"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.45%",
+          "Close Sort table by close in ascending order": "15,101",
+          "Sr.": "16",
+          "Stock Name Sort table by Stock Name in ascending order": "Apar Industries Limited",
+          "Symbol Sort table by Symbol in ascending order": "APARINDS",
+          "Volume Sort table by volume in ascending order": "2,62,252"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.34%",
+          "Close Sort table by close in ascending order": "456.9",
+          "Sr.": "17",
+          "Stock Name Sort table by Stock Name in ascending order": "Poonawalla Fincorp Ltd",
+          "Symbol Sort table by Symbol in ascending order": "POONAWALLA",
+          "Volume Sort table by volume in ascending order": "20,03,328"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.23%",
+          "Close Sort table by close in ascending order": "1,855.7",
+          "Sr.": "18",
+          "Stock Name Sort table by Stock Name in ascending order": "Bajaj Finserv Limited",
+          "Symbol Sort table by Symbol in ascending order": "BAJAJFINSV",
+          "Volume Sort table by volume in ascending order": "17,90,282"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "3.02%",
+          "Close Sort table by close in ascending order": "1,121",
+          "Sr.": "19",
+          "Stock Name Sort table by Stock Name in ascending order": "Uno Minda Ltd",
+          "Symbol Sort table by Symbol in ascending order": "UNOMINDA",
+          "Volume Sort table by volume in ascending order": "5,75,387"
+        },
+        {
+          "": "",
+          "%_change Sort table by %_change in descending order": "2.69%",
+          "Close Sort table by close in ascending order": "2,663",
+          "Sr.": "20",
+          "Stock Name Sort table by Stock Name in ascending order": "Endurance Technologies Limited",
+          "Symbol Sort table by Symbol in ascending order": "ENDURANCE",
+          "Volume Sort table by volume in ascending order": "1,01,896"
         }
       ]
     }

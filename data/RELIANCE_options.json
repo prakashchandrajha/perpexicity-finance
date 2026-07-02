@@ -1,0 +1,21 @@
+{
+  "atm_call_iv": 22,
+  "atm_put_iv": 23.67,
+  "atm_strike": 1300,
+  "chg_oi_ratio": 0.255,
+  "current_expiry": "28-Jul-2026",
+  "max_call_oi_strike": 1400,
+  "max_put_oi_strike": 1300,
+  "pcr": 0.669,
+  "resistance_level": 1400,
+  "rows_parsed": 45,
+  "sentiment": "BEARISH",
+  "source": "dom",
+  "support_level": 1300,
+  "symbol": "RELIANCE",
+  "total_call_chg_oi": 12118,
+  "total_call_oi": 111164,
+  "total_put_chg_oi": 3087,
+  "total_put_oi": 74334,
+  "underlying_price": 1301.9
+}

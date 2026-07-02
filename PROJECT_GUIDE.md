@@ -1,255 +1,140 @@
-# Perplexity Finance Power-Up Project Guide
+# Perplexity Finance Power-Up Project Guide: The Undefeated 9-Man Algorithmic Trading Team
 
-This project is a trading-bot intelligence stack for Indian intraday trading. It does not execute trades. It gives your bot better context before the broker/chart system decides entry, exit, stop, target, and quantity.
+This project is an institutional-grade algorithmic trading intelligence stack engineered for Indian equities, NSE derivatives, and global macro analysis. It acts as the "Master Brain" and "Coach" for your automated trading system, synthesizing real-time technicals, long-term balance sheets, option chain traps, sectoral capital rotation, professional consensus, and global macro weather before placing execution orders.
 
-## Final Audit Verdict
+---
 
-The direction is good. The project is using the three sources in the right broad way:
+## 🏆 The Championship 9-Man Cricket Lineup (System Architecture)
 
-- Perplexity is used for live narrative: why a stock, sector, or macro setup is moving.
-- Screener is used for fundamental safety: whether the bot should allow, reduce, watch, or avoid a stock.
-- Trendlyne is used for institutional/MarketMind context: delivery, block deals, ownership, and flow-style questions.
+Our architecture models a world-class cricket team where every engine plays a specialized, non-overlapping role.
 
-The best architecture is not to ask all three tools everything. The best architecture is a pipeline:
+| # | Player / Jersey | Engine & Bridge | Port | Specialized Role in the Algorithmic Team |
+|---|---|---|---|---|
+| **1** | **Rohit Sharma (The Opener)** | **Chartink** (`chartink.com`) | `8777` | **Intraday Breakout Hunter:** Scans 5,000+ NSE stocks in real-time to spot volume explosions, VWAP crossovers, and momentum setups. |
+| **2** | **Virat Kohli (The Anchor)** | **Screener.in** (`screener.in`) | `8776` | **Balance Sheet Police:** Pulls 10-year financials, debt-to-equity ratios, ROCE, and P&L trajectories. Enforces local SQLite risk gates to block junk stocks. |
+| **3** | **Jasprit Bumrah (Main Bowler)**| **NSE Options** (`nseindia.com`) | `8778` | **Trap Detector & Finisher:** Calculates Put-Call Ratios (PCR), ATM Implied Volatility, and Change in OI Ratios (`<1.0` vs `>1.0`) to expose call-writing bull traps. |
+| **4** | **Yuvraj Singh (All-Rounder)**| **Trendlyne** (`trendlyne.com`) | `8787` | **Institutional DVM & Consensus:** Extracts Durability/Valuation/Momentum scores, broker target price upgrades, and insider block deals. |
+| **5** | **The Pitch Inspector** | **Macro Cash Flow API** | Direct | **FII / DII Cash Weather Forecast:** Tracks institutional net buying/selling. If FIIs dump `>₹2,000 Cr`, it triggers a Category 5 Storm alert and cuts position sizing by 50%. |
+| **6** | **Hardik Pandya (Strategist)**| **NSE Sectoral Heatmap** | Direct | **Capital Rotation Tracker:** Reads real-time Advance/Decline ratios across NSE sectoral indices (`allIndices`) to ensure we trade *with* institutional sector momentum. |
+| **7** | **The 12th Man** | **StockGro** (`stockgro.club`) | Direct | **Professional Signal & Retail FOMO Check:** Verifies SEBI Registered Analyst trade setups and checks if the retail crowd is overheated. |
+| **8** | **MS Dhoni (Global Tactician)**| **Investing.com** (`in.investing.com`)| `8788` | **Global Weather & Technical Consensus:** Bypasses Cloudflare to extract multi-timeframe consensus (`STRONG BUY`/`STRONG SELL`), 12 Moving Averages, 10 Oscillators, Fibonacci Pivots, and Brent Crude / DXY trends. |
+| **9** | **The Captain / Coach** | **Perplexity AI** (`perplexity.ai`) | `8765` | **Master Brain & Orchestrator:** Synthesizes data from all 8 engines, checks live breaking news, enforces strict risk rules, and delivers the final AI Trade Plan (Entry, Stop Loss, Target). |
 
-```text
-Broker/chart anomaly -> local Screener risk gate -> Trendlyne institutional context -> Perplexity final narrative -> bot decision layer
-```
+---
 
-## Core Rule
-
-Each tool has one job.
-
-| Tool | Best Job | Do Not Use It For |
-|---|---|---|
-| Perplexity Finance | Live causal narrative, news synthesis, macro translation, earnings tone | Raw fundamentals, long history, broker execution |
-| Screener | 10+ year financials, custom screens, debt/pledge/ROCE risk gate | Intraday price, VWAP, ORB, tick volume, breaking news |
-| Trendlyne | MarketMind/ownership/institutional context, delivery/block deal style questions | Final trade signal, stop loss, chart execution |
-| Broker/chart data | Price, volume, VWAP, ORB, OI, execution | News reasoning or fundamentals |
-
-## How The Bot Should Use It
-
-### Pre-Market
-
-Use Screener first.
-
-Purpose:
-
-- Build the tradable universe.
-- Remove high-debt, pledged, weak-quality names.
-- Store `bot_score`, `risk_bucket`, `position_size_multiplier`, `allowed_bot_actions`, and `blocked_reasons`.
-
-Then use Perplexity only for top candidates or macro/sector setup.
-
-Purpose:
-
-- Understand overnight narrative.
-- Identify catalysts.
-- Translate global events into Indian sector impact.
-
-Command shape:
-
-```bash
-python orchestrator.py pre-market
-```
-
-### Live Market
-
-Do not poll Perplexity, Screener, or Trendlyne continuously. Live usage should be event-driven only.
-
-Correct flow:
+## ⚙️ How The System Works: The Pipeline
 
 ```text
-1. Broker/chart data detects anomaly.
-2. Check local Screener SQLite first.
-3. If high risk or blocked, skip the trade and save external queries.
-4. If allowed, ask Trendlyne for institutional context.
-5. Feed Screener + Trendlyne context into Perplexity.
-6. Let the bot decide using chart trigger + risk gate + narrative.
+Chartink Breakout / Chart Anomaly
+        │
+        ▼
+[Gate 1: Virat Kohli / Screener] ──(If High Debt / Pledged / Junk)──► ❌ BLOCK & ABORT
+        │
+        ▼
+[Gate 2: Jasprit Bumrah / Options] ──(If Change in OI Ratio > 1.5 / Bull Trap)──► ⚠️ REDUCE SIZE / CAUTION
+        │
+        ▼
+[Gate 3: Hardik Pandya / Sectors] ──(If Sector Index is Red / Lagging)──► ❌ VETO (Do not trade against sector)
+        │
+        ▼
+[Gate 4: MS Dhoni / Investing.com] ──(If Global DXY / Crude Spiking or Technical Consensus = SELL)──► ❌ VETO
+        │
+        ▼
+[Gate 5: Yuvraj & FII/DII Weather] ──► Assemble Institutional DVM & Net Cash Balance
+        │
+        ▼
+[The Captain: Perplexity AI] ──► Conducts Live Web Search & Generates Exact Trade Plan (JSON)
 ```
 
-Command shape:
+---
 
+## 📜 Core Operational Rules
+
+### 1. Pre-Market Inspection (`09:00 AM`)
+Run the pre-match pitch inspection to evaluate macro liquidity, index derivatives, and global weather before the market opens:
 ```bash
-python orchestrator.py anomaly RELIANCE.NS --context "RELIANCE broke VWAP with 5x volume while Nifty is flat. Explain if this is real buying or noise."
+python3 orchestrator.py pre-open
 ```
+* Checks FII/DII net cash flow.
+* Evaluates Nifty & BankNifty Option Chains (PCR & ATM IV).
+* Reads Hardik Pandya's Sectoral Heatmap.
+* Queries MS Dhoni for global Brent Crude, USD/INR, and Nifty 50 Multi-Timeframe Technical Consensus.
 
-### Post-Market
-
-Use Screener to rebuild tomorrow's universe and save memory.
-
-Use Perplexity for day-wrap narrative only for important names.
-
-Use Trendlyne if you need ownership/flow-style interpretation after a big move.
-
-## Trading-Bot Decision Contract
-
-The bot should not consume human-style labels like "buy" or "sell" from these projects.
-
-It should consume permissions:
-
-| Field | Meaning |
-|---|---|
-| `risk_bucket` | low, medium, high, unknown |
-| `position_size_multiplier` | 1.0 normal, 0.5 reduced, 0.25 tiny/manual, 0.0 blocked |
-| `allowed_bot_actions` | normal_trade, reduce_size, watch_only, manual_review, avoid |
-| `blocked_reasons` | hard reasons to block auto-entry |
-| `catalyst_tags` | IPO, earnings, FII, crude, regulatory, rates, etc. |
-| `urgency` | whether the narrative is breaking or normal |
-| `confidence` | confidence of extracted narrative signal |
-
-Recommended final decision matrix:
-
-| Screener | Trendlyne | Perplexity | Bot Action |
-|---|---|---|---|
-| avoid | any | any | block trade |
-| reduce_size | weak/unclear | no catalyst | half or smaller size only if chart is excellent |
-| normal_trade | supportive | bullish catalyst | allow normal size if broker trigger confirms |
-| normal_trade | distribution/block selling | bullish headline | manual review or reduce size |
-| unknown | any | any | manual review, no auto-entry |
-
-## Project Structure
-
-```text
-perpexicity-finance/
-  orchestrator.py
-  PROJECT_GUIDE.md
-  perplexity-finance-scraper/
-    main.py
-    bot_api.py
-    scraper/extension_server.py
-    extension/
-    data/perplexity_warehouse.db
-  power_up/
-    screener/
-      main.py
-      server/extension_server.py
-      extension/
-      data/screener_warehouse.db
-    trendlyne/
-      main.py
-      server/extension_server.py
-      extension/
-```
-
-## Linux And Windows Compatibility
-
-The root orchestrator is cross-platform.
-
-It automatically looks for Python in this order:
-
-- Linux/macOS: `venv/bin/python`, then `.venv/bin/python`
-- Windows: `venv/Scripts/python.exe`, then `.venv/Scripts/python.exe`
-- fallback: the current `sys.executable`
-
-It also preserves the host environment when launching child scripts, so `PATH`, `HOME`, browser/session variables, and OS-specific settings are not accidentally dropped.
-
-Recommended Linux setup:
-
+### 2. Live Market Hunting & Anomaly Execution (`09:15 AM - 03:30 PM`)
+When a stock breaks out on your scanner (or when auditing a ticker), execute the full 9-engine institutional deep-dive:
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+python3 orchestrator.py anomaly TATATECH.NS
 ```
 
-Recommended Windows setup:
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-## Setup And Run
-
-Start each server in its own terminal when needed.
-
-Perplexity server:
-
+### 3. Wicket-Keeper Live Monitoring
+Continuously audit open trade plans against real-time underlying prices to trigger automated Stop-Loss exits or Take-Profit trailing:
 ```bash
-cd perplexity-finance-scraper
-python scraper/extension_server.py
+python3 orchestrator.py monitor
 ```
 
-Screener server:
-
+### 4. Video Analyst Performance Journal
+Review historical win rates and sentiment calibration from the SQLite warehouse:
 ```bash
-cd power_up/screener
-python server/extension_server.py
+python3 orchestrator.py journal
 ```
 
-Trendlyne server:
+---
 
+## 🚨 The 7 Algorithmic Safety Commandments (Institutional Pro-Trader Shield)
+
+To ensure this 9-man team operates with zero emotional or programmatic vulnerabilities:
+
+1. **The Opening Bell Rule (09:15–09:30 AM No-Trade Zone):** Never enter a breakout trade during the first 15 minutes of market opening. Wait for initial balance price discovery to settle and verify institutional volume before executing.
+2. **The Earnings & Corporate Event Veto:** Before entering any trade, check MS Dhoni's economic calendar. If the company is declaring earnings, dividends, or stock splits TODAY, block the trade regardless of technical consensus.
+3. **The Expiry Day Max Pain Veto (Jasprit Bumrah's Magnet Guard):** On weekly option expiry days after 1:30 PM, never enter a breakout trade that goes against the **Max Pain Strike** ($S_{pain}$). Option sellers will ruthlessly pin the market to Max Pain by 3:30 PM.
+4. **The Liquidity & Impact Cost Gatekeeper (Rohit Sharma Veto):** Never trade illiquid small-caps with wide bid-ask spreads. Any Chartink breakout candidate with estimated daily turnover `< ₹20 Crore` is instantly vetoed to prevent slippage traps.
+5. **The FII Algorithmic Dumping Veto (MS Dhoni Macro Flow Radar):** Check US 10-Year Treasury Yields and USD/INR exchange rates before entering long breakouts. If yields spike or Rupee weakens past key resistance, quantitative FII sell programs are active—block aggressive BankNifty and IT longs!
+6. **The 3-Stage ATR Dynamic Trailing Stop Loss (Wicket-Keeper):** Never use static profit targets.
+   * **Stage 1 (Initial Risk):** Hold stop loss at OI Support floor.
+   * **Stage 2 (Break-Even Lock):** Once price moves `+1.0 ATR` in profit, lock Stop Loss to Cost (`₹0 loss guaranteed`).
+7. **Player 10 (The Paper Umpire & Execution Ledger):** In the absence of a live broker API, the AI Trade Plan must be routed to our **Player 10 SQLite Paper Trading Engine** (`python3 orchestrator.py paper-entry`). The Wicket-Keeper (`monitor`) automatically enforces our 3-Stage ATR trailing stops against live market prices and logs verified P&L (`journal` & `paper-list`) to prove quantitative alpha before real capital is deployed. The root `orchestrator.py` acts as a clean CLI router delegating all specialized operations to our modular `sub_orchestrators/` package (`config.py`, `data_fetcher.py`, `committee.py`, `paper_umpire.py`, `wicket_keeper.py`, `briefings.py`, and `live_loop.py`). Always start the trading day by running **The 8:45 AM War Room Briefing** (`python3 orchestrator.py war-room`).
+
+---
+
+## 🛠️ Server Management & Setup
+
+Start all 6 Chrome Extension Background Servers persistently with a single command:
 ```bash
-cd power_up/trendlyne
-python server/extension_server.py
+./start_all.sh
 ```
+This launches servers on ports `8765`, `8776`, `8777`, `8778`, `8787`, and `8788` using `nohup` and `disown` to ensure they survive terminal termination.
 
-Load each Chrome extension from its `extension/` folder through `chrome://extensions/`.
-
-Then run the root orchestrator:
-
+To check active servers:
 ```bash
-python orchestrator.py pre-market
-python orchestrator.py anomaly RELIANCE.NS --context "Volume spike with VWAP breakout and unusual option activity."
-python orchestrator.py custom-screen "Market Capitalization > 3000 AND Debt to equity < 1 AND Return on capital employed > 15"
+lsof -i :8765 -i :8776 -i :8777 -i :8778 -i :8787 -i :8788
 ```
 
-## Benefits
+To load extensions into Chrome:
+1. Open Google Chrome and navigate to `chrome://extensions/`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select any of the extension directories:
+   * `power_up/screener/extension`
+   * `power_up/chartink/extension`
+   * `power_up/nse_options/extension`
+   * `power_up/trendlyne/extension`
+   * `power_up/investing/extension`
+   * `perplexity-finance-scraper/extension`
 
-- Saves Perplexity queries by checking Screener first.
-- Blocks risky names before live emotions enter the system.
-- Turns Screener into durable local bot memory through SQLite.
-- Uses Trendlyne as extra institutional context instead of duplicating Screener.
-- Uses Perplexity only where it has edge: live causal reasoning.
-- Keeps broker/chart data as the execution authority.
+---
 
-## Current Audit Notes
+## 🔍 Interactive Codebase Auditing (`Understand-Anything`)
+This project integrates with **[Understand-Anything](https://github.com/Egonex-AI/Understand-Anything)** to maintain architectural clarity across all 9 trading engines.
 
-### Strong Parts
-
-- The source roles are correctly separated.
-- Screener has SQLite memory, which is exactly what a bot needs.
-- Perplexity accepts injected context, so it can reason over broker anomaly + Screener + Trendlyne.
-- Orchestrator checks Screener before spending a Perplexity query.
-- Trendlyne is correctly treated as context, not as a final signal.
-
-### Fixed In This Pass
-
-1. `orchestrator.py` now resolves Python virtualenv paths on both Linux and Windows.
-2. `orchestrator.py` now preserves the host environment when launching child scripts.
-3. Screener extension keepalive messages now match between `content.js` and `background.js`.
-4. Screener extension no longer references an undefined `tab.id` after jobs.
-5. Screener ratio extraction is stricter and no longer reads every `<li>` on the company page.
-6. Trendlyne now saves structured context fields: `delivery_trend`, `block_deal_signal`, `fii_signal`, `institutional_bias`, and `flags`.
-7. `orchestrator.py` now injects Trendlyne structured context plus raw MarketMind prose into Perplexity.
-8. Perplexity anomaly prompt now uses Indian-market sources: NSE/BSE, SEBI, FII/DII, sector, crude, rates, FX, and reliable market news.
-
-### Weak Parts To Fix Next
-
-1. Some console output in older module logs may still have mojibake characters. Prefer plain ASCII logs for bot readability.
-2. Trendlyne structured parsing is still heuristic. After collecting real examples, refine keywords and add confidence scoring.
-## Final Trading Rule
-
-This stack should never place trades by itself.
-
-The correct final authority chain is:
-
-```text
-Broker/chart data decides setup.
-Screener decides whether the symbol is allowed.
-Trendlyne adds ownership/flow context.
-Perplexity explains the live narrative.
-Risk engine decides final size.
-Broker executes.
+To generate or update an interactive visual knowledge graph of this trading system:
+```bash
+/understand
 ```
-
-If any external data is missing, stale, or strange, downgrade to `manual_review` or `avoid`.
-
-## Official Source Links
-
-- Perplexity Finance: https://www.perplexity.ai/finance
-- Screener: https://www.screener.in/
-- Trendlyne MarketMind: https://trendlyne.com/marketmind/ask-ai/
-
+To open the web dashboard and visually inspect the 9-man team's dependencies and architectural layers:
+```bash
+/understand-dashboard
+```
+To audit the impact of any code changes before deploying to live trading:
+```bash
+/understand-diff
+```
 

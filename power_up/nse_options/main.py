@@ -29,6 +29,8 @@ def run_option_chain(symbol: str, is_index: bool):
     # Print core insights
     print(f" - Underlying Price: {raw_data.get('underlying_price')}")
     print(f" - Put-Call Ratio (PCR): {raw_data.get('pcr')} ({raw_data.get('sentiment')})")
+    print(f" - Max Pain Strike (Institutional Magnet): {raw_data.get('max_pain_strike')}")
+    print(f" - Expiry Pinning Risk: {raw_data.get('expiry_pinning_risk')}")
     print(f" - Resistance (Max Call OI): {raw_data.get('resistance_level')}")
     print(f" - Support (Max Put OI): {raw_data.get('support_level')}")
     print(f" - Rows Parsed: {raw_data.get('rows_parsed')}")

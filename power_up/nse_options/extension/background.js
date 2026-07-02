@@ -125,6 +125,7 @@ async function runJob(job) {
           let atm_strike = 0;
           let atm_ce_iv = 0;
           let atm_pe_iv = 0;
+          const strikesData = [];
           
           for (const row of allRows) {
             const cells = Array.from(row.querySelectorAll("td"));
@@ -138,59 +139,45 @@ async function runJob(job) {
             const strike = parseFloat(strikeText) || 0;
             if (strike === 0) continue;
             
-            // CE OI = cell 1, PE OI = cell 21
-            const ceOiText = cells[1].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            const peOiText = cells[21].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
+            const ce_oi = parseFloat(cells[1].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const ce_chg_oi = parseFloat(cells[2].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const ce_ltp = parseFloat(cells[5].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const ce_iv = parseFloat(cells[4].innerText.trim().replace(/,/g, "") || "0") || 0;
             
-            // CE Chg OI = cell 2, PE Chg OI = cell 20
-            const ceChgText = cells[2].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            const peChgText = cells[20].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            
-            // CE IV = cell 4, PE IV = cell 18
-            const ceIvText = cells[4].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            const peIvText = cells[18].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-
-            // CE LTP = cell 5, PE LTP = cell 17
-            const ceLtpText = cells[5].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            const peLtpText = cells[17].innerText.trim().replace(/,/g, "").replace(/-/g, "0");
-            
-            const ce_oi = parseFloat(ceOiText) || 0;
-            const pe_oi = parseFloat(peOiText) || 0;
-            const ce_chg = parseFloat(ceChgText) || 0;
-            const pe_chg = parseFloat(peChgText) || 0;
-            const ce_iv = parseFloat(ceIvText) || 0;
-            const pe_iv = parseFloat(peIvText) || 0;
-            const ce_ltp = parseFloat(ceLtpText) || 0;
-            const pe_ltp = parseFloat(peLtpText) || 0;
+            const pe_iv = parseFloat(cells[18].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const pe_ltp = parseFloat(cells[17].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const pe_chg_oi = parseFloat(cells[20].innerText.trim().replace(/,/g, "") || "0") || 0;
+            const pe_oi = parseFloat(cells[21].innerText.trim().replace(/,/g, "") || "0") || 0;
             
             total_ce_oi += ce_oi;
             total_pe_oi += pe_oi;
-            total_ce_chg_oi += ce_chg;
-            total_pe_chg_oi += pe_chg;
+            total_ce_chg_oi += ce_chg_oi;
+            total_pe_chg_oi += pe_chg_oi;
             
             if (ce_oi > max_ce_oi) { max_ce_oi = ce_oi; max_ce_strike = strike; }
             if (pe_oi > max_pe_oi) { max_pe_oi = pe_oi; max_pe_strike = strike; }
             
-            // Track ATM using underlying price if available
             if (underlying > 0) {
               const diff = Math.abs(strike - underlying);
               if (diff < atm_diff) {
                 atm_diff = diff;
+                atm_ltp_diff = Math.abs(ce_ltp - pe_ltp);
                 atm_strike = strike;
                 atm_ce_iv = ce_iv;
                 atm_pe_iv = pe_iv;
-              }
-            } else if (ce_ltp > 0 && pe_ltp > 0) {
-              // Fallback: ATM option has CE LTP ≈ PE LTP
-              const ltp_diff = Math.abs(ce_ltp - pe_ltp);
-              if (ltp_diff < atm_ltp_diff) {
-                atm_ltp_diff = ltp_diff;
-                atm_strike = strike;
-                atm_ce_iv = ce_iv;
-                atm_pe_iv = pe_iv;
+              } else if (diff === atm_diff) {
+                const ltp_diff = Math.abs(ce_ltp - pe_ltp);
+                if (ltp_diff < atm_ltp_diff) {
+                  atm_ltp_diff = ltp_diff;
+                  atm_strike = strike;
+                  atm_ce_iv = ce_iv;
+                  atm_pe_iv = pe_iv;
+                }
               }
             }
             
+            // Collect strike OI for Max Pain calculation
+            strikesData.push({ strike, ce_oi, pe_oi });
             rowCount++;
           }
           
@@ -201,6 +188,37 @@ async function runJob(job) {
           
           const pcr = total_ce_oi > 0 ? Number((total_pe_oi / total_ce_oi).toFixed(3)) : 0;
           const chg_oi_ratio = total_ce_chg_oi !== 0 ? Number((total_pe_chg_oi / total_ce_chg_oi).toFixed(3)) : 0;
+          
+          // Calculate Institutional Max Pain Strike
+          let max_pain_strike = 0;
+          let min_total_loss = Infinity;
+          for (let i = 0; i < strikesData.length; i++) {
+            const K = strikesData[i].strike;
+            let total_loss = 0;
+            for (let j = 0; j < strikesData.length; j++) {
+              const S = strikesData[j].strike;
+              if (K > S) {
+                total_loss += strikesData[j].ce_oi * (K - S);
+              } else if (K < S) {
+                total_loss += strikesData[j].pe_oi * (S - K);
+              }
+            }
+            if (total_loss < min_total_loss) {
+              min_total_loss = total_loss;
+              max_pain_strike = K;
+            }
+          }
+          
+          // Evaluate Expiry Day Pinning Risk (Max Pain Magnet Veto)
+          let expiry_pinning_risk = "LOW";
+          if (underlying > 0 && max_pain_strike > 0) {
+            const pain_diff_pct = Number((Math.abs(underlying - max_pain_strike) / underlying * 100).toFixed(2));
+            if (pain_diff_pct <= 0.5) {
+              expiry_pinning_risk = "HIGH_PINNING_MAGNET";
+            } else if (pain_diff_pct <= 1.0) {
+              expiry_pinning_risk = "MODERATE";
+            }
+          }
           
           sendResult({
             source: "dom",
@@ -220,6 +238,8 @@ async function runJob(job) {
             max_put_oi_strike: max_pe_strike,
             resistance_level: max_ce_strike,
             support_level: max_pe_strike,
+            max_pain_strike: max_pain_strike,
+            expiry_pinning_risk: expiry_pinning_risk,
             sentiment: pcr >= 1.0 ? "BULLISH" : "BEARISH",
             rows_parsed: rowCount,
           });
@@ -253,7 +273,7 @@ async function runJob(job) {
       throw new Error(result.error);
     }
     
-    console.log(`[NSE Bridge] ${job.symbol}: PCR=${result.pcr} Resistance=${result.resistance_level} Support=${result.support_level} (${result.rows_parsed} strikes)`);
+    console.log(`[NSE Bridge] ${job.symbol}: PCR=${result.pcr} MaxPain=${result.max_pain_strike} Risk=${result.expiry_pinning_risk} Resistance=${result.resistance_level} Support=${result.support_level} (${result.rows_parsed} strikes)`);
     await postJson(`${SERVER}/complete`, {
         job_id: job.id,
         symbol: job.symbol,
